@@ -674,7 +674,7 @@ tags: [auth, security, api] # Categorization
 
 ```bash
 # From your project directory
-curl -sL https://raw.githubusercontent.com/rix/afx/main/install.sh | bash -s -- .
+curl -sL https://raw.githubusercontent.com/rixrix/afx/main/install.sh | bash -s -- .
 ```
 
 Or if you have AFX cloned locally:
@@ -716,7 +716,7 @@ When the AFX framework is updated, you can pull the latest changes:
 
 ```bash
 # Update existing installation (preserves your .afx.yaml config)
-curl -sL https://raw.githubusercontent.com/rix/afx/main/install.sh | bash -s -- --update .
+curl -sL https://raw.githubusercontent.com/rixrix/afx/main/install.sh | bash -s -- --update .
 
 # Or if you have AFX cloned locally
 ./path/to/afx/install.sh --update .

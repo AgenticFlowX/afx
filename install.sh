@@ -3,7 +3,7 @@
 # Usage:
 #   Install:  ./install.sh /path/to/project
 #   Update:   ./install.sh --update /path/to/project
-#   Remote:   curl -sL https://raw.githubusercontent.com/rix/afx/main/install.sh | bash -s -- .
+#   Remote:   curl -sL https://raw.githubusercontent.com/rixrix/afx/main/install.sh | bash -s -- .
 #
 # Options:
 #   --update          Update existing AFX installation (preserves user content)
@@ -17,6 +17,7 @@ set -e
 
 # AFX Version (update this when releasing)
 AFX_VERSION="1.0.0"
+AFX_REPO="rixrix/afx"
 
 # Boundary markers for CLAUDE.md
 AFX_START_MARKER="<!-- AFX:START - Managed by AFX. Do not edit manually. -->"
@@ -88,10 +89,10 @@ while [[ $# -gt 0 ]]; do
             echo "  ./install.sh --update ."
             echo ""
             echo "  # Remote install"
-            echo "  curl -sL https://raw.githubusercontent.com/rix/afx/main/install.sh | bash -s -- ."
+            echo "  curl -sL https://raw.githubusercontent.com/${AFX_REPO}/main/install.sh | bash -s -- ."
             echo ""
             echo "  # Remote update"
-            echo "  curl -sL https://raw.githubusercontent.com/rix/afx/main/install.sh | bash -s -- --update ."
+            echo "  curl -sL https://raw.githubusercontent.com/${AFX_REPO}/main/install.sh | bash -s -- --update ."
             exit 0
             ;;
         *)
@@ -136,10 +137,10 @@ if [ -z "$SCRIPT_DIR" ] || [ ! -f "$SCRIPT_DIR/.afx.yaml.template" ]; then
     TEMP_DIR=$(mktemp -d)
     trap "rm -rf $TEMP_DIR" EXIT
 
-    git clone --depth 1 --quiet https://github.com/rix/afx.git "$TEMP_DIR/afx" 2>/dev/null || {
+    git clone --depth 1 --quiet https://github.com/${AFX_REPO}.git "$TEMP_DIR/afx" 2>/dev/null || {
         echo -e "${RED}Error: Failed to clone AFX repository${NC}"
         echo "Check your internet connection or clone manually:"
-        echo "  git clone https://github.com/rix/afx.git"
+        echo "  git clone https://github.com/${AFX_REPO}.git"
         exit 1
     }
     AFX_DIR="$TEMP_DIR/afx"
