@@ -1,0 +1,116 @@
+<svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lightFlowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb"/>
+      <stop offset="50%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#c026d3"/>
+    </linearGradient>
+
+    <linearGradient id="lightThreadGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#d97706"/>
+    </linearGradient>
+
+    <filter id="lightGlow">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <!-- Light background -->
+  <rect width="800" height="800" fill="#ffffff"/>
+
+  <!-- Main icon mark -->
+  <g id="lightIconMark" transform="translate(400, 300)">
+    
+    <!-- The continuous flow path -->
+    <path d="M -140 0 
+             C -140 -80, -70 -80, -70 0
+             C -70 80, 0 80, 0 0
+             C 0 -80, 70 -80, 70 0
+             C 70 80, 140 80, 140 0"
+          stroke="url(#lightFlowGrad)"
+          stroke-width="8"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          opacity="0.9"/>
+
+    <!-- Golden thread overlay -->
+    <path d="M -140 0 Q -105 -40, -70 0 Q -35 40, 0 0 Q 35 -40, 70 0 Q 105 40, 140 0"
+          stroke="url(#lightThreadGrad)"
+          stroke-width="3"
+          fill="none"
+          stroke-linecap="round"
+          opacity="0.9"/>
+
+    <!-- Three key nodes -->
+    <!-- Spec -->
+    <g transform="translate(-140, 0)">
+      <circle r="20" fill="url(#lightFlowGrad)" opacity="0.9"/>
+      <circle r="14" fill="#ffffff"/>
+      <circle r="6" fill="url(#lightThreadGrad)"/>
+    </g>
+    
+    <!-- Code -->
+    <g transform="translate(0, 0)">
+      <circle r="24" fill="url(#lightFlowGrad)" opacity="0.9"/>
+      <circle r="18" fill="#ffffff"/>
+      <circle r="8" fill="url(#lightThreadGrad)"/>
+    </g>
+    
+    <!-- Execution -->
+    <g transform="translate(140, 0)">
+      <circle r="20" fill="url(#lightFlowGrad)" opacity="0.9"/>
+      <circle r="14" fill="#ffffff"/>
+      <circle r="6" fill="url(#lightThreadGrad)"/>
+    </g>
+
+    <!-- Collaboration orbits -->
+    <circle r="180" stroke="url(#lightFlowGrad)" stroke-width="1" fill="none" opacity="0.2" stroke-dasharray="4,8"/>
+    <circle r="200" stroke="url(#lightFlowGrad)" stroke-width="1" fill="none" opacity="0.15" stroke-dasharray="4,12"/>
+  </g>
+
+  <!-- Typography -->
+  <g id="lightBranding">
+    <!-- Main AFX -->
+    <text x="400" y="520" 
+          font-family="'SF Mono', 'Monaco', monospace" 
+          font-size="72" 
+          fill="#0f172a" 
+          text-anchor="middle" 
+          font-weight="700"
+          letter-spacing="8">AFX</text>
+    
+    <!-- Full name -->
+    <text x="400" y="560" 
+          font-family="'Inter', 'Helvetica', sans-serif" 
+          font-size="18" 
+          fill="#475569" 
+          text-anchor="middle" 
+          letter-spacing="6"
+          font-weight="300">AGENTICFLOW</text>
+    
+    <!-- Tagline -->
+    <text x="400" y="600"
+          font-family="'Inter', 'Helvetica', sans-serif"
+          font-size="14"
+          fill="#64748b"
+          text-anchor="middle"
+          letter-spacing="1"
+          font-style="italic">Session continuity for AI-assisted development</text>
+  </g>
+
+  <!-- Decorative code elements -->
+  <g opacity="0.3" fill="none" stroke="#2563eb" stroke-width="2">
+    <path d="M 150 250 L 130 250 L 130 350 L 150 350"/>
+    <path d="M 650 250 L 670 250 L 670 350 L 650 350"/>
+  </g>
+
+  <!-- Subtle grid -->
+  <g opacity="0.08" stroke="#cbd5e1" stroke-width="1">
+    <line x1="200" y1="200" x2="600" y2="200"/>
+    <line x1="200" y1="400" x2="600" y2="400"/>
+    <line x1="200" y1="200" x2="200" y2="400"/>
+    <line x1="600" y1="200" x2="600" y2="400"/>
+  </g>
+</svg>

@@ -1,0 +1,100 @@
+# AFX Project Configuration Template
+# Copy this file to .afx.yaml in your project root and customize.
+# See: docs/agenticflowx/agenticflowx.md
+
+version: '1.0'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Paths
+# ─────────────────────────────────────────────────────────────────────────────
+paths:
+  specs: 'docs/specs'                    # Root directory for all specs
+  templates: 'docs/agenticflowx/templates'        # Path to AFX templates
+  sessions: 'docs/specs'                 # Global discussions (root)
+
+# Active features (used by /afx:report, /afx:work status)
+# Add your feature folder names here
+features:
+  - my-feature                           # Example: your first feature
+  # - another-feature                    # Uncomment and add more
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Context (Upstream Artifacts) - Optional
+# ─────────────────────────────────────────────────────────────────────────────
+# context:
+#   architecture: 'docs/architecture'    # System constraints & patterns
+#   proposals: 'docs/proposals'          # Business intent & rough ideas
+#   research: 'docs/research'            # Global exploration & knowledge
+
+# ─────────────────────────────────────────────────────────────────────────────
+# AI Attribution - Optional
+# ─────────────────────────────────────────────────────────────────────────────
+ai_attribution:
+  enabled: true                          # Enable @ai-assisted annotations
+  required: false                        # Set to true for compliance-heavy projects
+  format: '@ai-assisted {model} {date}'
+  # Example output: @ai-assisted claude-3.5-sonnet 2025-12-16
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test Traceability - Optional
+# ─────────────────────────────────────────────────────────────────────────────
+test_traceability:
+  enabled: true                          # Enable @covers annotations
+  annotation: '@covers'
+  # Example: @covers FR-1: User can submit feature claim
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Anchor Format
+# ─────────────────────────────────────────────────────────────────────────────
+anchors:
+  task_format: '#{phase}.{task}-{slug}'  # e.g., #2.1-create-repository
+  section_format: '#{slug}'              # e.g., #data-model
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Feature Prefixes (for discussion IDs)
+# ─────────────────────────────────────────────────────────────────────────────
+# Add your feature prefixes here. Used by /afx:session for discussion IDs.
+# Format: feature-folder: PREFIX (2-3 letters, uppercase)
+prefixes:
+  specs: GEN                             # General cross-cutting discussions
+  my-feature: MF                         # Example: your first feature prefix
+  # another-feature: AF                  # Uncomment and add more
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Quality Gates
+# ─────────────────────────────────────────────────────────────────────────────
+quality_gates:
+  require_path_check: true               # Must run /afx:check path before closing
+  require_human_approval: true           # Must run /afx:work approve before closing
+  block_on_mock_code: true               # Block PRs with setTimeout, // Mock patterns
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Verification Settings
+# ─────────────────────────────────────────────────────────────────────────────
+verification:
+  two_stage: true                        # Agent [OK] + Human [OK] required
+  stale_threshold_days: 30               # Report specs older than this as stale
+
+# ─────────────────────────────────────────────────────────────────────────────
+# File Patterns
+# ─────────────────────────────────────────────────────────────────────────────
+# Files that MUST have @see references (customize for your project)
+require_see_links:
+  - '*.repository.ts'
+  - '*.service.ts'
+  - '*.action.ts'
+  # - '*.model.ts'                       # Uncomment if using models
+
+# Files to scan for orphaned annotations (customize for your project structure)
+scan_for_orphans:
+  - 'src/**/*.ts'
+  - 'src/**/*.tsx'
+  # - 'packages/**/*.ts'                 # Uncomment for monorepo
+  # - 'apps/**/*.ts'                     # Uncomment for monorepo
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Spec Templates
+# ─────────────────────────────────────────────────────────────────────────────
+templates:
+  location: 'docs/agenticflowx/templates'         # Path to AFX templates folder
+  default: 'default'                     # Template used by /afx:init feature

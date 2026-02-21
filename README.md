@@ -1,0 +1,675 @@
+<p align="center">
+  <img src="assets/agenticflow_logo_light.svg" alt="AgenticFlowX Logo" width="600"/>
+</p>
+
+# AFX (AgenticFlowX)
+
+> **Keep AI agents on track, even when you're not**
+
+AFX is a spec-driven development framework for Claude Code that prevents AI agents from going off-spec. It maintains bidirectional traceability between specifications and code, preserves context across sessions, and enforces quality gates before tasks close.
+
+```mermaid
+graph LR
+    A[📋 Write Spec] --> B[🤖 Claude Reads]
+    B --> C[💻 Writes Code]
+    C --> D[✅ Verify]
+    D --> E[📝 Save Context]
+
+    E -.Resume.-> B
+    C -.@see.-> A
+
+    style A fill:#cfe2ff
+    style B fill:#d1e7dd
+    style C fill:#fff3cd
+    style D fill:#d4edda
+    style E fill:#f8d7da
+```
+
+## The Problem
+
+AI coding assistants are powerful but lose context easily:
+
+- **Context loss**: Close the window, lose your train of thought
+- **Scope creep**: "Fix a bug" becomes "refactor the entire module"
+- **Orphaned code**: Code written without understanding why or what spec it serves
+- **Verification burden**: No systematic way to prove code matches requirements
+- **Session breaks**: Coffee break = starting over with context dump
+
+## The Solution
+
+AFX gives Claude Code a memory and a rulebook:
+
+**Specs as Source of Truth**: Four-file structure per feature (spec, design, tasks, journal) that Claude reads and follows
+
+**Code-to-Spec Tracing**: Every function includes `@see` annotations linking back to the spec that required it. No orphaned code.
+
+**Context-Aware Commands**: `/afx:next` actually understands project state and tells you what to work on next
+
+**Session Continuity**: `/afx:session save` captures discussion context into the journal. Resume work days later without re-explaining everything.
+
+**Execution Verification**: `/afx:check path` traces code execution from UI through business logic to database, proving the feature actually works
+
+**Two-Stage Verification**: Agent marks tasks `[OK]`, human approves `[OK]` - both required to close a task
+
+## Why AFX?
+
+**Without AFX:**
+
+- "Claude, can you continue from yesterday?" → _Spends 10 minutes re-explaining context_
+- Claude "fixes a bug" → _Refactors 3 unrelated files you didn't ask for_
+- "Why does this function exist?" → _No idea, Claude wrote it 2 weeks ago_
+- Task says "Done" → _Code exists but isn't actually called anywhere_
+- Need to prove feature works → _Manually click through UI hoping nothing breaks_
+
+**With AFX:**
+
+- `/afx:work resume` → _Claude reads journal, picks up exactly where you left off_
+- Claude follows specs → _Only implements what's approved, no scope creep_
+- Every function has `@see` link → _Instant understanding of why code exists_
+- Task requires verification → _Both agent AND human must approve before closing_
+- `/afx:check path` → _Automated trace from UI → business logic → database_
+
+## Quick Start
+
+### One-Line Install
+
+```bash
+# From your project directory
+curl -sL https://raw.githubusercontent.com/rix/afx/main/install.sh | bash -s -- .
+```
+
+Or if you have AFX cloned locally:
+
+```bash
+./path/to/afx/install.sh /path/to/your/project
+```
+
+This installs:
+
+- Slash commands to `.claude/commands/`
+- Templates to `docs/agenticflowx/templates/`
+- Configuration file `.afx.yaml`
+- AFX documentation to `docs/agenticflowx/`
+- AFX snippets to `CLAUDE.md`
+
+### Install Options
+
+```bash
+# Commands only (minimal install)
+curl -sL .../install.sh | bash -s -- --commands-only .
+
+# Skip CLAUDE.md modification
+curl -sL .../install.sh | bash -s -- --no-claude-md .
+
+# Skip AFX documentation (docs/agenticflowx/)
+curl -sL .../install.sh | bash -s -- --no-docs .
+
+# Preview changes without applying
+curl -sL .../install.sh | bash -s -- --dry-run .
+
+# Overwrite existing files (fresh install)
+curl -sL .../install.sh | bash -s -- --force .
+```
+
+### Updating AFX
+
+When the AFX framework is updated, you can pull the latest changes:
+
+```bash
+# Update existing installation (preserves your .afx.yaml config)
+curl -sL https://raw.githubusercontent.com/rix/afx/main/install.sh | bash -s -- --update .
+
+# Or if you have AFX cloned locally
+./path/to/afx/install.sh --update .
+```
+
+The updater:
+
+- Updates all slash commands and templates
+- Updates AFX documentation in `docs/agenticflowx/`
+- Preserves your `.afx.yaml` configuration
+- Replaces the AFX section in `CLAUDE.md` (your custom content is preserved)
+- Uses boundary markers (`<!-- AFX:START -->` / `<!-- AFX:END -->`) for clean updates
+
+### Initialize Your First Feature
+
+```bash
+# In Claude Code, run:
+/afx:init feature user-authentication
+```
+
+This creates the four-file spec structure:
+
+```
+docs/specs/user-authentication/
+├── readme.md    # Feature dashboard (start here)
+├── spec.md      # Requirements - WHAT to build
+├── design.md    # Architecture - HOW to build it
+├── tasks.md     # Implementation checklist - WHEN/WHO
+└── journal.md   # Session logs - WHY decisions were made
+```
+
+**The four-file structure explained:**
+
+**`spec.md`** - Requirements only. No implementation details. This is a living document that represents the _current factual state_ of requirements.
+
+- User stories, acceptance criteria, business rules
+- What the feature must do, not how it does it
+- Example: "Users must be able to reset passwords via email"
+
+**`design.md`** - Technical architecture. How you'll implement the spec.
+
+- **Living document**: Overwrite it to reflect current reality rather than appending history.
+- API endpoints, data models, algorithms
+- Technology choices (JWT vs sessions, bcrypt vs argon2)
+- Example: "Password reset tokens stored in Redis with 1-hour TTL"
+
+**`tasks.md`** - Implementation checklist with two-stage verification.
+
+- Numbered tasks (1.1, 1.2, 2.1, etc.) that map to design sections
+- Each task has `[Agent OK]` and `[Human OK]` columns
+- Tasks cannot close without both approvals
+- Example: "1.2: Implement JWT token generation [OK] [OK]"
+
+**`journal.md`** - Append-only historical log of all discussions and decisions.
+
+- `/afx:session save` appends entries with timestamps
+- **Event log**: All historical context, abandoned ideas, and chronological narrative belong here.
+- Records context: what was discussed, why decisions were made, blockers encountered
+- Makes sessions resumable days/weeks later
+- Example: "Decided on JWT over sessions due to mobile app requirements"
+
+**Why four files instead of one?**
+
+```mermaid
+graph LR
+    A[spec.md<br/>WHAT] --> B[design.md<br/>HOW]
+    B --> C[tasks.md<br/>WHEN/WHO]
+    C --> D[journal.md<br/>WHY]
+
+    D -.Context.-> C
+    C -.Traces to.-> B
+    B -.Implements.-> A
+
+    style A fill:#fff3cd
+    style B fill:#cfe2ff
+    style C fill:#d1e7dd
+    style D fill:#f8d7da
+```
+
+- **Separation of concerns**: Requirements don't change when implementation details do
+- **Approval workflow**: Freeze spec.md, iterate on design.md
+- **Context preservation**: Journal captures the "why" that's lost in code comments
+- **Agent guidance**: Claude reads the right file for the right purpose
+
+## Commands
+
+### Context & Navigation
+
+**`/afx:next`** - Context-aware guidance
+Analyzes your project state and tells you exactly what to work on next. Checks for unapproved specs, incomplete tasks, pending verifications, and stale sessions.
+
+**`/afx:discover [capabilities|scripts|tools|project]`** - Project intelligence
+Scans your codebase to understand build systems, test runners, package managers, and available tooling. Claude learns how to build, test, and deploy your project.
+
+**`/afx:work status|next|resume|sync`** - Workflow orchestration
+
+- `status` - Current work state across all features
+- `next <spec>` - Pick and start the next task from a spec
+- `resume` - Continue interrupted work with full context restoration
+- `sync` - Sync task completion states between code and specs
+
+**`/afx:spec list|show|validate|review|approve`** - Specification management
+
+- `list` - Show all specs with status, owner, and progress
+- `show <name>` - Display spec overview with phase completion and recent journal entries
+- `validate <name>` - Check spec structure integrity (4 required files, frontmatter, links)
+- `phases <name>` - List all phases with completion percentages
+- `requirements <name>` - Extract FR/NFR from spec.md
+- `coverage <name>` - Requirements vs tasks gap analysis
+- `discuss <name>` - Interactive spec discussion and gap identification
+- `review <name>` - Comprehensive automated review (completeness, quality, consistency, gaps, risks)
+- `approve <name>` - Mark spec as approved after validation (automated gate)
+- `sign-off <name>` - Human approval with signature and timestamp (compliance/audit trail)
+
+### Development
+
+**`/afx:dev code|refactor|fix`** - Traced development
+Write code with automatic `@see` annotation insertion. Claude links every function back to the spec section or task that required it. No orphaned code.
+
+**`/afx:init feature|experiment <name>`** - Scaffold new work
+Creates the four-file spec structure (spec.md, design.md, tasks.md, journal.md) with proper frontmatter and templates.
+
+### Verification
+
+**`/afx:check path|lint|links`** - Quality gates
+
+- `path` - **BLOCKING GATE**: Trace execution from UI → business logic → database
+- `lint` - Verify all code has valid `@see` annotations
+- `links` - Check spec integrity and cross-references
+
+**`/afx:task verify|audit|close`** - Task management
+
+- `verify <task-id>` - Confirm implementation matches task requirements
+- `audit` - Review all tasks for completion criteria
+- `close <task-id>` - Close task after verification (requires both [OK] columns)
+
+### Session Management
+
+**`/afx:session save|recall|list`** - Context preservation
+
+- `save` - Capture current discussion into journal.md with structured metadata
+- `recall <session-id>` - Restore previous session context
+- `list` - Browse all recorded sessions across features
+
+**`/afx:handoff create|accept`** - Agent transitions
+Package current context for handoff to another agent or future session. Includes spec state, task progress, verification status, and discussion history.
+
+### Reporting
+
+**`/afx:report traceability|health|coverage`** - Project metrics
+
+- `traceability` - Code-to-spec coverage analysis
+- `health` - Spec quality and task completion rates
+- `coverage` - Which specs have implementation vs which are documentation-only
+
+## Project Intelligence
+
+AFX doesn't just track specs - it learns how your project works:
+
+```bash
+/afx:discover capabilities
+```
+
+**What it discovers:**
+
+| Category          | Examples                                | Used By                                  |
+| ----------------- | --------------------------------------- | ---------------------------------------- |
+| Build systems     | npm/yarn/pnpm scripts, Makefile, gradle | `/afx:check`, `/afx:work`                |
+| Test runners      | jest, pytest, cargo test, go test       | `/afx:dev code` (auto-run after changes) |
+| Package managers  | npm, yarn, pnpm, pip, cargo             | Dependency installation                  |
+| Development tools | eslint, prettier, tsc, mypy             | `/afx:check lint`                        |
+| Database tools    | Migrations, seeders, schema management  | `/afx:dev` database tasks                |
+| Deployment        | Docker, CI/CD configs, deploy scripts   | `/afx:work` deployment integration       |
+
+**Why this matters:** Claude learns your project's commands and can automatically run tests, linters, and builds without asking how.
+
+```bash
+# Example: AFX discovers and stores in .afx.yaml
+capabilities:
+  build: npm run build
+  test: npm test
+  lint: npm run lint
+  dev: npm run dev
+  migrate: npm run db:migrate
+```
+
+## Example Workflow
+
+```mermaid
+stateDiagram-v2
+    [*] --> Init: init feature
+    Init --> WriteSpec: edit spec
+    WriteSpec --> Approve: get approval
+    Approve --> SelectTask: work next
+    SelectTask --> Develop: dev code
+    Develop --> PathCheck: check path
+    PathCheck --> Failed: path broken
+    PathCheck --> SaveSession: gate passed
+    Failed --> Develop: fix path
+    SaveSession --> [*]: session save
+
+    SaveSession --> Resume: next session
+    Resume --> SelectTask: work resume
+```
+
+**Day 1: Starting a new feature**
+
+```bash
+/afx:init feature user-authentication
+# Creates docs/specs/user-authentication/ with all templates
+
+# Edit spec.md with requirements, get approval
+/afx:work next user-authentication
+# Claude reads tasks.md, picks task 1.1
+
+/afx:dev code
+# Implement login endpoint with @see annotations
+
+/afx:check path
+# Trace: LoginButton.onClick() → authService.login() → db.users.findOne()
+# ✓ Gate 1 passed
+
+/afx:session save "Implemented login endpoint, discussed token strategy"
+# Context saved to journal.md
+```
+
+**Day 2: After lunch (new session)**
+
+```bash
+/afx:next
+# AFX: "Resume user-authentication task 1.2 (Password hashing).
+#       Last session saved 2 hours ago. Gate 1 passed for task 1.1."
+
+/afx:work resume
+# Context restored: reads journal, understands token strategy decision
+
+/afx:dev code
+# Implement password hashing with @see annotations
+
+/afx:check path
+# Trace password hashing in registration flow
+# ✓ Gate 1 passed
+
+/afx:task verify 1.2
+# Agent marks [OK] in tasks.md
+
+# Human reviews, marks second [OK]
+/afx:task close 1.2
+# Task closed with both verifications
+```
+
+**Day 3: Handoff to another developer**
+
+```bash
+/afx:handoff create
+# Packages: spec state, completed tasks, open discussions, verification status
+
+# Other developer:
+/afx:handoff accept
+# Full context restored, continues from task 1.3 without explanation needed
+```
+
+## Code Traceability in Action
+
+AFX enforces bidirectional links between specs and code via JSDoc `@see` annotations:
+
+**In your spec** ([docs/specs/user-auth/design.md](docs/specs/user-auth/design.md)):
+
+```markdown
+### 2.1 Token Generation
+
+Use JWT with 24-hour expiry. Include user ID and role in payload.
+```
+
+**In your code** (`src/auth/tokens.ts`):
+
+```typescript
+/**
+ * @see docs/specs/user-auth/design.md#21-token-generation
+ * @see docs/specs/user-auth/tasks.md#12-implement-jwt-tokens
+ */
+export function generateToken(userId: string, role: string): string {
+  return jwt.sign({ userId, role }, process.env.JWT_SECRET, { expiresIn: "24h" });
+}
+```
+
+**Bidirectional traceability:**
+
+```mermaid
+graph LR
+    A[design.md] --> B[tokens.ts]
+    B -.-> A
+
+    D[tasks.md] --> B
+    B -.-> D
+
+    style A fill:#cfe2ff
+    style D fill:#d1e7dd
+    style B fill:#fff3cd
+```
+
+**What this enables:**
+
+- **Impact analysis**: `/afx:report traceability` shows which code will be affected by spec changes
+- **Orphan detection**: `/afx:check lint` finds code without spec justification
+- **Audit trail**: Understand why every function exists and what requirement it fulfills
+- **Agent guidance**: Claude reads `@see` links to understand context when modifying code
+
+## Documentation
+
+- [Full Manual](docs/agenticflowx/agenticflowx.md) - Complete framework reference
+- [SDD Guide](docs/agenticflowx/guide.md) - Spec-Driven Development methodology
+- [Cheatsheet](docs/agenticflowx/cheatsheet.md) - Quick reference
+
+## Project Structure
+
+**AFX Repository:**
+
+```
+afx/
+├── .claude/commands/     # AFX slash commands for Claude Code
+├── docs/                 # Framework documentation
+├── templates/            # Spec templates (spec, design, tasks, journal, readme)
+├── prompts/              # CLAUDE.md integration snippets
+├── examples/             # Example project setup
+├── install.sh            # One-line installer script
+└── .afx.yaml.template    # Configuration template
+```
+
+**Your Project (after install):**
+
+```
+your-project/
+├── .claude/commands/     # AFX slash commands
+├── docs/
+│   ├── afx/              # AFX reference documentation
+│   │   ├── agenticflowx.md
+│   │   ├── guide.md
+│   │   ├── cheatsheet.md
+│   │   └── templates/    # AFX spec templates
+│   │       ├── spec.md
+│   │       ├── design.md
+│   │       ├── tasks.md
+│   │       ├── journal.md
+│   │       └── readme.md
+│   └── specs/            # Your feature specifications
+│       └── {feature}/
+│           ├── spec.md
+│           ├── design.md
+│           ├── tasks.md
+│           └── journal.md
+├── .afx.yaml             # Project configuration
+└── CLAUDE.md             # Claude Code instructions (with AFX section)
+```
+
+## Configuration
+
+AFX uses `.afx.yaml` for project-specific configuration:
+
+```yaml
+version: "1.0"
+
+paths:
+  specs: "docs/specs"
+  templates: "docs/agenticflowx/templates"
+
+features:
+  - my-feature
+  - another-feature
+
+prefixes:
+  specs: GEN
+  my-feature: MF
+
+quality_gates:
+  require_path_check: true
+  require_human_approval: true
+```
+
+See `.afx.yaml.template` for full configuration options.
+
+## Quality Gates
+
+AFX enforces verification before tasks can close:
+
+```mermaid
+graph LR
+    A[Code Complete] --> B{Gate 1<br/>Path Check}
+    B -->|Fail| A
+    B -->|Pass| C{Gate 2<br/>Lint Check}
+    C -->|Fail| A
+    C -->|Pass| D{Gate 3<br/>Link Check}
+    D -->|Fail| A
+    D -->|Pass| E{Gate 4<br/>Audit}
+    E -->|Fail| A
+    E -->|Pass| F[Agent Approval]
+    F --> G[Human Approval]
+    G --> H[Task Closed]
+
+    style B fill:#dc3545,stroke:#333,color:#fff
+    style C fill:#ffc107,stroke:#333
+    style D fill:#17a2b8,stroke:#333,color:#fff
+    style E fill:#28a745,stroke:#333,color:#fff
+    style H fill:#d4edda,stroke:#333
+```
+
+### Gate 1: Path Verification (BLOCKING)
+
+**Command**: `/afx:check path`
+
+Traces code execution through the stack to prove the feature actually works:
+
+```mermaid
+graph TD
+    A[User clicks Login button] --> B[LoginForm.handleSubmit<br/>src/components/LoginForm.tsx:42]
+    B --> C[authService.login<br/>src/services/auth.ts:18]
+    C --> D[validateCredentials<br/>src/auth/validator.ts:91]
+    D --> E[db.users.findOne<br/>src/db/users.ts:15]
+
+    style A fill:#e1f5ff
+    style E fill:#d4edda
+```
+
+**Why it's blocking**: Without path verification, you can't prove the feature is wired up correctly. Code might exist but never be called.
+
+### Gate 2: Annotation Compliance
+
+**Command**: `/afx:check lint`
+
+Verifies every function has valid `@see` annotations linking to specs. Finds:
+
+- Orphaned functions without spec justification
+- Broken links to non-existent spec sections
+- Missing `@see` annotations in new code
+
+### Gate 3: Spec Integrity
+
+**Command**: `/afx:check links`
+
+Validates spec document cross-references:
+
+- Internal links between spec sections
+- Task references to design sections
+- Journal entries citing specific tasks
+
+### Gate 4: Requirements Alignment
+
+**Command**: `/afx:task audit`
+
+Compares implementation against task acceptance criteria:
+
+- All required functionality implemented
+- Edge cases handled per spec
+- No out-of-scope additions
+
+## What Makes AFX Different
+
+| AFX is NOT...           | AFX actually is...                                                                 |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| Documentation generator | Living contracts that AI agents actively read and enforce during development       |
+| Task tracker            | Embedded tasks with two-stage verification (agent + human approval required)       |
+| Linter                  | Execution path tracer that proves code paths exist from UI to database             |
+| Prompt library          | Complete methodology with enforced rules, not suggestions                          |
+| Single-session tool     | Context preservation system - survives interruptions, days, and weeks between work |
+
+## Core Philosophy
+
+**State vs Event Separation**: Maintain a strict boundary between living documents (`spec.md`, `design.md`) which must always reflect the _current factual state_ without chronological history, and append-only logs (`journal.md`, `tasks.md`, `changelog.md`) which record the _events_ of how the system evolved.
+
+**Specs as executable contracts**: Specifications aren't documentation that gets written and forgotten. They're living contracts that AI agents read and enforce during development. Claude Code follows specs like a compiler follows syntax rules.
+
+**Bidirectional traceability**: Code points to specs (`@see` annotations), and specs point to code (through task completion). You can navigate in both directions: from requirement to implementation, and from implementation back to requirement.
+
+**Context over memory**: AI agents don't have memory between sessions. AFX gives them context instead. The journal preserves not just what was done, but why it was done. This makes interrupted work resumable.
+
+**Two-stage verification**: AI agents are good at implementation but can hallucinate completion. Human verification adds the second approval gate. Both columns must say `[OK]` before tasks close.
+
+**Execution proof over promises**: Code can exist without being called. `/afx:check path` doesn't trust that code works - it traces execution from entry point to database to prove the path exists.
+
+## Best Used For
+
+| Use AFX When                                        | Skip AFX When                              |
+| --------------------------------------------------- | ------------------------------------------ |
+| Multi-session features spanning days/weeks          | Quick prototypes or throwaway code         |
+| Complex requirements needing clear AI guidance      | Simple bug fixes (< 1 hour)                |
+| Frequent interruptions (meetings, context switches) | Solo sprint with no breaks                 |
+| "Why does this exist?" is a common question         | Requirements change faster than you code   |
+| Need to prove execution paths work                  | Specs would take longer to write than code |
+| Scope creep is a concern                            | Exploring/experimenting without direction  |
+| Audit trails required (compliance, handoffs)        | One-off scripts with no maintenance        |
+
+**Rule of thumb**: The more complex the feature or the longer the timeline, the more value AFX provides.
+
+## Real-World Benefits
+
+| Category    | Benefit                           | Impact                                         |
+| ----------- | --------------------------------- | ---------------------------------------------- |
+| **Time**    | Session resume                    | 30 seconds vs 10 minutes re-explaining context |
+|             | Scope control                     | No wasted cycles on unasked-for refactors      |
+|             | Context recovery                  | Resume after days/weeks without memory loss    |
+| **Quality** | Traceability                      | Know why every function exists                 |
+|             | Verification                      | Catch broken execution paths before production |
+|             | Alignment                         | Code provably matches approved requirements    |
+| **Flow**    | Fewer "what was I doing?" moments | Journal preserves your train of thought        |
+|             | Better decisions                  | Technical choices documented with rationale    |
+|             | Audit trail                       | Complete history of what changed and why       |
+
+## Frontmatter Schema
+
+AFX uses YAML frontmatter to make specs machine-readable for Claude:
+
+```yaml
+---
+afx: true # Marks file as AFX-managed
+type: SPEC # SPEC | DESIGN | TASKS | JOURNAL
+status: Draft # Draft | Approved | Living
+owner: "@yourhandle" # Who's responsible
+version: 1.0 # Semantic versioning
+tags: [auth, security, api] # Categorization
+---
+```
+
+**Why this matters:**
+
+- `/afx:next` scans frontmatter to find unapproved specs (status: Draft)
+- `/afx:work status` groups features by tags
+- `/afx:report health` tracks approval rates and ownership
+- Claude knows which documents are authoritative (afx: true)
+
+## Common Scenarios
+
+| Problem                                       | Solution                                                 | Command                        |
+| --------------------------------------------- | -------------------------------------------------------- | ------------------------------ |
+| Need to step away mid-task                    | Save context, resume later with full memory              | `/afx:session save → resume`   |
+| Claude added features I didn't ask for        | Claude reads approved spec, only implements listed tasks | `/afx:work next <spec>`        |
+| Need to prove feature actually works          | Trace execution from UI → logic → database               | `/afx:check path`              |
+| Can't remember why we made a design decision  | Recall saved session with full context                   | `/afx:session recall`          |
+| New developer needs to take over              | Package context, handoff with zero explanation needed    | `/afx:handoff create → accept` |
+| Refactor broke something but tests still pass | Path verification catches missing execution links        | `/afx:check path`              |
+| Which code breaks if I change this spec?      | Impact analysis shows all `@see` links to that section   | `/afx:report traceability`     |
+| Lost in codebase, what should I work on?      | Context-aware guidance based on project state            | `/afx:next`                    |
+| Need to understand what this function does    | Read `@see` annotation to jump to spec                   | Check JSDoc in code            |
+| Task marked done but not actually complete    | Two-stage verification: agent + human both must approve  | `/afx:task verify → close`     |
+
+## Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting PRs.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Acknowledgments
+
+AFX was developed as part of real-world production projects and refined through extensive use with Claude Code.

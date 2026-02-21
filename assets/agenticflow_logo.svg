@@ -1,0 +1,107 @@
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient for the golden thread -->
+    <linearGradient id="threadGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#d97706;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b45309;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient for flow elements -->
+    <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Subtle glow effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="400" fill="#0f172a"/>
+
+  <!-- The Golden Thread - flowing through three nodes -->
+  <g id="goldenThread">
+    <!-- Thread path connecting Spec → Code → Execution -->
+    <path d="M 120 200 Q 200 150, 280 200 Q 360 250, 440 200 Q 520 150, 600 200" 
+          stroke="url(#threadGradient)" 
+          stroke-width="4" 
+          fill="none"
+          stroke-linecap="round"
+          filter="url(#glow)"/>
+    
+    <!-- Bidirectional flow arrows -->
+    <path d="M 280 200 L 270 195 M 280 200 L 270 205" 
+          stroke="url(#threadGradient)" 
+          stroke-width="3" 
+          fill="none"
+          stroke-linecap="round"/>
+    <path d="M 440 200 L 430 195 M 440 200 L 430 205" 
+          stroke="url(#threadGradient)" 
+          stroke-width="3" 
+          fill="none"
+          stroke-linecap="round"/>
+  </g>
+
+  <!-- Three nodes: Spec, Code, Execution -->
+  <g id="nodes">
+    <!-- Spec node (left) -->
+    <circle cx="120" cy="200" r="28" fill="url(#flowGradient)" opacity="0.9"/>
+    <circle cx="120" cy="200" r="22" fill="#0f172a"/>
+    <text x="120" y="207" font-family="monospace" font-size="20" fill="url(#flowGradient)" text-anchor="middle" font-weight="bold">S</text>
+    
+    <!-- Code node (center) -->
+    <circle cx="360" cy="200" r="28" fill="url(#flowGradient)" opacity="0.9"/>
+    <circle cx="360" cy="200" r="22" fill="#0f172a"/>
+    <text x="360" y="207" font-family="monospace" font-size="20" fill="url(#flowGradient)" text-anchor="middle" font-weight="bold">C</text>
+    
+    <!-- Execution node (right) -->
+    <circle cx="600" cy="200" r="28" fill="url(#flowGradient)" opacity="0.9"/>
+    <circle cx="600" cy="200" r="22" fill="#0f172a"/>
+    <text x="600" y="207" font-family="monospace" font-size="20" fill="url(#flowGradient)" text-anchor="middle" font-weight="bold">E</text>
+  </g>
+
+  <!-- Human-AI collaboration orbits -->
+  <g id="collaboration" opacity="0.3">
+    <!-- Outer orbit suggesting continuous flow -->
+    <ellipse cx="360" cy="200" rx="280" ry="80" 
+             stroke="url(#flowGradient)" 
+             stroke-width="1" 
+             fill="none"
+             stroke-dasharray="8,8"/>
+  </g>
+
+  <!-- AFX Typography -->
+  <g id="typography">
+    <text x="400" y="320" font-family="'SF Mono', 'Monaco', 'Courier New', monospace" 
+          font-size="48" 
+          fill="#e2e8f0" 
+          text-anchor="middle" 
+          font-weight="600"
+          letter-spacing="4">AFX</text>
+    
+    <text x="400" y="350" font-family="'Inter', 'Helvetica', sans-serif" 
+          font-size="14" 
+          fill="#94a3b8" 
+          text-anchor="middle" 
+          letter-spacing="2">AGENTICFLOW</text>
+  </g>
+
+  <!-- Subtle code bracket elements suggesting living documentation -->
+  <g id="brackets" opacity="0.4">
+    <path d="M 90 180 L 80 180 L 80 220 L 90 220" 
+          stroke="#3b82f6" 
+          stroke-width="2" 
+          fill="none"/>
+    <path d="M 630 180 L 640 180 L 640 220 L 630 220" 
+          stroke="#8b5cf6" 
+          stroke-width="2" 
+          fill="none"/>
+  </g>
+</svg>

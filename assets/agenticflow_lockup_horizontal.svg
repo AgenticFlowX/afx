@@ -1,0 +1,98 @@
+<svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hFlowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="50%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#d946ef"/>
+    </linearGradient>
+
+    <linearGradient id="hThreadGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#fbbf24"/>
+      <stop offset="100%" style="stop-color:#f59e0b"/>
+    </linearGradient>
+
+    <filter id="hGlow">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+  </defs>
+
+  <!-- Transparent background (will work on both light and dark) -->
+  <rect width="1200" height="300" fill="transparent"/>
+
+  <!-- Icon mark on left -->
+  <g transform="translate(150, 150)">
+    <!-- The flow -->
+    <path d="M -80 0 Q -50 -30, -20 0 Q 10 30, 40 0 Q 70 -30, 100 0"
+          stroke="url(#hFlowGrad)"
+          stroke-width="8"
+          fill="none"
+          stroke-linecap="round"/>
+    
+    <!-- Golden thread -->
+    <path d="M -80 0 Q -50 -30, -20 0 Q 10 30, 40 0 Q 70 -30, 100 0"
+          stroke="url(#hThreadGrad)"
+          stroke-width="3"
+          fill="none"
+          stroke-linecap="round"/>
+
+    <!-- Nodes -->
+    <circle cx="-80" cy="0" r="16" fill="url(#hFlowGrad)"/>
+    <circle cx="-80" cy="0" r="12" fill="#0f172a"/>
+    <circle cx="-80" cy="0" r="5" fill="url(#hThreadGrad)"/>
+
+    <circle cx="10" cy="0" r="18" fill="url(#hFlowGrad)"/>
+    <circle cx="10" cy="0" r="14" fill="#0f172a"/>
+    <circle cx="10" cy="0" r="6" fill="url(#hThreadGrad)"/>
+
+    <circle cx="100" cy="0" r="16" fill="url(#hFlowGrad)"/>
+    <circle cx="100" cy="0" r="12" fill="#0f172a"/>
+    <circle cx="100" cy="0" r="5" fill="url(#hThreadGrad)"/>
+
+    <!-- Flow arrows -->
+    <path d="M -20 0 L -26 -4 M -20 0 L -26 4" 
+          stroke="url(#hThreadGrad)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 40 0 L 34 -4 M 40 0 L 34 4" 
+          stroke="url(#hThreadGrad)" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- Typography -->
+  <g>
+    <!-- Main brand name -->
+    <text x="320" y="170" 
+          font-family="'SF Mono', 'Monaco', monospace" 
+          font-size="84" 
+          fill="#e2e8f0" 
+          font-weight="700"
+          letter-spacing="4">AgenticFlow</text>
+    
+    <!-- AFX badge -->
+    <g transform="translate(920, 130)">
+      <rect x="0" y="0" width="90" height="50" rx="8" 
+            fill="url(#hFlowGrad)" opacity="0.15"/>
+      <rect x="0" y="0" width="90" height="50" rx="8" 
+            stroke="url(#hFlowGrad)" stroke-width="2" fill="none"/>
+      <text x="45" y="35" 
+            font-family="'SF Mono', monospace" 
+            font-size="24" 
+            fill="url(#hFlowGrad)" 
+            text-anchor="middle"
+            font-weight="700"
+            letter-spacing="2">AFX</text>
+    </g>
+
+    <!-- Tagline -->
+    <text x="320" y="205"
+          font-family="'Inter', 'Helvetica', sans-serif"
+          font-size="20"
+          fill="#94a3b8"
+          letter-spacing="1">Session continuity for AI-assisted development</text>
+  </g>
+
+  <!-- Decorative code elements -->
+  <g opacity="0.3">
+    <path d="M 40 60 L 30 60 L 30 240 L 40 240" 
+          stroke="url(#hFlowGrad)" stroke-width="2" fill="none"/>
+    <path d="M 1160 60 L 1170 60 L 1170 240 L 1160 240" 
+          stroke="url(#hFlowGrad)" stroke-width="2" fill="none"/>
+  </g>
+</svg>

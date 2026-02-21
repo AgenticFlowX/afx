@@ -1,0 +1,31 @@
+# AFX Configuration for Example Project
+version: '1.6'
+
+paths:
+  specs: 'docs/specs'
+  templates: 'templates'
+  sessions: 'docs/specs'
+
+features:
+  - example-feature
+
+prefixes:
+  specs: GEN
+  example-feature: EX
+
+quality_gates:
+  require_path_check: true
+  require_human_approval: true
+  block_on_mock_code: true
+
+verification:
+  two_stage: true
+  stale_threshold_days: 30
+
+require_see_links:
+  - '*.service.ts'
+  - '*.action.ts'
+
+scan_for_orphans:
+  - 'src/**/*.ts'
+  - 'src/**/*.tsx'
