@@ -282,13 +282,24 @@ ${AFX_END_MARKER}"
         else
             if [ -f "$CLAUDE_MD" ]; then
                 if grep -q "$AFX_START_MARKER" "$CLAUDE_MD"; then
-                    # Has boundary markers - replace the section
-                    # Use awk to replace content between markers
-                    awk -v start="$AFX_START_MARKER" -v end="$AFX_END_MARKER" -v new="$AFX_SECTION" '
-                        $0 == start { skip=1; print new; next }
+                    # Has boundary markers - replace the section safely
+                    # 1. Print everything before the start marker
+                    awk -v start="$AFX_START_MARKER" '
+                        $0 == start { exit }
+                        { print }
+                    ' "$CLAUDE_MD" > "$CLAUDE_MD.tmp"
+                    
+                    # 2. Print the new section
+                    echo "$AFX_SECTION" >> "$CLAUDE_MD.tmp"
+                    
+                    # 3. Print everything after the end marker
+                    awk -v end="$AFX_END_MARKER" '
+                        BEGIN { skip=1 }
                         $0 == end { skip=0; next }
                         !skip { print }
-                    ' "$CLAUDE_MD" > "$CLAUDE_MD.tmp" && mv "$CLAUDE_MD.tmp" "$CLAUDE_MD"
+                    ' "$CLAUDE_MD" >> "$CLAUDE_MD.tmp"
+                    
+                    mv "$CLAUDE_MD.tmp" "$CLAUDE_MD"
                     UPDATED+=("CLAUDE.md AFX section")
                 elif grep -q "## Documentation References\|## AgenticFlow" "$CLAUDE_MD"; then
                     # Has old-style AFX section without markers
@@ -414,5 +425,5 @@ echo ""
 echo -e "${CYAN}To update AFX later:${NC}"
 echo "  ./install.sh --update ."
 echo "  # or"
-echo "  curl -sL https://raw.githubusercontent.com/rix/afx/main/install.sh | bash -s -- --update ."
+echo "  curl -sL https://raw.githubusercontent.com/${AFX_REPO}/main/install.sh | bash -s -- --update ."
 echo ""
