@@ -290,7 +290,7 @@ All AFX-managed documentation MUST include YAML frontmatter. The `afx: true` mar
 afx: true # AFX ownership marker (required)
 type: SPEC # Document type (required)
 status: Draft # Draft | Approved | Living
-owner: "@handle" # GitHub handle (quoted)
+owner: '@handle' # GitHub handle (quoted)
 priority: High # High | Medium | Low (SPEC only)
 version: 1.0 # Semantic versioning
 created: YYYY-MM-DDTHH:MM:SSZ # ISO 8601 creation timestamp
@@ -318,7 +318,7 @@ afx: true
 id: 0001 # Optional numbered ID
 type: RES # RES | ADR
 status: Approved # Draft | Approved | Deprecated
-owner: "@handle"
+owner: '@handle'
 date: YYYY-MM-DD # Decision/creation date
 tags: [topic1, topic2]
 ---

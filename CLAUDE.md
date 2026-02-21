@@ -103,7 +103,7 @@ All AFX documents use YAML frontmatter:
 afx: true # AFX ownership marker
 type: SPEC # SPEC | DESIGN | TASKS | JOURNAL | COMMAND
 status: Draft # Draft | Approved | Living
-owner: "@handle"
+owner: '@handle'
 version: 1.0
 tags: [feature, topic]
 ---

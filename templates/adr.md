@@ -4,7 +4,7 @@ type: ADR
 status: Proposed # Proposed | Accepted | Rejected | Deprecated | Superseded
 version: 1.0
 created: YYYY-MM-DD
-owner: "@handle"
+owner: '@handle'
 tags: [adr, architecture]
 ---
 
