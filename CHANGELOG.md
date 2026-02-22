@@ -56,6 +56,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Re-formatted broken markdown codeblocks and syntax wrappers inside `prompts/yaml-frontmatter.md`.
 - Corrected linguistic overlaps in documentation (e.g., "Context to another developer") generated during the handoff terminology rename.
 
+## [1.0.5] - 2026-02-22
+
+### Fixed
+
+- Resolved mangled markdown strings in `.claude/commands/afx-context.md` caused by previous bad line replacements during the `prepare`-to-`save` rename.
+- Replaced the deprecated `type: HANDOFF` and `prepared:` keys from the output context template with `type: CONTEXT` and `saved:`.
+
 ## [1.0.4] - 2026-02-22
 
 ### Changed

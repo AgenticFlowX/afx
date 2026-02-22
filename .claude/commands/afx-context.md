@@ -50,7 +50,7 @@ Formalize context transfer between AI agent sessions. When an agent times out, d
 **Single file**: `docs/specs/afx-context.md`
 
 - One centralized location — no scanning across spec folders
-- `pCreate or overwrite the `afx-context.md` file using this structure, filled with data from the steps above.sume` reads this file, then asks user whether to clear it
+- `load` reads this file directly
 - History preserved via one-liner archive entries in each feature's `journal.md` (historical contexts and narratives should _always_ go here, never in living documents like `design.md` or `spec.md`)
 
 ---
@@ -62,10 +62,6 @@ Formalize context transfer between AI agent sessions. When an agent times out, d
 ## 1. save
 
 Generate a detailed context bundle for the next agent session (or for human recall).
-
-### Usage
-
-s
 
 ```bash
 /afx:context save                 # Auto-detect all features from git diff + session context
@@ -92,16 +88,16 @@ s
 ````markdown
 ---
 afx: true
-type: HANDOFF
+type: CONTEXT
 status: Active
-prepared: { YYYY-MM-DD }
+saved: { YYYY-MM-DD }
 branch: { branch-name }
 features: [{ feature1 }, { feature2 }]
 ---
 
 # 🤝 Context
 
-📅 **Prepared**: {date}
+📅 **Saved**: {date}
 🌿 **Branch**: `{branch}`
 ⏱️ **Session Duration**: ~{estimate}
 🏷️ **Features**: {feature1}, {feature2}
