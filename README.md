@@ -714,51 +714,52 @@ This installs:
 - AFX documentation to `docs/agenticflowx/`
 - AFX snippets to `CLAUDE.md`
 
-### Install Options
+## How to create your first specs
 
-```bash
-# Commands only (minimal install)
-curl -sL .../install.sh | bash -s -- --commands-only .
+A common difficulty for new users is translating a raw idea into structured AFX specifications (the "blank canvas" problem). You don't have to write these specifications manually—you can use Claude Code to scaffold them for you.
 
-# Skip CLAUDE.md modification
-curl -sL .../install.sh | bash -s -- --no-claude-md .
+```mermaid
+graph TD
+    A[Raw Idea<br/>'Build a SaaS Landing Page'] --> B[Claude Code]
+    B -->|Asks Clarifying Questions| C[User Answers]
+    C -->|Auto-executes /afx-init| D[docs/specs/saas-landing/]
 
-# Skip AFX documentation (docs/agenticflowx/)
-curl -sL .../install.sh | bash -s -- --no-docs .
+    D --> E[spec.md<br/>FRs & NFRs]
+    D --> F[design.md<br/>Architecture & UI]
+    D --> G[tasks.md<br/>Implementation Checklist]
 
-# Preview changes without applying
-curl -sL .../install.sh | bash -s -- --dry-run .
-
-# Overwrite existing files (fresh install)
-curl -sL .../install.sh | bash -s -- --force .
+    style A fill:#f8d7da
+    style B fill:#d1e7dd
+    style C fill:#cfe2ff
+    style D fill:#e1f5ff
 ```
 
-### Updating AFX
+**Step 1: Start the CLI**
+Navigate to your project directory and start the CLI by typing `claude`.
 
-When the AFX framework is updated, you can pull the latest changes:
+**Step 2: Paste the Kickoff Prompt**
+Copy the prompt below and paste it directly into Claude. By default, it uses a simple "SaaS Landing Page" example so you can safely test how the framework operates. You can replace the first sentence with your actual feature idea:
 
-```bash
-# Update existing installation (preserves your .afx.yaml config)
-curl -sL https://raw.githubusercontent.com/rixrix/afx/main/install.sh | bash -s -- --update .
+```text
+I want to build a single-page landing page for my SaaS product. Make it plain, static HTML/CSS/JS with no frameworks (no React, Next.js, etc) so I can easily preview it in my browser.
 
-# Or if you have AFX cloned locally
-./path/to/afx/install.sh --update .
+Please act as my Product Manager and Technical Architect:
+1. Ask me 1-3 clarifying questions about this idea. Wait for my response.
+2. Once answered, use the `/afx-init` command to scaffold the folder structure.
+3. Write the `spec.md`, `design.md`, and `tasks.md` files based on our discussion. Remember to check `CLAUDE.md` for global UI conventions before writing the design document.
+
+When you're done, ask me if I'm ready to run `/afx-work next` to start coding!
 ```
 
-The updater:
+**Step 3: Answer the Questions**
+Claude will act as your Product Manager and pause to ask you a few clarifying questions.
 
-- Updates all slash commands and templates
-- Updates AFX documentation in `docs/agenticflowx/`
-- Preserves your `.afx.yaml` configuration
-- Replaces the AFX section in `CLAUDE.md` (your custom content is preserved)
-- Uses boundary markers (`<!-- AFX:START -->` / `<!-- AFX:END -->`) for clean updates
+**Step 4: Review the Generated Output**
+Once you answer, Claude will automatically run `/afx-init` and build out your specification files tailored to your answers:
 
-### Initialize Your First Feature
-
-```bash
-# In Claude Code, run:
-/afx:init feature user-authentication
-```
+- `spec.md`: Contains your User Stories, Functional Requirements, and Non-Functional Requirements.
+- `design.md`: Contains your system architecture, color palettes, and component layouts.
+- `tasks.md`: Contains Phase 1, Phase 2, etc., with atomic checkboxes mapped back to the spec via `@see`.
 
 ## Contributing
 
