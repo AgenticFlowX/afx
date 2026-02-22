@@ -74,7 +74,7 @@ All AFX-managed files use YAML frontmatter for Obsidian/Dataview compatibility. 
 afx: true # AFX ownership marker (required)
 type: SPEC # Document type (required)
 status: Draft # Draft | Approved | Living
-owner: '@handle' # GitHub handle
+owner: "@handle" # GitHub handle
 priority: High # High | Medium | Low (SPEC only)
 version: 1.0 # Semantic versioning
 created: YYYY-MM-DDTHH:MM:SSZ # ISO 8601 creation timestamp
@@ -132,6 +132,12 @@ When starting or resuming work on a ticket:
 4. **READ** linked spec/design - get exact values, interfaces, patterns
 5. **CONTINUE** from next unchecked subtask
 6. **UPDATE** Session Log when done
+
+### Global vs Feature Context (UI/UX)
+
+- **Global Brain (`CLAUDE.md`)**: Contains your system-wide design tokens (e.g., "Use Tailwind", "Use Shadcn components", "Brand colors").
+- **Feature Brain (`docs/specs/*/design.md`)**: Contains the specific component composition and visual layout for the current feature.
+  **Rule:** ALWAYS check `CLAUDE.md` for global UI constraints before implementing a feature's local design spec. Do not define global component library rules inside local feature specs.
 
 ### Commands
 

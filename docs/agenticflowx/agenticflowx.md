@@ -72,6 +72,23 @@ Unlike frameworks that generate code _from_ specs, AFX requires code to link _ba
 - **Orphan Detection** (`/afx:report orphans`): Hunts for code detached from specs.
 - **Refactor Contracts**: Enforces "Update Design First" workflow for architectural changes.
 
+### 5. Context Segregation (Global vs Local Brain)
+
+AFX explicitly separates system-wide project rules from feature-specific logic to prevent duplicate or conflicting prompt instructions. **Claude Code is the primary consumer** of this split architecture.
+
+```mermaid
+graph TD
+    A[CLAUDE.md<br/>Global Brain] -->|System-wide Tokens<br/>Tailwind, Shadcn, Colors| C[Claude Code Session]
+    B[docs/specs/*/design.md<br/>Feature Brain] -->|Specific Layouts<br/>Grid, Forms, Composition| C
+
+    style A fill:#e1f5ff
+    style B fill:#e1f5ff
+    style C fill:#d1e7dd
+```
+
+- **Global Context (`CLAUDE.md`)**: The "Project Brain". Defines system-wide tech stack, overarching UI library rules (Tailwind/Material), and global design tokens.
+- **Local Context (`docs/specs/*`)**: The "Feature Brain". Defines the individual feature's visual layout, internal component composition, and specific business logic.
+
 ---
 
 # Part 2: Architecture
@@ -290,7 +307,7 @@ All AFX-managed documentation MUST include YAML frontmatter. The `afx: true` mar
 afx: true # AFX ownership marker (required)
 type: SPEC # Document type (required)
 status: Draft # Draft | Approved | Living
-owner: '@handle' # GitHub handle (quoted)
+owner: "@handle" # GitHub handle (quoted)
 priority: High # High | Medium | Low (SPEC only)
 version: 1.0 # Semantic versioning
 created: YYYY-MM-DDTHH:MM:SSZ # ISO 8601 creation timestamp
@@ -318,7 +335,7 @@ afx: true
 id: 0001 # Optional numbered ID
 type: RES # RES | ADR
 status: Approved # Draft | Approved | Deprecated
-owner: '@handle'
+owner: "@handle"
 date: YYYY-MM-DD # Decision/creation date
 tags: [topic1, topic2]
 ---

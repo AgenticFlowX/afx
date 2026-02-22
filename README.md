@@ -181,6 +181,29 @@ graph LR
 - **Context preservation**: Journal captures the "why" that's lost in code comments
 - **Agent guidance**: Claude reads the right file for the right purpose
 
+## Global Context vs Local Context
+
+AFX operates on a strict **Global Brain** vs **Local Brain** segregation paradigm to manage UI definitions and architectural constraints.
+
+**Claude Code (the AI agent) is the primary consumer** of this split architecture. By separating global design tokens from local feature layouts, we prevent AI context window bloat and conflicting agent instructions during development.
+
+```mermaid
+graph TD
+    A[CLAUDE.md<br/>Global Brain] -->|System-wide Tokens<br/>Tailwind, Shadcn, Colors| C[Claude Code Session]
+    B[docs/specs/*/design.md<br/>Feature Brain] -->|Specific Layouts<br/>Grid, Forms, Composition| C
+
+    style A fill:#e1f5ff
+    style B fill:#e1f5ff
+    style C fill:#d1e7dd
+```
+
+1. **Global Context (`CLAUDE.md`)**: The "Project Brain". Defines system-wide visual constraints and tech stack rules.
+   - Example global rules: _"Use TailwindCSS for styling", "Always use Shadcn UI components", "Primary brand color is `#FF5500`."_
+2. **Local Context (`docs/specs/*/design.md`)**: The "Feature Brain". Defines the individual feature's visual layout and component composition.
+   - Example local rules: _"The login form has a two-column grid on desktop, stacking to single-column on mobile. Use a Shadcn `Card` component."_
+
+By splitting context, your individual feature specs don't have to redefine what a "Button" looks like every single time—they just inherit the global rules from `CLAUDE.md`.
+
 ## Commands
 
 ### Context & Navigation

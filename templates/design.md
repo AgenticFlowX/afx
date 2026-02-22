@@ -2,11 +2,11 @@
 afx: true
 type: DESIGN
 status: Draft
-owner: '@owner'
+owner: "@owner"
 version: 1.0
-created: '{YYYY-MM-DDTHH:MM:SSZ}'
-last_verified: '{YYYY-MM-DD}'
-tags: ['{feature}']
+created: "{YYYY-MM-DDTHH:MM:SSZ}"
+last_verified: "{YYYY-MM-DD}"
+tags: ["{feature}"]
 ---
 
 # {Feature Name} - Technical Design
@@ -42,6 +42,13 @@ tags: ['{feature}']
 ### Component Diagram
 
 {Show the main components and their relationships}
+
+---
+
+## User Interface & UX
+
+{Describe the general visual layout, specific component usage, and responsive behavior.}
+{**Reminder**: Global design tokens (e.g. "Use Tailwind", "Use Shadcn") belong in the project's `CLAUDE.md`, not here. This section is only for this feature's specific component composition.}
 
 ---
 

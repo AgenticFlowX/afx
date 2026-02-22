@@ -56,6 +56,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Re-formatted broken markdown codeblocks and syntax wrappers inside `prompts/yaml-frontmatter.md`.
 - Corrected linguistic overlaps in documentation (e.g., "Context to another developer") generated during the handoff terminology rename.
 
+## [1.0.6] - 2026-02-22
+
+### Added
+
+- Inserted a definitive **Global vs Local Context** section in `README.md` and `docs/agenticflowx/agenticflowx.md` to explicitly define how `CLAUDE.md` houses system-wide design tokens (Global Brain), whereas `docs/specs/*/design.md` defines specific component layouts (Feature Brain). Added Mermaid diagrams to visually map this relationship.
+- Added a dedicated **User Interface & UX** section to both `templates/design.md` files so new feature scaffolding properly captures visual requirements.
+- Implemented a new core rule inside `prompts/complete.md` enforcing agents to ingest the global UI parameters from `CLAUDE.md` before composing local `/afx:init` specifications.
+
 ## [1.0.5] - 2026-02-22
 
 ### Fixed
