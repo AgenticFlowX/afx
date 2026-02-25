@@ -13,43 +13,32 @@ This repository contains:
 - Framework docs in `docs/`
 - Installer and prompt snippets for downstream projects
 
-## AFX Codex Commands
+## AFX AI Commands
 
-Use `afx-xxx` skills for command execution:
+This project supports multiple AI agents. Use the appropriate format:
 
-- `afx-next`
-- `afx-discover`
-- `afx-work`
-- `afx-dev`
-- `afx-check`
-- `afx-task`
-- `afx-session`
-- `afx-init`
-- `afx-context`
-- `afx-spec`
-- `afx-report`
-- `afx-help`
-- `afx-update`
+### Codex Skills
+
+Use `afx-xxx` command names:
+
+- `afx-next`, `afx-discover`, `afx-work`, `afx-dev`, `afx-check`, `afx-task`, `afx-session`, `afx-init`, `afx-context`, `afx-spec`, `afx-report`, `afx-help`, `afx-update`.
+
+### Gemini CLI Commands
+
+Use `/afx:xxx` slash commands:
+
+- `/afx:next`, `/afx:discover`, `/afx:work`, `/afx:dev`, `/afx:check`, `/afx:task`, `/afx:session`, `/afx:init`, `/afx:context`, `/afx:spec`, `/afx:report`, `/afx:help`, `/afx:update`.
 
 ## Command Compatibility
 
-- Claude form: `/afx:work next user-auth`
-- Codex form: `afx-work next user-auth`
-
-If a user types Claude-style slash syntax, interpret it as the equivalent `afx-xxx` Codex skill workflow.
-
-## Git Commit Attribution
-
-When committing to this repository, append the following co-author trailer to every commit message:
-
-```
-Co-authored-by: codex <noreply@openai.com>
-```
+- Claude/Gemini: `/afx:work next user-auth`
+- Codex: `afx-work next user-auth`
 
 ## Source of Truth
 
-Codex skills delegate to canonical AFX command definitions in:
+Agent-specific commands and skills delegate to canonical definitions in:
 
 - `.claude/commands/afx-*.md`
+- `.gemini/commands/afx-*.md` (Gemini proxies)
 
-When updating behavior, keep `.codex/skills/afx-*` and `.claude/commands/afx-*.md` aligned.
+See [Multi-Agent Commands](docs/agenticflowx/multi-agent.md) for parity mapping.

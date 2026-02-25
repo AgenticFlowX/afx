@@ -12,6 +12,7 @@ tags: [afx, command, context, session]
 **Read `.afx.yaml`** at project root to resolve paths:
 
 - `paths.specs` - Where `afx-context.md` and feature specs live (default: `docs/specs`)
+- `paths.adr` - Where global ADR files live (default: `docs/adr`)
 
 If `.afx.yaml` doesn't exist, use defaults.
 
@@ -72,7 +73,8 @@ Generate a detailed context bundle for the next agent session (or for human reca
 
 1. If `.afx.yaml` not found, use `docs/specs/afx-context.md` as default. If it exists and is NOT cleared, warn: "Existing context found. Overwrite?" Wait for confirmation before proceeding.
 2. **Detect features**: From git diff + session context (or argument). Identify ALL features touched this session.
-3. **Read session state** (per feature):
+3. **Detect global ADRs**: Scan `docs/adr/*.md` for any Proposed ADRs or those modified in the current session.
+4. **Read session state** (per feature):
    - Current/completed tasks from tasks.md
    - Recent journal.md entries and discussions
    - Key decisions with reasoning (Reminder: ensure all reasoning and history is logged to `journal.md` and _not_ to living docs like `design.md`)
@@ -113,6 +115,16 @@ features: [{ feature1 }, { feature2 }]
 {2-4 paragraph narrative covering the session arc: goals → work done →
 outcomes → what's next. Include reasoning, not just actions. Mention any
 manual testing results, research findings, or exploratory work.}
+
+---
+
+## 🏛️ Architectural Decisions (ADRs)
+
+> Global architectural decisions proposed or modified during this session.
+
+| ADR  | Title    | Status   | Change Summary |
+| ---- | -------- | -------- | -------------- |
+| {id} | {title}  | {status} | {brief change} |
 
 ---
 

@@ -4,32 +4,25 @@
 
 ---
 
-## AgenticFlowX - Codex Commands
+## AgenticFlowX - AI Commands
 
-This project uses **AgenticFlowX (AFX)** with Codex skills. Use `afx-xxx` command names in Codex to run the matching AFX workflow.
+This project uses **AgenticFlowX (AFX)**. Use the appropriate command format for your platform:
 
-### Skill Triggers
+### Codex Skills
 
-When the user asks for one of these commands, use the matching skill:
+Use `afx-xxx` command names to run the matching AFX workflow:
 
-- `afx-next` -> `.codex/skills/afx-next`
-- `afx-discover` -> `.codex/skills/afx-discover`
-- `afx-work` -> `.codex/skills/afx-work`
-- `afx-dev` -> `.codex/skills/afx-dev`
-- `afx-check` -> `.codex/skills/afx-check`
-- `afx-task` -> `.codex/skills/afx-task`
-- `afx-session` -> `.codex/skills/afx-session`
-- `afx-init` -> `.codex/skills/afx-init`
-- `afx-context` -> `.codex/skills/afx-context`
-- `afx-spec` -> `.codex/skills/afx-spec`
-- `afx-report` -> `.codex/skills/afx-report`
-- `afx-help` -> `.codex/skills/afx-help`
-- `afx-update` -> `.codex/skills/afx-update`
+- `afx-next`, `afx-discover`, `afx-work`, `afx-dev`, `afx-check`, `afx-task`, `afx-session`, `afx-init`, `afx-context`, `afx-spec`, `afx-report`, `afx-help`, `afx-update`.
 
-### Compatibility Rule
+### Gemini CLI Commands
 
-If users type Claude-style commands (for example `/afx:work next user-auth`), interpret them as Codex `afx-work` requests and run the equivalent workflow.
+Use `/afx:xxx` slash commands to run AFX workflows:
+
+- `/afx:next`, `/afx:discover`, `/afx:work`, `/afx:dev`, `/afx:check`, `/afx:task`, `/afx:session`, `/afx:init`, `/afx:context`, `/afx:spec`, `/afx:report`, `/afx:help`, `/afx:update`.
 
 ### Source of Truth
 
-Codex skills delegate to canonical AFX command definitions in `.claude/commands/afx-*.md`. Keep behavior aligned with those files.
+Commands and skills delegate to canonical AFX command definitions in:
+
+- `.claude/commands/afx-*.md`
+- `.gemini/commands/afx-*.md` (Gemini-specific proxies)

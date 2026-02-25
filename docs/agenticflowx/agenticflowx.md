@@ -75,15 +75,19 @@ Unlike frameworks that generate code _from_ specs, AFX requires code to link _ba
 ### 5. Context Segregation (Global vs Local Brain)
 
 AFX explicitly separates system-wide project rules from feature-specific logic to prevent duplicate or conflicting prompt instructions. **Claude Code and Codex are the primary consumers** of this split architecture.
+AFX explicitly separates system-wide project rules from feature-specific logic to prevent duplicate or conflicting prompt instructions. **Claude Code, Codex, and Gemini are the primary consumers** of this split architecture.
 
 ```mermaid
 graph TD
     A[CLAUDE.md<br/>Global Brain] -->|System-wide Tokens<br/>Tailwind, Shadcn, Colors| C[Claude Code Session]
     B[docs/specs/*/design.md<br/>Feature Brain] -->|Specific Layouts<br/>Grid, Forms, Composition| C
+    A --> D[Codex / Gemini Session]
+    B --> D
 
     style A fill:#e1f5ff
     style B fill:#e1f5ff
     style C fill:#d1e7dd
+    style D fill:#d1e7dd
 ```
 
 - **Global Context (`CLAUDE.md`)**: The "Project Brain". Defines system-wide tech stack, overarching UI library rules (Tailwind/Material), and global design tokens.

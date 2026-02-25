@@ -285,9 +285,28 @@ if [ "$COMMANDS_ONLY" = "true" ]; then
 fi
 
 # ============================================================================
-# 3. Install/Update templates
+# 3. Install/Update Gemini CLI commands
 # ============================================================================
-echo -e "${BLUE}[3/7] Installing templates...${NC}"
+echo -e "${BLUE}[3/8] Installing Gemini CLI commands...${NC}"
+GEMINI_COMMANDS_DIR="$TARGET_DIR/.gemini/commands"
+
+if [ "$DRY_RUN" != "true" ]; then
+    mkdir -p "$GEMINI_COMMANDS_DIR"
+fi
+
+if [ -d "$AFX_DIR/.gemini/commands" ]; then
+    for cmd in "$AFX_DIR"/.gemini/commands/afx-*.md; do
+        if [ -f "$cmd" ]; then
+            filename=$(basename "$cmd")
+            install_file "$cmd" "$GEMINI_COMMANDS_DIR/$filename" "Gemini command: $filename" "$UPDATE_MODE"
+        fi
+    done
+fi
+
+# ============================================================================
+# 4. Install/Update templates
+# ============================================================================
+echo -e "${BLUE}[4/8] Installing templates...${NC}"
 TEMPLATES_DIR="$TARGET_DIR/docs/agenticflowx/templates"
 
 if [ -d "$AFX_DIR/templates" ]; then
@@ -300,9 +319,9 @@ if [ -d "$AFX_DIR/templates" ]; then
 fi
 
 # ============================================================================
-# 4. Create/Update .afx.yaml
+# 5. Create/Update .afx.yaml
 # ============================================================================
-echo -e "${BLUE}[4/7] Managing configuration...${NC}"
+echo -e "${BLUE}[5/8] Managing configuration...${NC}"
 AFX_CONFIG="$TARGET_DIR/.afx.yaml"
 
 if [ -f "$AFX_CONFIG" ]; then
@@ -317,10 +336,10 @@ else
 fi
 
 # ============================================================================
-# 5. Update CLAUDE.md with boundary markers
+# 6. Update CLAUDE.md with boundary markers
 # ============================================================================
 if [ "$NO_CLAUDE_MD" != "true" ]; then
-    echo -e "${BLUE}[5/7] Updating CLAUDE.md...${NC}"
+    echo -e "${BLUE}[6/8] Updating CLAUDE.md...${NC}"
     CLAUDE_MD="$TARGET_DIR/CLAUDE.md"
     SNIPPET_FILE="$AFX_DIR/prompts/complete.md"
 
@@ -402,14 +421,14 @@ HEADER
         fi
     fi
 else
-    echo -e "${YELLOW}[5/7] Skipping CLAUDE.md (--no-claude-md)${NC}"
+    echo -e "${YELLOW}[6/8] Skipping CLAUDE.md (--no-claude-md)${NC}"
 fi
 
 # ============================================================================
-# 6. Update AGENTS.md with boundary markers
+# 7. Update AGENTS.md with boundary markers
 # ============================================================================
 if [ "$NO_AGENTS_MD" != "true" ]; then
-    echo -e "${BLUE}[6/7] Updating AGENTS.md...${NC}"
+    echo -e "${BLUE}[7/8] Updating AGENTS.md...${NC}"
     AGENTS_MD="$TARGET_DIR/AGENTS.md"
     AGENTS_SNIPPET_FILE="$AFX_DIR/prompts/agents.md"
 
@@ -468,14 +487,14 @@ HEADER
         fi
     fi
 else
-    echo -e "${YELLOW}[6/7] Skipping AGENTS.md (--no-agents-md)${NC}"
+    echo -e "${YELLOW}[7/8] Skipping AGENTS.md (--no-agents-md)${NC}"
 fi
 
 # ============================================================================
-# 7. Install AFX documentation
+# 8. Install AFX documentation
 # ============================================================================
 if [ "$NO_DOCS" != "true" ]; then
-    echo -e "${BLUE}[7/7] Installing AFX documentation...${NC}"
+    echo -e "${BLUE}[8/8] Installing AFX documentation...${NC}"
     AFX_DOCS_DIR="$TARGET_DIR/docs/agenticflowx"
 
     if [ "$DRY_RUN" != "true" ]; then
@@ -483,13 +502,13 @@ if [ "$NO_DOCS" != "true" ]; then
     fi
 
     # Copy AFX documentation files
-    for doc in "agenticflowx.md" "guide.md" "cheatsheet.md" "codex.md"; do
+    for doc in "agenticflowx.md" "guide.md" "cheatsheet.md" "multi-agent.md"; do
         if [ -f "$AFX_DIR/docs/agenticflowx/$doc" ]; then
             install_file "$AFX_DIR/docs/agenticflowx/$doc" "$AFX_DOCS_DIR/$doc" "AFX Doc: $doc" "$UPDATE_MODE"
         fi
     done
 else
-    echo -e "${YELLOW}[7/7] Skipping AFX documentation (--no-docs)${NC}"
+    echo -e "${YELLOW}[8/8] Skipping AFX documentation (--no-docs)${NC}"
 fi
 # ============================================================================
 # Create directory structure
@@ -547,7 +566,7 @@ fi
 echo ""
 if [ "$UPDATE_MODE" = "true" ]; then
     echo -e "${BLUE}Update notes:${NC}"
-    echo "  - Claude commands, Codex skills, and templates were updated"
+    echo "  - Claude commands, Codex skills, Gemini commands, and templates were updated"
     echo "  - AFX docs in docs/agenticflowx/ were updated"
     echo "  - .afx.yaml was preserved (your config)"
     echo "  - CLAUDE.md AFX section was replaced (your content preserved)"

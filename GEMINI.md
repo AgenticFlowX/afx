@@ -9,6 +9,7 @@
 - **Key Files:**
   - `install.sh`: The primary installer and updater for the framework.
   - `.claude/commands/`: Definitions for slash commands used by Claude Code.
+  - `.gemini/commands/`: Proxy command files for Gemini CLI that delegate to Claude specs.
   - `.codex/skills/`: Skills for Codex that delegate to the Claude commands.
   - `templates/`: Base templates for features and ADRs.
   - `.afx.yaml.template`: Configuration schema for projects using AFX.
@@ -39,17 +40,19 @@ Since AFX is primarily a framework of documentation and instructions, there is n
   - `journal.md` and `tasks.md` record **events and history**.
 - **Command Structure:** All custom commands follow a standard Markdown format with YAML frontmatter and specific sections (`Usage`, `Agent Instructions`, `Execution Script`).
 
+## Gemini-Specific Guidance
+
+- **Command Execution:** Gemini CLI uses proxy files in `.gemini/commands/` which point to the canonical logic in `.claude/commands/`.
+- **Specialized Tools:**
+  - Use `codebase_investigator` for high-level architectural analysis or mapping complex dependencies during `/afx:next` or `/afx:discover`.
+  - Use `grep_search` and `read_file` for precise context scanning within specs and journals.
+  - Follow the "Smart Init Protocol" in `/afx:init` by leveraging these tools for pre-scaffold analysis.
+
 ## Git Commit Attribution
 
 When committing to this repository, append the following co-author trailer to every commit message:
 
 ```
 Co-authored-by: gemini-code-assist <noreply@gemini.google.com>
+Co-authored-by: gemini-code-assist[bot] <176961590+gemini-code-assist[bot]@users.noreply.github.com>
 ```
-
-## TODO / Known Gaps
-
-- **Global ADR Command Awareness:** The `global-adr` feature has implemented scaffolding (`/afx:init adr`), but Phase 2 (Command Awareness) is incomplete. The following commands need to be updated to be ADR-aware:
-  - `/afx:next`: Should surface Proposed ADRs needing review.
-  - `/afx:context`: Should include ADRs in handoff bundles.
-  - `/afx:discover`: Should report ADR counts and recent decisions.

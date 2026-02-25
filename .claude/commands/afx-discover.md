@@ -14,6 +14,7 @@ Discover what exists in your project: infrastructure scripts, automation tools, 
 **Read `.afx.yaml`** at project root to resolve paths:
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
+- `paths.adr` - Where global ADR files live (default: `docs/adr`)
 - `paths.templates` - Where templates are located (default: `docs/agenticflowx/templates`)
 
 If `.afx.yaml` doesn't exist, use defaults.
@@ -105,6 +106,7 @@ cloudformation/
 # Documentation
 docs/infrastructure/
 docs/deployment/
+docs/adr/
 README.md
 ```
 
@@ -428,6 +430,14 @@ High-level overview of project automation and tooling.
 **Missing:**
 
 - {missing-monitoring-capability}
+
+### Architecture & Decisions
+
+**Status:**
+
+- **Total ADRs:** {count}
+- **Latest Decision:** {ADR-NNNN: Title} ({status})
+- **Active Proposals:** {count}
 
 ### Next Steps
 

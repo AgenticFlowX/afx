@@ -14,6 +14,7 @@ The "Golden Thread" command. intelligently analyzes your current context (git st
 **Read `.afx.yaml`** at project root to resolve paths:
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
+- `paths.adr` - Where global ADR files live (default: `docs/adr`)
 
 If `.afx.yaml` doesn't exist, use defaults.
 
@@ -35,7 +36,12 @@ You must perform a deep context scan to determine the user's state. Follow this 
     - Is a task waiting for review?
       - **Suggestion**: `/afx:work approve <task> "note"` (if you are the reviewer) or "Wait for human review."
 
-2.  **Check Git State** (`git status --short`):
+2.  **Check Global ADRs** (`ls docs/adr/*.md`):
+    - Are there ADRs with `status: Proposed`?
+      - **Situation**: Architectural decisions are pending review.
+      - **Suggestion**: "Review Proposed ADR: docs/adr/ADR-NNNN-*.md"
+
+3.  **Check Git State** (`git status --short`):
     - Are there uncommitted changes?
       - **Situation**: Work is in progress but not saved/verified.
       - **Suggestion**:
@@ -115,7 +121,21 @@ _You have code changes that haven't been verified yet. Run the runtime check to 
 _The task seems finished. Validate it against the spec requirements in tasks.md._
 ```
 
-**Scenario 3: Idle**
+**Scenario 3: Proposed ADRs**
+(User created an ADR but hasn't finalized it)
+
+```markdown
+## Context: Architectural Decision Pending
+
+**Detected**: 1 Proposed ADR (docs/adr/ADR-0001-database-choice.md)
+
+### Recommended Next Step
+
+**> Review docs/adr/ADR-0001-database-choice.md**
+_An architectural decision is currently Proposed. Review the context and rationale to move it to Accepted or Rejected._
+```
+
+**Scenario 4: Idle**
 (No active task)
 
 ```markdown

@@ -6,11 +6,11 @@
 
 > **Keep AI agents on track, even when you're not**
 
-AFX is a spec-driven development framework for Claude Code and Codex that prevents AI agents from going off-spec. It maintains bidirectional traceability between specifications and code, preserves context across sessions, and enforces quality gates before tasks close.
+AFX is a spec-driven development framework for **Claude Code, Codex, and Gemini Code Assist** that prevents AI agents from going off-spec. It maintains bidirectional traceability between specifications and code, preserves context across sessions, and enforces quality gates before tasks close.
 
 ```mermaid
 graph LR
-    A[📋 Write Spec] --> B[🤖 Claude Reads]
+    A[📋 Write Spec] --> B[🤖 Agent Reads]
     B --> C[💻 Writes Code]
     C --> D[✅ Verify]
     D --> E[📝 Save Context]
@@ -226,16 +226,19 @@ stateDiagram-v2
 
 AFX operates on a strict **Global Brain** vs **Local Brain** segregation paradigm to manage UI definitions and architectural constraints.
 
-**Claude Code and Codex (AI agents) are the primary consumers** of this split architecture. By separating global design tokens from local feature layouts, we prevent AI context window bloat and conflicting agent instructions during development.
+**Claude Code, Codex, and Gemini (AI agents) are the primary consumers** of this split architecture. By separating global design tokens from local feature layouts, we prevent AI context window bloat and conflicting agent instructions during development.
 
 ```mermaid
 graph TD
     A[CLAUDE.md<br/>Global Brain] -->|System-wide Tokens<br/>Tailwind, Shadcn, Colors| C[Claude Code Session]
     B[docs/specs/*/design.md<br/>Feature Brain] -->|Specific Layouts<br/>Grid, Forms, Composition| C
+    A --> D[Codex / Gemini Session]
+    B --> D
 
     style A fill:#e1f5ff
     style B fill:#e1f5ff
     style C fill:#d1e7dd
+    style D fill:#d1e7dd
 ```
 
 1. **Global Context (`CLAUDE.md`)**: The "Project Brain". Defines system-wide visual constraints and tech stack rules.
@@ -483,7 +486,7 @@ graph LR
 - [Full Manual](docs/agenticflowx/agenticflowx.md) - Complete framework reference
 - [SDD Guide](docs/agenticflowx/guide.md) - Spec-Driven Development methodology
 - [Cheatsheet](docs/agenticflowx/cheatsheet.md) - Quick reference
-- [Codex Commands](docs/agenticflowx/codex.md) - `afx-xxx` skills and parity mapping
+- [Multi-Agent Commands](docs/agenticflowx/multi-agent.md) - `afx-xxx` skills and parity mapping
 
 ## Project Structure
 
