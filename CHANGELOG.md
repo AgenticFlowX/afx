@@ -5,6 +5,34 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-02-25
+
+### Added
+
+- First-class **Codex skill support** with versioned skills at `.codex/skills/afx-*` for all AFX command families.
+- OpenAI skill metadata manifests at `.codex/skills/afx-*/agents/openai.yaml`.
+- New `AGENTS.md` guidance for Codex and compatible coding agents.
+- New Codex snippet source at `prompts/agents.md`.
+- New Codex command reference at `docs/agenticflowx/codex.md`.
+- `install.sh` support for Codex installation:
+  - Installs/updates `.codex/skills/afx-*`.
+  - Manages a bounded AFX Codex block in `AGENTS.md`.
+  - Adds `--no-agents-md` option.
+
+### Changed
+
+- Updated documentation and framework references to position AFX as supporting both Claude Code and Codex:
+  - `README.md`
+  - `CLAUDE.md`
+  - `docs/_index.md`
+  - `docs/agenticflowx/agenticflowx.md`
+- Expanded `--commands-only` behavior in `install.sh` to include both `.claude` and `.codex` command assets.
+- Aligned command specs to current spec file expectations (`spec.md`, `tasks.md`, `journal.md`) instead of legacy `readme.md` references where applicable.
+
+### Removed
+
+- Removed obsolete `examples/minimal-project/docs/specs/example-feature/readme.md`.
+
 ## [1.1.0] - 2026-02-24
 
 ### Added
