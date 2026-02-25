@@ -916,6 +916,7 @@ When a GitHub issue is linked to the spec:
 | `/afx:init config`         | Manage `.afx.yaml`                 |
 | `/afx:context save`        | Generate context bundle            |
 | `/afx:context load`        | Load context from previous context |
+| `/afx:update check/apply`  | Check/apply upstream AFX updates   |
 | `/afx:help`                | Show command reference             |
 
 ## CLI Tooling Scripts

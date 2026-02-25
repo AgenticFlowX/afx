@@ -84,6 +84,13 @@ See [.afx.yaml.template](../../.afx.yaml.template) for options.
 /afx:help guides                         # List all role-based guides
 ```
 
+### Framework Maintenance
+
+```bash
+/afx:update check [--repo owner/repo --ref branch]  # Check local vs upstream AFX version
+/afx:update apply [flags]                            # Apply AFX update via installer
+```
+
 ---
 
 ## Quick Reference
@@ -99,6 +106,7 @@ See [.afx.yaml.template](../../.afx.yaml.template) for options.
 | `/afx:check path`   | "Does code actually work?" |
 | `/afx:session note` | "Remember this idea"       |
 | `/afx:session save` | "Save this discussion"     |
+| `/afx:update check` | "Is AFX up to date?"       |
 
 ---
 
@@ -236,6 +244,7 @@ gh issue create --label "bug" --title "Fix login timeout"
 | **Check**   | check    | Quality gates and compliance   |
 | **Dev**     | dev      | Development actions            |
 | **Session** | session  | Session discussion capture     |
+| **Update**  | update   | Framework maintenance          |
 | **Help**    | help     | This reference                 |
 
 ---

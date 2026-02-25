@@ -24,6 +24,7 @@ When the user asks for one of these commands, use the matching skill:
 - `afx-spec` -> `.codex/skills/afx-spec`
 - `afx-report` -> `.codex/skills/afx-report`
 - `afx-help` -> `.codex/skills/afx-help`
+- `afx-update` -> `.codex/skills/afx-update`
 
 ### Compatibility Rule
 

@@ -318,6 +318,13 @@ Package current context for transfer to another agent or future session. Include
 - `health` - Spec quality and task completion rates
 - `coverage` - Which specs have implementation vs which are documentation-only
 
+### Framework Maintenance
+
+**`/afx:update check|apply`** - Keep AFX assets current
+
+- `check` - Compare local AFX version to upstream latest release
+- `apply` - Run installer update flow with optional safety flags (`--dry-run`, `--commands-only`, etc.)
+
 ## Project Intelligence
 
 AFX doesn't just track specs - it learns how your project works:

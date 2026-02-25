@@ -34,6 +34,7 @@ AFX supports Codex via skills named `afx-xxx`.
 | `/afx:spec`          | `afx-spec`     |
 | `/afx:report`        | `afx-report`   |
 | `/afx:help`          | `afx-help`     |
+| `/afx:update`        | `afx-update`   |
 
 ## Behavior Contract
 

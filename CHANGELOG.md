@@ -5,6 +5,34 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-02-25
+
+### Added
+
+- New AFX framework maintenance command `/afx:update` with:
+  - `check` subcommand to compare local AFX version against upstream release.
+  - `apply` subcommand to execute installer update flow (`--update`) with pass-through safety flags.
+- New Codex skill parity for updates:
+  - `.codex/skills/afx-update/SKILL.md`
+  - `.codex/skills/afx-update/agents/openai.yaml`
+- New spec package for this feature at `docs/specs/afx-update/` (`spec.md`, `design.md`, `tasks.md`, `journal.md`).
+
+### Changed
+
+- Updated command/discovery surfaces to include `update` workflow:
+  - `.claude/commands/afx-help.md`
+  - `docs/agenticflowx/codex.md`
+  - `README.md`
+  - `CLAUDE.md`
+  - `AGENTS.md`
+  - `prompts/agents.md`
+  - `docs/_index.md`
+  - `docs/agenticflowx/agenticflowx.md`
+
+### Fixed
+
+- Corrected `/afx:update check` behavior when local marker is `AFX Version: Unknown` to return `Status: UNKNOWN` instead of `LOCAL AHEAD`.
+
 ## [1.2.0] - 2026-02-25
 
 ### Added

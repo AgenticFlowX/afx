@@ -40,3 +40,4 @@ SORT file.name ASC
 | `/afx:init`     | Feature spec scaffolding           |
 | `/afx:session`  | Discussion capture                 |
 | `/afx:work`     | Task execution                     |
+| `/afx:update`   | Framework update maintenance       |

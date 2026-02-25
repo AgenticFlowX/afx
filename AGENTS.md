@@ -29,6 +29,7 @@ Use `afx-xxx` skills for command execution:
 - `afx-spec`
 - `afx-report`
 - `afx-help`
+- `afx-update`
 
 ## Command Compatibility
 

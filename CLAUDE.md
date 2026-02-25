@@ -78,6 +78,7 @@ Code MUST link back to specs via JSDoc `@see` annotations:
 | `/afx:session`  | Discussion capture and recall                       |
 | `/afx:init`     | Feature scaffolding + ADR creation                  |
 | `/afx:context`  | Agent session context                               |
+| `/afx:update`   | Framework update check and apply                    |
 
 ### Standard Workflow
 
