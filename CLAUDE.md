@@ -116,6 +116,14 @@ tags: [feature, topic]
 ---
 ```
 
+## Git Commit Attribution
+
+When committing to this repository, append the following co-author trailer to every commit message:
+
+```
+Co-authored-by: claude <noreply@anthropic.com>
+```
+
 ## Integration
 
 **One-line install** (from target project directory):

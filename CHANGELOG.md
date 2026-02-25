@@ -5,6 +5,15 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-02-25
+
+### Chore
+
+- Standardized git commit attribution guidelines across documentation for:
+  - Gemini: `gemini-code-assist <noreply@gemini.google.com>`
+  - Claude: `claude <noreply@anthropic.com>`
+  - Codex: `code <noreply@openai.com>`
+
 ## [1.3.0] - 2026-02-25
 
 ### Added

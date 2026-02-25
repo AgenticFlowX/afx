@@ -38,6 +38,14 @@ Use `afx-xxx` skills for command execution:
 
 If a user types Claude-style slash syntax, interpret it as the equivalent `afx-xxx` Codex skill workflow.
 
+## Git Commit Attribution
+
+When committing to this repository, append the following co-author trailer to every commit message:
+
+```
+Co-authored-by: codex <noreply@openai.com>
+```
+
 ## Source of Truth
 
 Codex skills delegate to canonical AFX command definitions in:
