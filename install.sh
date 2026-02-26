@@ -10,6 +10,7 @@
 #   --commands-only   Only install/update command assets (.claude + .codex)
 #   --no-claude-md    Skip CLAUDE.md snippet integration
 #   --no-agents-md    Skip AGENTS.md snippet integration
+#   --no-gemini-md    Skip GEMINI.md snippet integration
 #   --no-docs         Skip copying AFX documentation to docs/agenticflowx/
 #   --force           Overwrite all existing files (fresh install)
 #   --dry-run         Show what would be changed without making changes
@@ -29,6 +30,9 @@ AFX_END_MARKER="<!-- AFX:END -->"
 # Boundary markers for AGENTS.md
 AFX_AGENTS_START_MARKER="<!-- AFX-CODEX:START - Managed by AFX. Do not edit manually. -->"
 AFX_AGENTS_END_MARKER="<!-- AFX-CODEX:END -->"
+# Boundary markers for GEMINI.md
+AFX_GEMINI_START_MARKER="<!-- AFX-GEMINI:START - Managed by AFX. Do not edit manually. -->"
+AFX_GEMINI_END_MARKER="<!-- AFX-GEMINI:END -->"
 
 # Colors for output
 RED='\033[0;31m'
@@ -43,6 +47,7 @@ UPDATE_MODE=false
 COMMANDS_ONLY=false
 NO_CLAUDE_MD=false
 NO_AGENTS_MD=false
+NO_GEMINI_MD=false
 NO_DOCS=false
 FORCE=false
 DRY_RUN=false
@@ -67,6 +72,10 @@ while [[ $# -gt 0 ]]; do
             NO_AGENTS_MD=true
             shift
             ;;
+        --no-gemini-md)
+            NO_GEMINI_MD=true
+            shift
+            ;;
         --no-docs)
             NO_DOCS=true
             shift
@@ -89,6 +98,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --commands-only   Only install/update command assets (.claude + .codex)"
             echo "  --no-claude-md    Skip CLAUDE.md snippet integration"
             echo "  --no-agents-md    Skip AGENTS.md snippet integration"
+            echo "  --no-gemini-md    Skip GEMINI.md snippet integration"
             echo "  --no-docs         Skip copying AFX documentation to docs/agenticflowx/"
             echo "  --force           Overwrite all files (fresh install)"
             echo "  --dry-run         Preview changes without applying"
@@ -240,7 +250,7 @@ install_directory() {
 # ============================================================================
 # 1. Install/Update Claude slash commands
 # ============================================================================
-echo -e "${BLUE}[1/7] Installing Claude slash commands...${NC}"
+echo -e "${BLUE}[1/9] Installing Claude slash commands...${NC}"
 COMMANDS_DIR="$TARGET_DIR/.claude/commands"
 
 if [ "$DRY_RUN" != "true" ]; then
@@ -258,7 +268,7 @@ done
 # ============================================================================
 # 2. Install/Update Codex skills
 # ============================================================================
-echo -e "${BLUE}[2/7] Installing Codex skills...${NC}"
+echo -e "${BLUE}[2/9] Installing Codex skills...${NC}"
 CODEX_SKILLS_DIR="$TARGET_DIR/.codex/skills"
 
 if [ "$DRY_RUN" != "true" ]; then
@@ -287,7 +297,7 @@ fi
 # ============================================================================
 # 3. Install/Update Gemini CLI commands
 # ============================================================================
-echo -e "${BLUE}[3/8] Installing Gemini CLI commands...${NC}"
+echo -e "${BLUE}[3/9] Installing Gemini CLI commands...${NC}"
 GEMINI_COMMANDS_DIR="$TARGET_DIR/.gemini/commands"
 
 if [ "$DRY_RUN" != "true" ]; then
@@ -306,7 +316,7 @@ fi
 # ============================================================================
 # 4. Install/Update templates
 # ============================================================================
-echo -e "${BLUE}[4/8] Installing templates...${NC}"
+echo -e "${BLUE}[4/9] Installing templates...${NC}"
 TEMPLATES_DIR="$TARGET_DIR/docs/agenticflowx/templates"
 
 if [ -d "$AFX_DIR/templates" ]; then
@@ -321,7 +331,7 @@ fi
 # ============================================================================
 # 5. Create/Update .afx.yaml
 # ============================================================================
-echo -e "${BLUE}[5/8] Managing configuration...${NC}"
+echo -e "${BLUE}[5/9] Managing configuration...${NC}"
 AFX_CONFIG="$TARGET_DIR/.afx.yaml"
 
 if [ -f "$AFX_CONFIG" ]; then
@@ -339,7 +349,7 @@ fi
 # 6. Update CLAUDE.md with boundary markers
 # ============================================================================
 if [ "$NO_CLAUDE_MD" != "true" ]; then
-    echo -e "${BLUE}[6/8] Updating CLAUDE.md...${NC}"
+    echo -e "${BLUE}[6/9] Updating CLAUDE.md...${NC}"
     CLAUDE_MD="$TARGET_DIR/CLAUDE.md"
     SNIPPET_FILE="$AFX_DIR/prompts/complete.md"
 
@@ -421,14 +431,14 @@ HEADER
         fi
     fi
 else
-    echo -e "${YELLOW}[6/8] Skipping CLAUDE.md (--no-claude-md)${NC}"
+    echo -e "${YELLOW}[6/9] Skipping CLAUDE.md (--no-claude-md)${NC}"
 fi
 
 # ============================================================================
 # 7. Update AGENTS.md with boundary markers
 # ============================================================================
 if [ "$NO_AGENTS_MD" != "true" ]; then
-    echo -e "${BLUE}[7/8] Updating AGENTS.md...${NC}"
+    echo -e "${BLUE}[7/9] Updating AGENTS.md...${NC}"
     AGENTS_MD="$TARGET_DIR/AGENTS.md"
     AGENTS_SNIPPET_FILE="$AFX_DIR/prompts/agents.md"
 
@@ -487,14 +497,80 @@ HEADER
         fi
     fi
 else
-    echo -e "${YELLOW}[7/8] Skipping AGENTS.md (--no-agents-md)${NC}"
+    echo -e "${YELLOW}[7/9] Skipping AGENTS.md (--no-agents-md)${NC}"
 fi
 
 # ============================================================================
-# 8. Install AFX documentation
+# 8. Update GEMINI.md with boundary markers
+# ============================================================================
+if [ "$NO_GEMINI_MD" != "true" ]; then
+    echo -e "${BLUE}[8/9] Updating GEMINI.md...${NC}"
+    GEMINI_MD="$TARGET_DIR/GEMINI.md"
+    GEMINI_SNIPPET_FILE="$AFX_DIR/prompts/gemini.md"
+
+    if [ -f "$GEMINI_SNIPPET_FILE" ]; then
+        GEMINI_SNIPPET_CONTENT=$(sed -n '/^---$/,$p' "$GEMINI_SNIPPET_FILE" | tail -n +2)
+
+        AFX_GEMINI_SECTION="${AFX_GEMINI_START_MARKER}
+<!-- AFX Version: ${AFX_VERSION} -->
+
+${GEMINI_SNIPPET_CONTENT}
+${AFX_GEMINI_END_MARKER}"
+
+        if [ "$DRY_RUN" = "true" ]; then
+            if [ -f "$GEMINI_MD" ]; then
+                if grep -q "$AFX_GEMINI_START_MARKER" "$GEMINI_MD" 2>/dev/null; then
+                    UPDATED+=("GEMINI.md AFX Gemini section (would update)")
+                else
+                    INSTALLED+=("GEMINI.md AFX Gemini section (would append)")
+                fi
+            else
+                INSTALLED+=("GEMINI.md (would create)")
+            fi
+        else
+            if [ -f "$GEMINI_MD" ]; then
+                if grep -q "$AFX_GEMINI_START_MARKER" "$GEMINI_MD"; then
+                    awk -v start="$AFX_GEMINI_START_MARKER" '
+                        $0 == start { exit }
+                        { print }
+                    ' "$GEMINI_MD" > "$GEMINI_MD.tmp"
+
+                    echo "$AFX_GEMINI_SECTION" >> "$GEMINI_MD.tmp"
+
+                    awk -v end="$AFX_GEMINI_END_MARKER" '
+                        BEGIN { skip=1 }
+                        $0 == end { skip=0; next }
+                        !skip { print }
+                    ' "$GEMINI_MD" >> "$GEMINI_MD.tmp"
+
+                    mv "$GEMINI_MD.tmp" "$GEMINI_MD"
+                    UPDATED+=("GEMINI.md AFX Gemini section")
+                else
+                    echo "" >> "$GEMINI_MD"
+                    echo "$AFX_GEMINI_SECTION" >> "$GEMINI_MD"
+                    INSTALLED+=("GEMINI.md AFX Gemini section")
+                fi
+            else
+                cat > "$GEMINI_MD" << 'HEADER'
+# GEMINI.md
+
+Project context for Gemini CLI when working with code in this repository.
+
+HEADER
+                echo "$AFX_GEMINI_SECTION" >> "$GEMINI_MD"
+                INSTALLED+=("GEMINI.md (created)")
+            fi
+        fi
+    fi
+else
+    echo -e "${YELLOW}[8/9] Skipping GEMINI.md (--no-gemini-md)${NC}"
+fi
+
+# ============================================================================
+# 9. Install AFX documentation
 # ============================================================================
 if [ "$NO_DOCS" != "true" ]; then
-    echo -e "${BLUE}[8/8] Installing AFX documentation...${NC}"
+    echo -e "${BLUE}[9/9] Installing AFX documentation...${NC}"
     AFX_DOCS_DIR="$TARGET_DIR/docs/agenticflowx"
 
     if [ "$DRY_RUN" != "true" ]; then
@@ -508,7 +584,7 @@ if [ "$NO_DOCS" != "true" ]; then
         fi
     done
 else
-    echo -e "${YELLOW}[8/8] Skipping AFX documentation (--no-docs)${NC}"
+    echo -e "${YELLOW}[9/9] Skipping AFX documentation (--no-docs)${NC}"
 fi
 # ============================================================================
 # Create directory structure
@@ -571,6 +647,7 @@ if [ "$UPDATE_MODE" = "true" ]; then
     echo "  - .afx.yaml was preserved (your config)"
     echo "  - CLAUDE.md AFX section was replaced (your content preserved)"
     echo "  - AGENTS.md AFX Codex section was replaced (your content preserved)"
+    echo "  - GEMINI.md AFX Gemini section was replaced (your content preserved)"
 else
     echo -e "${BLUE}Next steps:${NC}"
     echo "  1. Edit .afx.yaml to configure your project"
