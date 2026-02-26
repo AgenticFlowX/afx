@@ -22,5 +22,5 @@ AFX prompts are in `.github/prompts/afx-*.prompt.md`. Each delegates to canonica
 ### Git Commit Attribution
 
 ```
-Co-authored-by: GitHub Copilot <noreply@microsoft.com>
+Co-authored-by: copilot[bot] <167198135+copilot[bot]@users.noreply.github.com>
 ```
