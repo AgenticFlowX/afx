@@ -127,9 +127,10 @@ When committing to this repository, append the appropriate co-author trailer to 
 
 ```
 Co-authored-by: claude <noreply@anthropic.com>
-Co-authored-by: openai-codex[bot] <215057067+openai-codex[bot]@users.noreply.github.com>
+Co-authored-by: codex <noreply@openai.com>
+Co-authored-by: gemini-code-assist <noreply@gemini.google.com>
 Co-authored-by: gemini-code-assist[bot] <176961590+gemini-code-assist[bot]@users.noreply.github.com>
-Co-authored-by: copilot[bot] <167198135+copilot[bot]@users.noreply.github.com>
+Co-authored-by: copilot <noreply@github.com>
 ```
 
 Use only the line matching the agent that assisted with the commit.
