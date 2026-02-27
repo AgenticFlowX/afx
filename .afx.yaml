@@ -9,13 +9,16 @@ paths:
 
 features:
   - global-adr
+  - vscode-extension
 
-context:
+library:
   architecture: "docs/agenticflowx"
+  research: "docs/research"
 
 prefixes:
   specs: GEN
   global-adr: GA
+  vscode-extension: VE
 
 quality_gates:
   require_path_check: false # No runtime code to trace

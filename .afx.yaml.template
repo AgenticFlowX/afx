@@ -14,18 +14,17 @@ paths:
   sessions: 'docs/specs'                 # Global discussions (root)
 
 # Active features (used by /afx:report, /afx:work status)
-# Add your feature folder names here
-features:
-  - my-feature                           # Example: your first feature
-  # - another-feature                    # Uncomment and add more
+# Add your feature folder names here. Use /afx:init to scaffold a new feature.
+features: []
+  # - my-feature                         # Example: uncomment and rename
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Context (Upstream Artifacts) - Optional
+# Library (Upstream Artifacts) - Optional
 # ─────────────────────────────────────────────────────────────────────────────
-# context:
-#   architecture: 'docs/architecture'    # System constraints & patterns
-#   proposals: 'docs/proposals'          # Business intent & rough ideas
-#   research: 'docs/research'            # Global exploration & knowledge
+library:
+  docs: 'docs/agenticflowx'             # AFX framework documentation
+  research: 'docs/research'             # Global exploration & knowledge
+  # architecture: 'docs/architecture'    # System constraints & patterns
 
 # ─────────────────────────────────────────────────────────────────────────────
 # AI Attribution - Optional
@@ -58,8 +57,7 @@ anchors:
 # Format: feature-folder: PREFIX (2-3 letters, uppercase)
 prefixes:
   specs: GEN                             # General cross-cutting discussions
-  my-feature: MF                         # Example: your first feature prefix
-  # another-feature: AF                  # Uncomment and add more
+  # my-feature: MF                       # Example: add prefix per feature
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Quality Gates

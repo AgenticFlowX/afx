@@ -425,7 +425,7 @@ prefixes: # Feature discussion ID prefixes
   user-auth: UA
   users-permissions: UP
 
-context:
+library:
   architecture: "docs/architecture"
   proposals: "docs/proposals"
   research: "docs/research"

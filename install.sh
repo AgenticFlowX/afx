@@ -691,12 +691,16 @@ echo -e "${BLUE}[*] Creating directory structure...${NC}"
 if [ "$DRY_RUN" != "true" ]; then
     mkdir -p "$TARGET_DIR/docs/specs"
     mkdir -p "$TARGET_DIR/docs/adr"
+    mkdir -p "$TARGET_DIR/docs/research"
 fi
 if [ ! -d "$TARGET_DIR/docs/specs" ]; then
     INSTALLED+=("docs/specs/ directory")
 fi
 if [ ! -d "$TARGET_DIR/docs/adr" ]; then
     INSTALLED+=("docs/adr/ directory")
+fi
+if [ ! -d "$TARGET_DIR/docs/research" ]; then
+    INSTALLED+=("docs/research/ directory")
 fi
 
 # ============================================================================
