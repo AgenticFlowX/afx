@@ -1,5 +1,5 @@
 # AFX dogfooding — using AFX to develop AFX
-version: "feature/pack"
+version: "main"
 
 paths:
   specs: "docs/specs"

@@ -825,29 +825,31 @@ route_item() {
     local pack_dir="$4"
     local platforms="$5"
 
+    # Gate routing by both manifest platform support AND user's provider selection.
+    # platform_enabled() checks the pack manifest; INSTALL_* checks user preference.
     case "$type" in
         skill)
-            if platform_enabled "$platforms" "claude"; then
+            if platform_enabled "$platforms" "claude" && [[ "$INSTALL_CLAUDE" == "true" ]]; then
                 mkdir -p "$pack_dir/claude/skills/$item_name"
                 cp -r "$item_dir"/. "$pack_dir/claude/skills/$item_name/"
             fi
-            if platform_enabled "$platforms" "codex"; then
+            if platform_enabled "$platforms" "codex" && [[ "$INSTALL_CODEX" == "true" ]]; then
                 mkdir -p "$pack_dir/codex/skills/$item_name"
                 cp -r "$item_dir"/. "$pack_dir/codex/skills/$item_name/"
             fi
-            if platform_enabled "$platforms" "antigravity"; then
+            if platform_enabled "$platforms" "antigravity" && [[ "$INSTALL_ANTIGRAVITY" == "true" ]]; then
                 mkdir -p "$pack_dir/antigravity/skills/$item_name"
                 cp -r "$item_dir"/. "$pack_dir/antigravity/skills/$item_name/"
             fi
             ;;
         plugin)
-            if platform_enabled "$platforms" "claude"; then
+            if platform_enabled "$platforms" "claude" && [[ "$INSTALL_CLAUDE" == "true" ]]; then
                 mkdir -p "$pack_dir/claude/plugins/$item_name"
                 cp -r "$item_dir"/. "$pack_dir/claude/plugins/$item_name/"
             fi
             ;;
         openai)
-            if platform_enabled "$platforms" "codex"; then
+            if platform_enabled "$platforms" "codex" && [[ "$INSTALL_CODEX" == "true" ]]; then
                 mkdir -p "$pack_dir/codex/skills/$item_name"
                 cp -r "$item_dir"/. "$pack_dir/codex/skills/$item_name/"
             fi
@@ -859,14 +861,15 @@ route_item() {
                 break
             fi
             for provider in claude codex antigravity; do
-                if platform_enabled "$platforms" "$provider"; then
+                local install_flag="INSTALL_${provider^^}"
+                if platform_enabled "$platforms" "$provider" && [[ "${!install_flag}" == "true" ]]; then
                     mkdir -p "$pack_dir/$provider/skills/$item_name"
                     transform_for_provider "$canonical" \
                         "$pack_dir/$provider/skills/$item_name/SKILL.md" \
                         "$provider"
                 fi
             done
-            if platform_enabled "$platforms" "copilot"; then
+            if platform_enabled "$platforms" "copilot" && [[ "$INSTALL_COPILOT" == "true" ]]; then
                 mkdir -p "$pack_dir/copilot/agents"
                 generate_copilot_agent "$canonical" \
                     "$pack_dir/copilot/agents/${item_name}.agent.md" \
@@ -1131,7 +1134,7 @@ pack_copy_to_providers() {
     local disabled_items=$(afx_yaml_disabled_items "$pack_name")
 
     # Claude skills
-    if [[ -d "$pack_dir/claude/skills" ]]; then
+    if [[ -d "$pack_dir/claude/skills" ]] && [[ "$INSTALL_CLAUDE" == "true" ]]; then
         mkdir -p "$TARGET_DIR/.claude/skills"
         for skill in "$pack_dir"/claude/skills/*/; do
             [[ -d "$skill" ]] || continue
@@ -1148,7 +1151,7 @@ pack_copy_to_providers() {
     fi
 
     # Claude plugins
-    if [[ -d "$pack_dir/claude/plugins" ]]; then
+    if [[ -d "$pack_dir/claude/plugins" ]] && [[ "$INSTALL_CLAUDE" == "true" ]]; then
         mkdir -p "$TARGET_DIR/.claude/plugins"
         for plugin in "$pack_dir"/claude/plugins/*/; do
             [[ -d "$plugin" ]] || continue
@@ -1165,7 +1168,7 @@ pack_copy_to_providers() {
     fi
 
     # Codex skills
-    if [[ -d "$pack_dir/codex/skills" ]]; then
+    if [[ -d "$pack_dir/codex/skills" ]] && [[ "$INSTALL_CODEX" == "true" ]]; then
         mkdir -p "$TARGET_DIR/.agents/skills"
         for skill in "$pack_dir"/codex/skills/*/; do
             [[ -d "$skill" ]] || continue
@@ -1181,7 +1184,7 @@ pack_copy_to_providers() {
     fi
 
     # Antigravity skills
-    if [[ -d "$pack_dir/antigravity/skills" ]]; then
+    if [[ -d "$pack_dir/antigravity/skills" ]] && [[ "$INSTALL_ANTIGRAVITY" == "true" ]]; then
         mkdir -p "$TARGET_DIR/.agent/skills"
         for skill in "$pack_dir"/antigravity/skills/*/; do
             [[ -d "$skill" ]] || continue
@@ -1197,7 +1200,7 @@ pack_copy_to_providers() {
     fi
 
     # Copilot agents
-    if [[ -d "$pack_dir/copilot/agents" ]]; then
+    if [[ -d "$pack_dir/copilot/agents" ]] && [[ "$INSTALL_COPILOT" == "true" ]]; then
         mkdir -p "$TARGET_DIR/.github/agents"
         for agent in "$pack_dir"/copilot/agents/*.agent.md; do
             [[ -f "$agent" ]] || continue
@@ -2044,6 +2047,17 @@ if [[ -n "$PACK_DISABLE" || -n "$PACK_ENABLE" || -n "$PACK_REMOVE" || "$PACK_LIS
 fi
 
 PACK_OPERATION=false
+
+# ── Provider selection for pack operations ────────────────────────────────
+# Same logic as core install/update: load saved providers or prompt user.
+# This ensures packs only install for providers the user actually uses.
+if [[ "$_pack_only" == "true" ]]; then
+    if [[ -f "$TARGET_DIR/.afx.yaml" ]] && grep -q "^providers:" "$TARGET_DIR/.afx.yaml"; then
+        load_providers_from_yaml
+    else
+        select_providers
+    fi
+fi
 
 if [[ ${#PACK_NAMES[@]} -gt 0 && -z "$SKILL_DISABLE" && -z "$SKILL_ENABLE" ]]; then
     PACK_OPERATION=true
