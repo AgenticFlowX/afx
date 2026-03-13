@@ -43,3 +43,11 @@ After planning, check for:
 - Requirements without test cases
 - Test cases without requirement links
 - Acceptance criteria without assertions
+
+### AFX Integration
+
+<!-- @afx:provider-commands -->
+- Use `/afx:check path` to verify execution flow from UI to DB
+- Use `/afx:task audit` to verify test coverage against spec
+<!-- @afx:/provider-commands -->
+- Follow the spec → design → tasks → code traceability chain
