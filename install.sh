@@ -861,7 +861,11 @@ route_item() {
                 break
             fi
             for provider in claude codex antigravity; do
-                local install_flag="INSTALL_${provider^^}"
+                local _upper
+                case "$provider" in
+                    claude) _upper="CLAUDE" ;; codex) _upper="CODEX" ;; antigravity) _upper="ANTIGRAVITY" ;;
+                esac
+                local install_flag="INSTALL_${_upper}"
                 if platform_enabled "$platforms" "$provider" && [[ "${!install_flag}" == "true" ]]; then
                     mkdir -p "$pack_dir/$provider/skills/$item_name"
                     transform_for_provider "$canonical" \
@@ -2049,14 +2053,11 @@ fi
 PACK_OPERATION=false
 
 # ── Provider selection for pack operations ────────────────────────────────
-# Same logic as core install/update: load saved providers or prompt user.
-# This ensures packs only install for providers the user actually uses.
+# Always prompt — upstream packs may add new provider support between installs.
+# Load saved providers as defaults first, then let user confirm/change.
 if [[ "$_pack_only" == "true" ]]; then
-    if [[ -f "$TARGET_DIR/.afx.yaml" ]] && grep -q "^providers:" "$TARGET_DIR/.afx.yaml"; then
-        load_providers_from_yaml
-    else
-        select_providers
-    fi
+    load_providers_from_yaml
+    select_providers
 fi
 
 if [[ ${#PACK_NAMES[@]} -gt 0 && -z "$SKILL_DISABLE" && -z "$SKILL_ENABLE" ]]; then
