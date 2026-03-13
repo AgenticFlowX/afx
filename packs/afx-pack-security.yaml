@@ -14,19 +14,11 @@ platforms:
   copilot: partial # Only AFX-built skills — no external SKILL.md conversion
 
 includes:
-  # External skills from Antigravity (pristine — SKILL.md format → Claude + Codex + Antigravity)
-  - repo: anthropics/antigravity-awesome-skills
-    path: skills/
-    items:
-      - security-review
-      - dependency-vulnerability-check
-      - code-hardening
-
   # Claude Code plugins (pristine — .claude-plugin/ format → Claude only)
   - repo: anthropics/claude-code
     path: plugins/
     items:
-      - security-scanner
+      - security-guidance
 
   # AFX-built skills (guardrails baked in, hosted in AFX repo)
   - repo: rixrix/afx

@@ -606,6 +606,14 @@ fetch_manifest() {
     local ref="$2"
     local temp_manifest=$(mktemp)
 
+    # Prefer local manifest when running from the AFX repo (dev/testing)
+    local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || echo "")"
+    if [[ -n "$script_dir" && -f "$script_dir/packs/${pack_name}.yaml" ]]; then
+        cp "$script_dir/packs/${pack_name}.yaml" "$temp_manifest"
+        echo "$temp_manifest"
+        return 0
+    fi
+
     curl -sfL "https://raw.githubusercontent.com/${AFX_REPO}/${ref}/packs/${pack_name}.yaml" \
         -o "$temp_manifest" 2>/dev/null
 

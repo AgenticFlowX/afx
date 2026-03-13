@@ -1,5 +1,10 @@
 {
   "packs": {
+    "afx-pack-starter": {
+      "description": "Starter pack — verify AFX installation and multi-provider routing",
+      "category": "utility",
+      "providers": ["claude", "codex", "antigravity", "copilot"]
+    },
     "afx-pack-qa": {
       "description": "QA Engineer role pack — testing, review, and quality assurance",
       "category": "role",
@@ -12,12 +17,17 @@
     }
   },
   "upstream": {
-    "anthropics/claude-plugins-official": {
-      "featured": ["playwright-e2e", "security-scanner", "code-architect"]
+    "anthropics/claude-code": {
+      "featured": ["code-review", "pr-review-toolkit", "security-guidance"]
     },
-    "openai/skills": {},
-    "anthropics/antigravity-awesome-skills": {
-      "featured": ["code-architect"]
+    "anthropics/claude-plugins-official": {
+      "featured": ["code-simplifier", "hookify", "commit-commands"]
+    },
+    "anthropics/skills": {
+      "featured": ["webapp-testing"]
+    },
+    "openai/skills": {
+      "featured": ["playwright"]
     }
   }
 }

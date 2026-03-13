@@ -14,17 +14,11 @@ platforms:
   copilot: partial # Only AFX-built skills — no external SKILL.md conversion
 
 includes:
-  # External skills from Antigravity (pristine — SKILL.md format → Claude + Codex + Antigravity)
-  - repo: anthropics/antigravity-awesome-skills
+  # External skills from Anthropic (pristine — SKILL.md format → Claude + Codex + Antigravity)
+  - repo: anthropics/skills
     path: skills/
     items:
-      - test-driven-development
-      - tdd-workflow
-      - playwright-skill
-      - e2e-testing-patterns
-      - unit-testing-test-generate
-      - systematic-debugging
-      - performance-testing-review
+      - webapp-testing
 
   # External skills from OpenAI (pristine — SKILL.md + openai.yaml → Codex only)
   - repo: openai/skills
