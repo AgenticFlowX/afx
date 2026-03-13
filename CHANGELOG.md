@@ -5,6 +5,26 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-03-14
+
+### Added
+
+- **Starter Pack** (`afx-pack-starter`): New utility pack with `afx-hello` skill for verifying AFX installation and multi-provider routing across Claude, Codex, Antigravity, and Copilot.
+- **Provider Selection for Packs**: Pack install now always prompts users to select their AI coding tools, ensuring skills are only installed for providers the user actually uses.
+- **Local Manifest Fallback**: `fetch_manifest()` prefers local pack manifests when running from the AFX repo, enabling dev/testing without pushing to GitHub first.
+- **QA Pack**: Added `webapp-testing` skill from `anthropics/skills` (Playwright-based web app testing toolkit).
+
+### Fixed
+
+- **Bash 3.x Compatibility**: Replaced `${var^^}` uppercase syntax (bash 4+) with `case` mapping for macOS compatibility in `route_item()`.
+- **Provider-Gated Routing**: `route_item()` and `pack_copy_to_providers()` now respect user's provider selection (`INSTALL_*` flags) alongside manifest platform support.
+
+### Changed
+
+- **Pack Manifests Updated**: Removed dead upstream references (`anthropics/antigravity-awesome-skills` repo renamed to `anthropics/skills`), fixed `security-scanner` → `security-guidance` in security pack.
+- **Pack Index** (`packs/index.json`): Updated upstream registry with current repo names and featured skills from `anthropics/claude-code`, `anthropics/claude-plugins-official`, `anthropics/skills`, and `openai/skills`.
+- **AFX Skills**: Added `@afx:provider-commands` integration section to existing AFX-built skills.
+
 ## [1.6.0] - 2026-03-13
 
 ### Added
