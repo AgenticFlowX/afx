@@ -9,6 +9,40 @@
   <a href="https://docs.github.com/en/copilot"><img src="https://img.shields.io/badge/GitHub_Copilot-000000?style=flat&logo=github-copilot&logoColor=white" alt="GitHub Copilot"/></a>
 </p>
 
+<table>
+<tr>
+<td width="100" valign="top"><br/>
+
+![NEW](https://img.shields.io/badge/-NEW-6C5CE7?style=for-the-badge)
+
+</td>
+<td valign="top">
+
+<a href="https://github.com/rixrix/afx/releases"><img src="assets/vscode/vscode-extension-banner.png" alt="AgenticFlowX VSCode Extension" width="100%"/></a>
+
+**AgenticFlowX VSCode Extension (Alpha)**<br/>
+A dedicated visual interface for the AFX workflow. Track your feature pipeline, navigate specifications, and manage skill packs directly in the editor. [Read more &rarr;](docs/agenticflowx/vscode-extension.md)
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+![NOTICE](https://img.shields.io/badge/-NOTICE-636e72?style=for-the-badge)
+
+</td>
+<td valign="top">
+
+- 🔒 **Repository is private** — not yet public on GitHub.
+- 📦 Download the `.vsix` from the [Releases page](https://github.com/rixrix/afx/releases).
+- 🛍 VS Code Marketplace listing coming soon.
+- 🚧 **Alpha Status** — Expect bugs. Features may be unstable.
+- 🤝 **Companion Tool** — Not a replacement for agents like Claude Code or Codex.
+
+</td>
+</tr>
+</table>
+
 
 # AFX (AgenticFlowX)
 
@@ -412,6 +446,55 @@ Once you answer, Claude will automatically run `/afx-init` and build out your sp
 From extensive experience, we know that LLMs (like Claude, Codex, and others) can sometimes "drift" or hallucinate, even when provided with heavy instructions and stringent AFX guidelines. There will inevitably be times when tools and commands do not execute exactly as expected.
 
 As a user, you should anticipate a hybrid workflow. You will often need to use a mix of strict AFX slash commands (e.g., `/afx-spec review`) combined with your own **on-the-fly custom prompting** to course-correct the agent when it loses context or drifts from the instructions. AFX provides the crucial rails, but you are still the driver.
+
+---
+
+## AgenticFlowX VSCode Extension — Screenshots
+
+<table>
+<tr>
+<td align="center" width="50%">
+<img src="assets/vscode/pipeline.png" alt="Pipeline view" width="100%"/>
+<sub><b>Pipeline</b> — feature health across the pipeline</sub>
+</td>
+<td align="center" width="50%">
+<img src="assets/vscode/tasks-works-session.png" alt="Tasks & work sessions" width="100%"/>
+<sub><b>Tasks</b> — phases, checkboxes, and work session history</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<img src="assets/vscode/analytics.png" alt="Analytics dashboard" width="100%"/>
+<sub><b>Analytics</b> — project health KPIs and pipeline gauge</sub>
+</td>
+<td align="center" width="50%">
+<img src="assets/vscode/documents.png" alt="Documents browser" width="100%"/>
+<sub><b>Documents</b> — master-detail doc browser with markdown preview</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<img src="assets/vscode/journal.png" alt="Journal discussions" width="100%"/>
+<sub><b>Journal</b> — discussions across all spec journals</sub>
+</td>
+<td align="center" width="50%">
+<img src="assets/vscode/kanban.png" alt="Kanban board" width="100%"/>
+<sub><b>Board</b> — kanban boards backed by YAML in .afx/kanban/</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<img src="assets/vscode/notes.png" alt="Notes" width="100%"/>
+<sub><b>Notes</b> — quick capture with markdown timeline</sub>
+</td>
+<td align="center" width="50%">
+<img src="assets/vscode/architecture.png" alt="Architecture graph" width="100%"/>
+<sub><b>Architecture</b> — dependency graph and cycle detection</sub>
+</td>
+</tr>
+</table>
+
+---
 
 ## Contributing
 
