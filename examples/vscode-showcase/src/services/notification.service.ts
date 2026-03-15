@@ -5,16 +5,8 @@
  */
 
 import { User } from '../models/user.model';
-import { getAuthService } from './auth.service';
-
-interface Notification {
-  id: string;
-  userId: string;
-  type: 'task_assigned' | 'task_complete' | 'mention' | 'system';
-  message: string;
-  read: boolean;
-  createdAt: Date;
-}
+import { Notification, NotificationPreference } from '../models/notification.model';
+import { createLogger } from '../utils/logger';
 
 export function getNotificationService(db: unknown) {
   return {

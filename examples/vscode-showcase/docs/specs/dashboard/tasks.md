@@ -29,24 +29,24 @@ design: design.md
 
 ### 2.1 Widget API {#21-widget-api}
 
-- [ ] Implement `getWidgets()` endpoint
-- [ ] Implement `updateLayout()` endpoint
-- [ ] Add widget data aggregation queries
-- [ ] Add unit tests
+- [x] Implement `getWidgets()` endpoint
+- [x] Implement `updateLayout()` endpoint
+- [x] Add widget data aggregation queries
+- [x] Add unit tests
 
 ### 2.2 Dashboard Page {#22-dashboard-page}
 
-- [ ] Create dashboard grid layout component
-- [ ] Build task-summary widget
-- [ ] Build recent-activity widget
-- [ ] Build project-health widget
-- [ ] Add drag-to-reorder functionality
+- [x] Create dashboard grid layout component
+- [x] Build task-summary widget
+- [x] Build recent-activity widget
+- [x] Build project-health widget
+- [x] Add drag-to-reorder functionality
 
 ### 2.3 Layout Persistence {#23-layout-persistence}
 
-- [ ] Save layout on reorder
-- [ ] Load saved layout on mount
-- [ ] Fallback to default layout for new users
+- [x] Save layout on reorder
+- [x] Load saved layout on mount
+- [x] Fallback to default layout for new users
 
 ---
 

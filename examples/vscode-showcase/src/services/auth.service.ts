@@ -7,6 +7,8 @@
 
 import { User, UserProfile, RefreshToken } from '../models/user.model';
 import { isValidEmail, isStrongPassword } from '../utils/validation';
+import { hashPassword, verifyPassword, generateTokenId, hashToken } from '../utils/crypto';
+import { createLogger } from '../utils/logger';
 
 interface RegisterInput {
   email: string;
