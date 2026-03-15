@@ -38,6 +38,28 @@ A dedicated visual interface for the AFX workflow. Track your feature pipeline, 
 - 🛍 VS Code Marketplace listing coming soon.
 - 🚧 **Alpha Status** — Expect bugs. Features may be unstable.
 - 🤝 **Companion Tool** — Not a replacement for agents like Claude Code or Codex.
+- 🖥 **Tested on macOS and WSL** — not yet verified on native Windows.
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+![INSTALL](https://img.shields.io/badge/-INSTALL-00b894?style=for-the-badge)
+
+</td>
+<td valign="top">
+
+**Option 1 — One-liner (download + install)**
+
+```bash
+curl -L -o vscode-afx.vsix https://github.com/rixrix/afx/releases/download/v2.1.0/vscode-afx-2.0.0-alpha.1.vsix && code --install-extension vscode-afx.vsix
+```
+
+**Option 2 — From VS Code UI**
+
+1. Download the `.vsix` from the [Releases page](https://github.com/rixrix/afx/releases)
+2. In VS Code: `Cmd+Shift+P` → **Extensions: Install from VSIX...**
+3. Select the downloaded file
 
 </td>
 </tr>

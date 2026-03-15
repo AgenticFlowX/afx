@@ -5,6 +5,16 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-03-15
+
+### Added
+
+- **VSCode Extension VSIX**: Extension artifact (`vscode-afx-2.0.0-alpha.1.vsix`) now available as a GitHub release asset. Install via one-liner curl command or VS Code UI.
+
+### Changed
+
+- **README**: Added INSTALL section to the news table with download + install instructions. Added macOS/WSL tested notice.
+
 ## [2.0.1] - 2026-03-15
 
 ### Fixed
