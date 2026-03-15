@@ -1260,7 +1260,7 @@ pack_update_all() {
         echo -e "${BLUE}Updating $pack_name (ref: $pack_ref)...${NC}"
         pack_remove "$pack_name"
         pack_install "$pack_name" "$pack_ref"
-        ((updated++))
+        ((++updated))
     done < <(afx_yaml_all_packs)
 
     if [[ "$updated" -eq 0 ]]; then
@@ -1352,7 +1352,7 @@ step_skills() {
             [ -d "$skill_dir" ] || continue
             local skill_name=$(basename "$skill_dir")
             skill_sync "$skill_name" "$category"
-            ((synced++))
+            ((++synced))
         done
     done
 
@@ -1508,7 +1508,7 @@ count_glob() {
     local pattern="$1"
     local count=0
     for f in $pattern; do
-        [[ -e "$f" ]] && ((count++))
+        [[ -e "$f" ]] && ((++count))
     done
     echo "$count"
 }
@@ -1544,7 +1544,7 @@ step_reset() {
     local total=6
 
     # ── Step 1: Agent commands/skills ──
-    ((step++))
+    ((++step))
     echo -e "${DIM}[${step}/${total}]${NC} ${BOLD}Remove AFX agent commands and skills${NC}"
 
     local has_items=false
@@ -1595,7 +1595,7 @@ step_reset() {
     echo ""
 
     # ── Step 2: Strip AFX sections from MD files ──
-    ((step++))
+    ((++step))
     echo -e "${DIM}[${step}/${total}]${NC} ${BOLD}Strip AFX sections from MD files${NC}"
 
     local md_targets=()
@@ -1618,7 +1618,7 @@ step_reset() {
     echo ""
 
     # ── Step 3: AFX documentation ──
-    ((step++))
+    ((++step))
     echo -e "${DIM}[${step}/${total}]${NC} ${BOLD}Remove AFX documentation${NC}"
     if [[ -d "$TARGET_DIR/docs/agenticflowx" ]]; then
         echo -e "      ${DIM}docs/agenticflowx/ (docs + templates)${NC}"
@@ -1638,7 +1638,7 @@ step_reset() {
     echo ""
 
     # ── Step 4: .afx/ folder ──
-    ((step++))
+    ((++step))
     echo -e "${DIM}[${step}/${total}]${NC} ${BOLD}Remove .afx/ folder${NC}"
     if [[ -d "$TARGET_DIR/.afx" ]]; then
         echo -e "      ${DIM}.afx/ (skills, cache, managed config)${NC}"
@@ -1658,7 +1658,7 @@ step_reset() {
     echo ""
 
     # ── Step 5: .afx.yaml ──
-    ((step++))
+    ((++step))
     echo -e "${DIM}[${step}/${total}]${NC} ${BOLD}Remove .afx.yaml${NC}"
     if [[ -f "$TARGET_DIR/.afx.yaml" ]]; then
         echo -e "      ${DIM}.afx.yaml (user config)${NC}"
@@ -1678,7 +1678,7 @@ step_reset() {
     echo ""
 
     # ── Step 6: .gitignore cleanup ──
-    ((step++))
+    ((++step))
     echo -e "${DIM}[${step}/${total}]${NC} ${BOLD}Clean .gitignore${NC}"
     if [[ -f "$TARGET_DIR/.gitignore" ]] && grep -q "^\.afx/" "$TARGET_DIR/.gitignore" 2>/dev/null; then
         if confirm "  Remove '.afx/' entry from .gitignore?"; then
@@ -1985,11 +1985,11 @@ STEP=0
 total_steps() {
     local count=1  # step_skills (always runs)
     ((count+=2))   # templates + config (always)
-    [[ "$NO_CLAUDE_MD" != "true" ]] && ((count++))
-    [[ "$NO_AGENTS_MD" != "true" ]] && ((count++))
-    [[ "$NO_GEMINI_MD" != "true" ]] && ((count++))
-    [[ "$NO_DOCS" != "true" ]] && ((count++))
-    ((count++))  # directory structure
+    [[ "$NO_CLAUDE_MD" != "true" ]] && ((++count))
+    [[ "$NO_AGENTS_MD" != "true" ]] && ((++count))
+    [[ "$NO_GEMINI_MD" != "true" ]] && ((++count))
+    [[ "$NO_DOCS" != "true" ]] && ((++count))
+    ((++count))  # directory structure
     echo "$count"
 }
 
@@ -1998,7 +1998,10 @@ TOTAL=$(total_steps)
 run_step() {
     local label="$1"
     local func="$2"
-    ((STEP++))
+    # Use pre-increment (++STEP) not post-increment (STEP++).
+    # Post-increment returns the old value; when STEP=0, ((0)) is falsy
+    # and returns exit code 1, which kills the script under set -e on bash 5.x (Linux/WSL).
+    ((++STEP))
     echo -e "${DIM}[${STEP}/${TOTAL}]${NC} ${label}"
     "$func"
     echo ""
