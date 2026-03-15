@@ -1,0 +1,115 @@
+# AFX Configuration for VSCode Showcase Project (user overrides)
+version: '2.0'
+
+paths:
+  specs: 'docs/specs'
+  templates: 'templates'
+  sessions: 'docs/specs'
+
+features:
+  - user-auth
+  - dashboard
+  - notifications
+
+prefixes:
+  specs: GEN
+  user-auth: UA
+  dashboard: DB
+  notifications: NT
+
+quality_gates:
+  require_path_check: true
+  require_human_approval: true
+  block_on_mock_code: true
+
+verification:
+  two_stage: true
+  stale_threshold_days: 30
+
+require_see_links:
+  - '*.service.ts'
+  - '*.action.ts'
+
+scan_for_orphans:
+  - 'src/**/*.ts'
+  - 'src/**/*.tsx'
+
+packs:
+  - name: afx-pack-agenticflowx
+    installed_ref: main
+    installed_at: "2026-03-08"
+  - name: afx-pack-starter
+    installed_ref: main
+    installed_at: "2026-03-08"
+  - name: afx-pack-qa
+    installed_ref: main
+    installed_at: "2026-03-10"
+
+skills:
+  # AgenticFlowX workflow skills
+  - name: afx-next
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-work
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-dev
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-check
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-task
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-session
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-spec
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-report
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-discover
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-init
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-context
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-update
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-help
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  # Starter pack
+  - name: afx-hello
+    category: starter
+    source: afx-pack-starter
+    item_type: afx
+  # QA pack
+  - name: afx-qa-methodology
+    category: qa
+    source: afx-pack-qa
+    item_type: afx
+  - name: afx-spec-test-planning
+    category: qa
+    source: afx-pack-qa
+    item_type: afx
