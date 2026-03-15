@@ -9,51 +9,25 @@
   <a href="https://docs.github.com/en/copilot"><img src="https://img.shields.io/badge/GitHub_Copilot-000000?style=flat&logo=github-copilot&logoColor=white" alt="GitHub Copilot"/></a>
 </p>
 
-<table>
-<tr>
-<td width="100" valign="top"><br/>
-<b>NEW</b>
-</td>
-<td valign="top">
-
 <a href="https://github.com/rixrix/afx/releases"><img src="assets/vscode/vscode-extension-banner.png" alt="AgenticFlowX VSCode Extension" width="100%"/></a>
 
-**AgenticFlowX VSCode Extension (Alpha)**<br/>
-A dedicated visual interface for the AFX workflow. Track your feature pipeline, navigate specifications, and manage skill packs directly in the editor. [Read more &rarr;](docs/agenticflowx/vscode-extension.md)
+**AgenticFlowX VSCode Extension (Alpha)** — A dedicated visual interface for the AFX workflow. Track your feature pipeline, navigate specifications, and manage skill packs directly in the editor. [Read more &rarr;](docs/agenticflowx/vscode-extension.md)
 
-</td>
-</tr>
-<tr>
-<td valign="top"><br/>
-<b>NOTICE</b>
-</td>
-<td valign="top">
+> [!WARNING]
+> **Alpha Status** — Not yet on the VS Code Marketplace. Expect bugs. Some features may be unstable.
+> - 🔒 Repository is private — not yet public on GitHub.
+> - 📦 Download the `.vsix` from the [Releases page](https://github.com/rixrix/afx/releases).
+> - 🤝 Companion tool — not a replacement for agents like Claude Code or Codex.
+> - 🖥 Tested on macOS and WSL — not yet verified on native Windows.
 
-- 🔒 **Repository is private** — not yet public on GitHub.
-- 📦 Download the `.vsix` from the [Releases page](https://github.com/rixrix/afx/releases).
-- 🛍 VS Code Marketplace listing coming soon.
-- 🚧 **Alpha Status** — Expect bugs. Features may be unstable.
-- 🤝 **Companion Tool** — Not a replacement for agents like Claude Code or Codex.
-- 🖥 **Tested on macOS and WSL** — not yet verified on native Windows.
-</td>
-</tr>
-<tr>
-<td valign="top"><br/>
-<b>INSTALL</b>
-</td>
-<td valign="top">
-
-**Option 1 — One-liner (download + install)**
+**Install**
 
 ```bash
+# Option 1 — One-liner (download + install)
 curl -L -o vscode-afx.vsix https://github.com/rixrix/afx/releases/download/v2.1.0/vscode-afx-2.0.0-alpha.1.vsix && code --install-extension vscode-afx.vsix
 ```
 
-**Option 2 — From VS Code UI**
-
-1. Download the `.vsix` from the [Releases page](https://github.com/rixrix/afx/releases)
-2. In VS Code: `Cmd+Shift+P` → **Extensions: Install from VSIX...**
-3. Select the downloaded file
+Or from VS Code: download the `.vsix` from the [Releases page](https://github.com/rixrix/afx/releases), then `Cmd+Shift+P` → **Extensions: Install from VSIX...** and select the file.
 
 **See it in action** — Open the [vscode-showcase](https://github.com/rixrix/afx/tree/main/examples/vscode-showcase) example project used in the [screenshots below](#agenticflowx-vscode-extension--screenshots):
 
@@ -61,9 +35,7 @@ curl -L -o vscode-afx.vsix https://github.com/rixrix/afx/releases/download/v2.1.
 git clone https://github.com/rixrix/afx.git && code afx/examples/vscode-showcase
 ```
 
-</td>
-</tr>
-</table>
+---
 
 
 # AFX (AgenticFlowX)
