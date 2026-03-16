@@ -54,7 +54,7 @@ The spec tells you _what_ to build. The GitHub ticket tells you _where you left 
 - `/afx-help` - Show all commands
 
 <!-- AFX:START - Managed by AFX. Do not edit manually. -->
-<!-- AFX Version: Unknown -->
+<!-- AFX Version: 2.1.0 -->
 
 
 ## Documentation References (Living Documentation Traceability)
@@ -235,8 +235,7 @@ When starting or resuming work on a ticket:
 
 - `/afx-session note "content" [tags]` - Smart note (unifies capture/append)
 - `/afx-session log [feature]` - Save session to log
-- `/afx-session show [feature|all]` - Show recent discussions
-- `/afx-session search "query"` - Search notes across journals
+- `/afx-session active [feature|all]` - Show active discussions
 - `/afx-session recap [feature|all]` - Recap for resumption
 - `/afx-session promote <id>` - Promote discussion to ADR
 - `/afx-next` - Context-aware "Golden Thread" guidance
@@ -264,8 +263,7 @@ Use `/afx-session` to capture important discussions with AI agents:
 /afx-session note "content"                # Smart note (auto-tags)
 /afx-session note --ref UA-D001 "content"  # Append to discussion
 /afx-session log [feature]                 # Summarize session to log
-/afx-session show [feature|all]            # Show recent discussions
-/afx-session search "query"                # Search notes
+/afx-session active [feature|all]           # Show active discussions
 /afx-session promote <id>                  # Promote to ADR
 ```
 

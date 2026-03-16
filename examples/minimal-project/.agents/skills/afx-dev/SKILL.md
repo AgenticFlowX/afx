@@ -32,6 +32,37 @@ If neither file exists, use defaults.
 /afx-dev optimize [target]      # Performance optimization
 ```
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Create/modify source code and test files in the project's application directories
+- Run build, test, and lint commands
+- All code changes MUST include `@see` traceability annotations linking back to specs
+- Append to `docs/specs/**/journal.md` (Captures only, via Proactive Capture Protocol)
+
+### Forbidden
+
+- Create/modify/delete spec files (`spec.md`, `design.md`, `tasks.md`)
+- Modify `.afx.yaml` or `.afx/` configuration
+- Run deploy/migration commands without explicit user confirmation
+- Delete spec or research files
+
+If spec changes are requested, respond with:
+
+```text
+Out of scope for /afx-dev (development mode). Use /afx-spec to modify specifications.
+```
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-dev`**: Architecture change during refactor, scope cut during implementation, tech debt discovery, spec deviation found during coding.
+
+---
+
 ## Agent Instructions
 
 ### Next Command Suggestion (MANDATORY)
@@ -50,16 +81,21 @@ If neither file exists, use defaults.
 | After `test` (tests fail)            | `/afx-dev debug` to investigate failures     |
 | After `optimize` (optimization done) | `/afx-check path <path>` to verify           |
 
-**Suggestion Format** (5 ranked options, ideal → less ideal):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-check path <path>                     # Ideal: Verify implementation works
-  2. /afx-task verify <task-id>                  # Confirm task matches spec
-  3. /afx-work pick docs/specs/{feature}        # Move to next task
-  4. /afx-dev test <scope>                      # Run tests to validate
-  5. /afx-session note "<note>"              # Capture learnings before switching
+  1. /afx-check path <path>                     # Context-driven: Verify implementation works
+  2. /afx-task verify <task-id>                  # Context-driven: Confirm task matches spec
+  3. /afx-dev test <scope>                       # Context-driven: Run tests to validate
+  ──
+  4. /afx-work status                            # Re-orient after implementation
+  5. /afx-session note "<note>"                   # Capture learnings before switching
 ```
+
+### Timestamp Format (MANDATORY)
+
+When creating or updating Session Log entries, frontmatter (`last_verified`, `created`), and Work Sessions rows, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
 
 ---
 

@@ -14,8 +14,9 @@ AFX (AgenticFlowX) command reference.
 
 ## Configuration
 
-All AFX commands use two-tier config resolution: `.afx/.afx.yaml` (managed defaults) + `.afx.yaml` (user overrides).
-See `.afx/.afx.yaml` for all available options.
+**Read config** using two-tier resolution: `.afx/.afx.yaml` (managed defaults) + `.afx.yaml` (user overrides).
+
+If neither file exists, use defaults. See `.afx/.afx.yaml` for all available options.
 
 ## Usage
 
@@ -23,6 +24,26 @@ See `.afx/.afx.yaml` for all available options.
 /afx-help
 /afx-help guides  # View role-based workflows (Dev, QA, Ops, etc.)
 ```
+
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Display command reference and workflow guides
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for /afx-help (read-only reference mode). Use the suggested command to proceed.
+```
+
+---
 
 ## Available Commands
 

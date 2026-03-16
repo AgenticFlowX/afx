@@ -3,7 +3,7 @@
 Project context for Gemini CLI when working with code in this repository.
 
 <!-- AFX-GEMINI:START - Managed by AFX. Do not edit manually. -->
-<!-- AFX Version: Unknown -->
+<!-- AFX Version: 2.1.0 -->
 
 
 ## AgenticFlowX (AFX) - Spec-Driven Development

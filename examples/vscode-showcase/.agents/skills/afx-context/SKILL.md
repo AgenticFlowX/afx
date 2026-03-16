@@ -28,6 +28,36 @@ If neither file exists, use defaults.
 /afx-context impact <change>      # Analyze cross-feature impact
 ```
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Create/modify context bundles in `.afx/context/`
+- Analyze spec evolution and cross-feature impact (read-only analysis)
+- Append to `docs/specs/**/journal.md` (Captures only, via Proactive Capture Protocol)
+
+### Forbidden
+
+- Create/modify/delete source code in application directories
+- Modify spec files (`spec.md`, `design.md`, `tasks.md`)
+- Delete any files outside `.afx/context/`
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for /afx-context (context transfer mode). Use /afx-dev code to implement.
+```
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-context`**: Cross-feature impact detected.
+
+---
+
 ## Purpose
 
 Formalize context transfer between AI agent sessions. When an agent times out, disconnects, or needs to hand off work, this command ensures the next agent can resume exactly where the previous one left off.
@@ -35,6 +65,12 @@ Formalize context transfer between AI agent sessions. When an agent times out, d
 **Also serves as human memory refresh** — contexts are written detailed enough for a developer to recall a session from 3+ days ago, including reasoning, decisions, and research findings.
 
 **Unique to AFX**: No other framework provides structured agent-to-agent context with context preservation.
+
+### Timestamp Format (MANDATORY)
+
+When creating or updating context bundles (`saved` frontmatter, journal archive entries), all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+
+---
 
 ## Agent Instructions
 
@@ -261,10 +297,12 @@ The full context bundle content, followed by:
 ✅ **Context loaded from** `.afx/context.md`
 
 Next (ranked):
-
-1. `/afx-dev code` — Continue implementation
-2. `/afx-work resume` — Pick up from task queue
-3. `/afx-session recap {feature}` — Review more context
+  1. /afx-dev code                               # Context-driven: Continue implementation
+  2. /afx-work resume                             # Context-driven: Pick up from task queue
+  3. /afx-session recap {feature}                  # Context-driven: Review more context
+  ──
+  4. /afx-work status                             # Re-orient after context load
+  5. /afx-help                                    # See all options
 ```
 
 ---

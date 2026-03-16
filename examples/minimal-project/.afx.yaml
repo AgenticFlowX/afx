@@ -89,10 +89,10 @@ packs:
 
   - name: afx-pack-starter
     installed_ref: main
-    installed_at: 2026-03-16T11:34:40Z
+    installed_at: 2026-03-16T12:56:35Z
   - name: afx-pack-agenticflowx
     installed_ref: main
-    installed_at: 2026-03-16T11:34:41Z
+    installed_at: 2026-03-16T12:56:35Z
 # ── Your Overrides ───────────────────────────────────────────────────────
 # Override any value from .afx/.afx.yaml here. Examples:
 #

@@ -22,6 +22,32 @@ Session discussion capture and recall for multi-agent workflows.
 
 If neither file exists, use defaults.
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Create/modify markdown files only in:
+  - `docs/specs/**/journal.md` (feature session logs)
+  - `docs/specs/journal.md` (global session log)
+  - `docs/specs/**/research/` (ADR promotion only)
+  - `docs/adr/` (ADR promotion only)
+
+### Forbidden
+
+- Create/modify/delete source code in application directories
+- Modify spec files (`spec.md`, `design.md`, `tasks.md`)
+- Delete any files
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for /afx-session (session capture mode). Use /afx-dev code to implement.
+```
+
+---
+
 ## Usage
 
 ```bash
@@ -51,25 +77,32 @@ When no feature is specified, discussions go to `docs/specs/journal.md`. This is
 
 **CRITICAL**: After EVERY `/afx-session` action, suggest the most appropriate next command based on context:
 
-| Context                           | Suggested Next Command                          |
-| --------------------------------- | ----------------------------------------------- |
-| After `note` (more to discuss)    | Continue discussion or `/afx-session log`       |
-| After `note` (ready to work)      | `/afx-work pick <spec>` or `/afx-dev code`      |
-| After `note` (quick note added)   | Continue working or `/afx-session recap`        |
-| After `log`                       | `/afx-work pick <spec>` or `/afx-dev code`      |
-| After `recap` (resuming work)     | `/afx-work status` then `/afx-dev code`         |
-| After `promote` (ADR created)     | `/afx-dev code` to implement the decision       |
+| Context                         | Suggested Next Command                     |
+| ------------------------------- | ------------------------------------------ |
+| After `note` (more to discuss)  | Continue discussion or `/afx-session log`  |
+| After `note` (ready to work)    | `/afx-work pick <spec>` or `/afx-dev code` |
+| After `note` (quick note added) | Continue working or `/afx-session recap`   |
+| After `log`                     | `/afx-work pick <spec>` or `/afx-dev code` |
+| After `recap` (resuming work)   | `/afx-work status` then `/afx-dev code`    |
+| After `promote` (ADR created)   | `/afx-dev code` to implement the decision  |
 
-**Suggestion Format** (5 ranked options, ideal → less ideal):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-dev code                              # Ideal: Implement what was discussed
-  2. /afx-work pick docs/specs/{feature}        # Start next task from spec
-  3. /afx-session log {feature}                 # Summarize before moving on
-  4. /afx-session promote UA-D001               # Elevate to ADR if significant
-  5. /afx-session recap all                     # Review broader context
+  1. /afx-dev code                               # Context-driven: Implement what was discussed
+  2. /afx-session log {feature}                   # Context-driven: Summarize before moving on
+  3. /afx-session promote UA-D001                 # Context-driven: Elevate to ADR if significant
+  ──
+  4. /afx-work status                             # Re-orient after capture
+  5. /afx-help                                    # See all options
 ```
+
+---
+
+### Timestamp Format (MANDATORY)
+
+When creating or updating journal entries, captures, notes, and discussion metadata, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
 
 ---
 
@@ -171,6 +204,54 @@ The Agent MUST actively monitor the conversation depth. Suggest `/afx-session lo
 
 > `> /afx-session log`"
 
+### Proactive Capture Protocol (MANDATORY)
+
+**Cross-cutting rule**: This protocol applies to ALL AFX skills, not just `/afx-session`. When any skill detects a high-impact context change during its operation, it MUST auto-capture to `journal.md` without waiting for the user to invoke `/afx-session`.
+
+#### Trigger Conditions
+
+Auto-capture (without asking) when the agent detects:
+
+| Trigger              | Example                               | What to capture                        |
+| -------------------- | ------------------------------------- | -------------------------------------- |
+| Decision deferred    | "not now", "later", "future phase"    | Decision + reason + what it blocks     |
+| ADR-impacting choice | "let's use Postgres instead of Mongo" | The decision + alternatives considered |
+| Spec deviation       | "skip that requirement for MVP"       | Which FR/NFR is affected + why         |
+| Research finding     | "turns out X doesn't support Y"       | Finding + source + impact              |
+| Architecture change  | "move auth to a separate service"     | What changed + what's affected         |
+| Scope cut            | "drop feature X from this release"    | What's cut + where to track it         |
+
+#### Capture Format
+
+Append to `## Captures` section in the appropriate `journal.md`:
+
+```markdown
+- **{YYYY-MM-DDTHH:MM:SS.mmmZ}** - [AUTO:{skill}] {one-line summary}
+  `[{auto-tags}, auto-capture]`
+  **Impact**: {what this affects: ADR/spec/code/research}
+  **Action**: {deferred|decided|changed|cut} → {when/what to revisit}
+```
+
+#### Rules
+
+1. **Write to `## Captures`** — not `## Discussions` (that's for `/afx-session log`)
+2. **Tag with `auto-capture`** — so entries are filterable
+3. **Include source skill** — prefix: `[AUTO:afx-dev]`, `[AUTO:afx-spec]`, etc.
+4. **No duplicates** — if the same decision was just captured, skip
+5. **Feature routing** — if the context has an active feature, write to `docs/specs/{feature}/journal.md`. Otherwise write to `docs/specs/journal.md`
+6. **Consolidation** — still suggest `/afx-session log` at natural breakpoints to consolidate captures into full discussion entries
+
+#### Example
+
+During `/afx-dev code`, the user says "let's skip pagination for now, we'll do it in Phase 2":
+
+```markdown
+- **2025-03-17T14:30:00.000Z** - [AUTO:afx-dev] Pagination deferred to Phase 2
+  `[pagination, deferred, phase-2, auto-capture]`
+  **Impact**: spec — FR-7 (pagination) remains unimplemented
+  **Action**: deferred → revisit in Phase 2 planning
+```
+
 ---
 
 ## 3. Recap Mode
@@ -191,12 +272,12 @@ Generate comprehensive recap for session resumption:
 
 #### user-auth (2 discussions)
 
-- **2025-12-15**: Supplier assignment - Decided on hardcoded Phase 1 approach
-- **2025-12-14**: Email notifications - Deferred to Phase 2
+- **2025-12-15T10:30:00.000Z**: Supplier assignment - Decided on hardcoded Phase 1 approach
+- **2025-12-14T16:00:00.000Z**: Email notifications - Deferred to Phase 2
 
 #### agenticflow (1 discussion)
 
-- **2025-12-15**: PRD-first traceability - Validated uniqueness vs competitors
+- **2025-12-15T09:15:00.000Z**: PRD-first traceability - Validated uniqueness vs competitors
 
 ### Key Decisions Made
 
@@ -312,9 +393,9 @@ Next: /afx-work pick docs/specs/{new-feature}/tasks.md   # Start implementing ne
 
 <!-- Quick notes during active chat - cleared when recorded -->
 
-- **2025-12-17 14:30** - Remember to handle edge case X
+- **2025-12-17T14:30:00.000Z** - Remember to handle edge case X
   `[validation, edge-case]`
-- **2025-12-17 14:45** - User prefers approach B over A
+- **2025-12-17T14:45:00.000Z** - User prefers approach B over A
   `[architecture, decision]`
 
 ---
@@ -350,7 +431,7 @@ Next: /afx-work pick docs/specs/{new-feature}/tasks.md   # Start implementing ne
 
 **Notes**:
 
-- **[XX-D002.N1]** **[2025-12-16 10:30]** Later insight after testing `[testing]`
+- **[XX-D002.N1]** **[2025-12-16T10:30:00.000Z]** Later insight after testing `[testing]`
 
 **Related Files**: file1.ts, file2.ts
 **Participants**: @rix, Claude
@@ -362,7 +443,6 @@ Next: /afx-work pick docs/specs/{new-feature}/tasks.md   # Start implementing ne
 `[api, refactor]`
 
 ...
-
 ```
 
 > **Note**: Work Sessions table lives in `tasks.md`, not `journal.md`. It is updated by `/afx-work` and `/afx-dev` commands, NOT by `/afx-session`.

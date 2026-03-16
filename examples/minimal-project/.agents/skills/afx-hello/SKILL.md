@@ -20,6 +20,20 @@ Use this skill when you need to:
 - Check which provider you're running as — _"Hello AFX"_
 - Get a quick project health snapshot — _"Vibe check"_
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Detect AI provider, check skill availability, show project health
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+---
+
 ## Instructions
 
 When activated, perform these steps:

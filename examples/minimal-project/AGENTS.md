@@ -3,7 +3,7 @@
 Project instructions for Codex and compatible coding agents.
 
 <!-- AFX-CODEX:START - Managed by AFX. Do not edit manually. -->
-<!-- AFX Version: Unknown -->
+<!-- AFX Version: 2.1.0 -->
 
 
 ## AgenticFlowX - AI Commands

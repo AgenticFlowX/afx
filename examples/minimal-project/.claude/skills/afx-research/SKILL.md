@@ -14,14 +14,14 @@ Research workflow for AgenticFlowX with prompt-first intent routing.
 
 ## Configuration
 
-**Read `.afx.yaml`** at project root to resolve paths:
+**Read config** using two-tier resolution: `.afx/.afx.yaml` (managed defaults) + `.afx.yaml` (user overrides).
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
 - `paths.adr` - Where global ADR files live (default: `docs/adr`)
 - `library.research` - Global research library path (default: `docs/research`)
 - `paths.research` - Legacy/optional override for research path (fallback only)
 
-If `.afx.yaml` doesn't exist, use defaults.
+If neither file exists, use defaults.
 
 ## Usage
 
@@ -52,7 +52,7 @@ Run discovery and analysis work **without coding**. This command is for research
 
 ### Forbidden
 
-- Create/modify/delete source code under `src/**`, `apps/**`, `packages/**`
+- Create/modify/delete source code in application directories
 - Delete any files or folder
 - Run build/test/deploy/migration commands
 - Modify runtime config used by application execution
@@ -62,6 +62,12 @@ If user asks for implementation, respond with:
 ```text
 Out of scope for /afx-research (research-only mode). Use /afx-dev code after a spec/ADR decision is finalized.
 ```
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-research`**: Research finding that invalidates assumption, technology limitation discovered.
 
 ---
 
@@ -123,15 +129,16 @@ For save operations:
 | After `finalize --to spec`       | `/afx-spec review <feature>`                   |
 | If decisions ready for build     | `/afx-work plan <feature-or-instruction>`      |
 
-Suggestion format:
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```text
 Next (ranked):
-  1. /afx-research compare <topic>
-  2. /afx-research summarize <topic>
-  3. /afx-research finalize <topic> --to adr
-  4. /afx-adr create "<title>"
-  5. /afx-session note "research follow-up"
+  1. /afx-research compare <topic>               # Context-driven: Deepen analysis
+  2. /afx-research summarize <topic>              # Context-driven: Synthesize findings
+  3. /afx-research finalize <topic> --to adr      # Context-driven: Promote to decision
+  ──
+  4. /afx-session note "research follow-up"       # Capture findings before switching
+  5. /afx-work status                             # Re-orient after research
 ```
 
 ---

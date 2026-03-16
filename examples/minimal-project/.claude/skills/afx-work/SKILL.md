@@ -34,6 +34,36 @@ If neither file exists, use defaults.
 /afx-work close [feature] <issue> "<summary>" # Close issue and update docs
 ```
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Modify `docs/specs/**/tasks.md` (Work Sessions table and task checkboxes only)
+- Run shell commands for GitHub sync (`gh` CLI)
+- Append to `docs/specs/**/journal.md` (Captures only, via Proactive Capture Protocol)
+
+### Forbidden
+
+- Create/modify/delete source code in application directories
+- Modify spec content (`spec.md`, `design.md`)
+- Delete any files
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for /afx-work (work orchestration mode). Use /afx-dev code to implement.
+```
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-work`**: Task blocked/deferred, scope change during planning, priority shift.
+
+---
+
 ## Agent Instructions
 
 ### Next Command Suggestion (MANDATORY)
@@ -53,16 +83,23 @@ If neither file exists, use defaults.
 | After `reopen` (task reopened)    | `/afx-dev code` to fix the issue                              |
 | After `close` (issue closed)      | `gh pr create` or `/afx-spec status <spec>`                   |
 
-**Suggestion Format** (5 ranked options, ideal → less ideal):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-dev code                              # Ideal: Continue implementation
-  2. /afx-check path <path>                     # Verify before moving on
-  3. /afx-task verify <task-id>                  # Verify task completion
-  4. /afx-session note "<note>"                 # Capture context if switching
-  5. /afx-work status                           # Re-orient if confused
+  1. /afx-dev code                               # Context-driven: Continue implementation
+  2. /afx-check path <path>                      # Context-driven: Verify before moving on
+  3. /afx-task verify <task-id>                   # Context-driven: Verify task completion
+  ──
+  4. /afx-session note "<note>"                   # Capture context if switching
+  5. /afx-work status                             # Re-orient after action
 ```
+
+---
+
+### Timestamp Format (MANDATORY)
+
+When creating or updating Work Sessions entries, task checkboxes, and metadata, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
 
 ---
 
@@ -229,7 +266,7 @@ Pick up the next available task(s) from a feature spec and generate agent assign
 3. **Update Work Log**:
    - Open `docs/specs/{feature}/tasks.md`
    - Append row to `## Work Sessions` table:
-     `| {date} | {task_id} | Started {task_title} | - | [ ] | [ ] |`
+     `| {YYYY-MM-DDTHH:MM:SS.mmmZ} | {task_id} | Started {task_title} | - | [ ] | [ ] |`
 
 ### Task Readiness
 
@@ -725,7 +762,7 @@ Marks the **human approval** stage complete. This is the final step in the two-s
 
 3. **Update Work Sessions table**:
    - Add new row with verification entry
-   - Format: `| {date} | {task} | VERIFIED | {note} | - | [x] | [x] |`
+   - Format: `| {YYYY-MM-DDTHH:MM:SS.mmmZ} | {task} | VERIFIED | {note} | - | [x] | [x] |`
 
 4. **Confirm tasks.md** (optional):
    - Verify task is marked `[x]` in `docs/specs/{feature}/tasks.md`
@@ -741,10 +778,12 @@ Marks the **human approval** stage complete. This is the final step in the two-s
 **Updated:** docs/specs/{feature}/tasks.md
 
 Next (ranked):
-
-1.  /afx-work pick docs/specs/{feature}/tasks.md # Pick up next task
-2.  /afx-session recap {feature} # Review progress
-3.  gh pr create # Create PR if ready
+  1. /afx-work pick docs/specs/{feature}/tasks.md  # Context-driven: Pick up next task
+  2. gh pr create                                   # Context-driven: Create PR if ready
+  3. /afx-session recap {feature}                   # Context-driven: Review progress
+  ──
+  4. /afx-work status                               # Re-orient after completion
+  5. /afx-session note "<note>"                      # Capture context
 ```
 
 ### Work Sessions Update
@@ -827,7 +866,7 @@ When human verification finds issues that need fixing:
    - Change `[x]` back to `[ ]`
 
 3. **Update Work Sessions table**:
-   - Add new row: `| {date} | {task} | REOPENED | {reason} | - | [ ] | [ ] |`
+   - Add new row: `| {YYYY-MM-DDTHH:MM:SS.mmmZ} | {task} | REOPENED | {reason} | - | [ ] | [ ] |`
 
 ### Output Format
 
@@ -841,10 +880,12 @@ Task {task} reopened
 - docs/specs/{feature}/tasks.md (unchecked + Work Sessions updated)
 
 Next (ranked):
-
-1.  /afx-dev code # Fix the issue
-2.  /afx-session note "<note>" # Capture details
-3.  /afx-work status # Check current state
+  1. /afx-dev code                               # Context-driven: Fix the issue
+  2. /afx-dev debug                              # Context-driven: Investigate root cause
+  3. /afx-session note "<note>"                   # Context-driven: Capture details
+  ──
+  4. /afx-work status                            # Re-orient after reopen
+  5. /afx-check path <path>                      # Verify after fix
 ```
 
 ### Work Sessions Update
@@ -972,7 +1013,7 @@ gh issue view {issue-number} --json body,comments
 Add final closure entry to Work Sessions:
 
 ```markdown
-| {date} | - | CLOSED #{issue} | {summary} | [x] | [x] |
+| {YYYY-MM-DDTHH:MM:SS.mmmZ} | - | CLOSED #{issue} | {summary} | [x] | [x] |
 ```
 
 **Update `tasks.md` checkboxes (required):**
@@ -1020,10 +1061,12 @@ Issue #{issue-number} closed
 - **Local → GitHub:** Completion summary posted
 
 Next (ranked):
-
-1.  `gh pr create` # Create PR for this work
-2.  `/afx-work pick docs/specs/{feature}` # Continue with next phase
-3.  `/afx-session recap {feature}` # Review completed work
+  1. gh pr create                                # Context-driven: Create PR for this work
+  2. /afx-work pick docs/specs/{feature}          # Context-driven: Continue with next phase
+  3. /afx-session recap {feature}                  # Context-driven: Review completed work
+  ──
+  4. /afx-work status                             # Re-orient after close
+  5. /afx-session note "<note>"                    # Capture context
 ```
 
 ### Pre-Close Checklist (Auto-Verified)
@@ -1110,7 +1153,7 @@ gh pr create        → Creates PR for the work
 | ------------------ | -------------------------------------------------------------------------------- |
 | `/afx-spec`        | Spec-centric navigation and validation; work manages workflow state across specs |
 | `/afx-task`        | Verify specific tasks; work manages workflow state                               |
-| `/afx-check`       | Quality gates; work next blocks until verified                                   |
+| `/afx-check`       | Quality gates; work pick blocks until verified                                   |
 | `/afx-session`     | Captures discussions; work reads session logs                                    |
 | `/afx-work complete` | Completes human verification stage                                               |
 | `/afx-work reopen` | Reopens task that failed verification                                            |

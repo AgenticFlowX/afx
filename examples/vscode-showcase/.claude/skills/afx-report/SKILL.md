@@ -32,6 +32,26 @@ If neither file exists, use defaults.
 
 > **Note:** Overall health metrics and spec completeness scores are available in the VSCode AFX extension (Pipeline Tab). These subcommands focus on discovery operations that require codebase scanning.
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Generate traceability reports, coverage maps, orphan lists
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If fixes are requested, respond with:
+
+```text
+Out of scope for /afx-report (read-only reporting mode). Use /afx-dev code to fix orphans or /afx-check trace to audit.
+```
+
+---
+
 ## Agent Instructions
 
 ### Next Command Suggestion (MANDATORY)
@@ -103,10 +123,12 @@ For each orphan, add @see reference:
 ```
 
 Next (ranked):
-
-1. /afx-check trace notification.service.ts:1 # Fix first orphan
-2. /afx-dev code # Add @see links
-3. /afx-report health # Re-check after fixes
+  1. /afx-check trace notification.service.ts:1  # Context-driven: Fix first orphan
+  2. /afx-dev code                               # Context-driven: Add @see links
+  3. /afx-report health                          # Context-driven: Re-check after fixes
+  ──
+  4. /afx-work status                            # Re-orient after report
+  5. /afx-session note "<note>"                   # Capture findings
 ````
 
 ---
@@ -181,10 +203,12 @@ done
    - Task: Phase 2 (deferred)
 
 Next (ranked):
-
-1. /afx-work pick docs/specs/user-auth # Implement uncovered
-2. /afx-task list 7 # See Phase 7 tasks
-3. /afx-dev code # Start implementation
+  1. /afx-work pick docs/specs/user-auth         # Context-driven: Implement uncovered
+  2. /afx-task list 7                             # Context-driven: See Phase 7 tasks
+  3. /afx-dev code                               # Context-driven: Start implementation
+  ──
+  4. /afx-work status                            # Re-orient after report
+  5. /afx-session note "<note>"                   # Capture findings
 ```
 
 ---
@@ -238,10 +262,12 @@ find docs/specs -name "*.md" -mtime +$DAYS -print0 | xargs -0 ls -lt | awk '{pri
 | agenticflow | 2025-12-16  | 0    |
 
 Next (ranked):
-
-1. /afx-check links users-permissions # Verify stale spec
-2. /afx-session recap users-permissions # Review discussions
-3. /afx-work status # Check overall state
+  1. /afx-check links users-permissions          # Context-driven: Verify stale spec
+  2. /afx-session recap users-permissions         # Context-driven: Review discussions
+  3. /afx-spec review users-permissions           # Context-driven: Check spec quality
+  ──
+  4. /afx-work status                            # Re-orient after report
+  5. /afx-session note "<note>"                   # Capture findings
 ```
 
 ---

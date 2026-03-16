@@ -47,6 +47,33 @@ When task ID alone is provided (e.g., `7.1`), resolve spec in this order:
 
 ---
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Analyze task completion status against spec requirements
+- Append to `docs/specs/**/journal.md` (Captures only, via Proactive Capture Protocol)
+
+### Forbidden
+
+- Create/modify/delete any files (except journal captures above)
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for /afx-task (read-only verification mode). Use /afx-dev code to implement or /afx-work pick to assign.
+```
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-task`**: Spec-implementation mismatch that requires decision.
+
+---
+
 ## Agent Instructions
 
 ### Next Command Suggestion (MANDATORY)
@@ -60,15 +87,16 @@ When task ID alone is provided (e.g., `7.1`), resolve spec in this order:
 | After `verify` ([MISSING])             | `/afx-dev code` to implement                   |
 | After `brief` (understanding task)  | `/afx-dev code` or `/afx-work pick`            |
 
-**Suggestion Format** (5 ranked options, ideal → less ideal):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-work pick docs/specs/{feature}        # Ideal: Move to next task
-  2. /afx-dev code                              # Implement if task incomplete
-  3. /afx-check path <path>                     # Verify execution path
-  4. /afx-task verify {next-task-id}             # Verify another task
-  5. /afx-session note "<note>"              # Note findings before switching
+  1. /afx-dev code                               # Context-driven: Implement if task incomplete
+  2. /afx-work pick docs/specs/{feature}          # Context-driven: Move to next task
+  3. /afx-check path <path>                      # Context-driven: Verify execution path
+  ──
+  4. /afx-session note "<note>"                   # Note findings before switching
+  5. /afx-work status                             # Re-orient after verification
 ```
 
 ---

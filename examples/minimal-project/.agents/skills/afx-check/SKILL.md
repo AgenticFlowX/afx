@@ -30,6 +30,33 @@ If neither file exists, use defaults.
 /afx-check all <feature-path>    # Run all checks
 ```
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Trace execution paths, audit annotations, verify cross-references
+- Append to `docs/specs/**/journal.md` (Captures only, via Proactive Capture Protocol)
+
+### Forbidden
+
+- Create/modify/delete any files (except journal captures above)
+- Run build/test/deploy/migration commands
+
+If fixes are requested, respond with:
+
+```text
+Out of scope for /afx-check (read-only audit mode). Use /afx-dev code to fix issues found.
+```
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-check`**: Critical path failure, missing traceability that reveals design gap.
+
+---
+
 ## Agent Instructions
 
 ### Next Command Suggestion (MANDATORY)
@@ -47,15 +74,16 @@ If neither file exists, use defaults.
 | After `all` (READY FOR REVIEW) | `/afx-work pick <spec>` or create PR             |
 | After `all` (issues found)     | `/afx-dev code` to address issues                |
 
-**Suggestion Format** (5 ranked options, ideal → less ideal):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-work pick docs/specs/{feature}         # Ideal: Move to next task (if verified)
-  2. /afx-dev code                              # Fix gaps if verification failed
-  3. /afx-task verify <task-id>                 # Confirm task matches spec
-  4. /afx-check trace <path>                    # Check annotation compliance
-  5. /afx-session note "<note>"                 # Note issues before switching
+  1. /afx-dev code                               # Context-driven: Fix gaps if verification failed
+  2. /afx-work pick docs/specs/{feature}          # Context-driven: Move to next task (if verified)
+  3. /afx-task verify <task-id>                   # Context-driven: Confirm task matches spec
+  ──
+  4. /afx-session note "<note>"                   # Note issues before switching
+  5. /afx-work status                             # Re-orient after check
 ```
 
 ---
@@ -774,6 +802,6 @@ Next: /afx-dev code   # Address the issues first
 
 | Command        | Relationship                                          |
 | -------------- | ----------------------------------------------------- |
-| `/afx-work`    | Work next blocks until path check passes              |
+| `/afx-work`    | Work pick blocks until path check passes              |
 | `/afx-task`    | Task audit checks spec alignment; check verifies code |
 | `/afx-session` | No direct integration                                 |

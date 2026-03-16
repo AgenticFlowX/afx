@@ -63,7 +63,7 @@ Provides a spec-centric interface for managing specifications throughout their l
 
 ### Forbidden
 
-- Create/modify/delete source code under `src/**`, `apps/**`, `packages/**`, `inf/**`
+- Create/modify/delete source code in application directories
 - Create/modify/delete folders (spec folders are scaffolded by `/afx-init`)
 - Delete any spec files
 - Run build/test/deploy/migration commands
@@ -74,6 +74,18 @@ If implementation is requested, return:
 ```text
 Out of scope for /afx-spec (specification-management mode). Use /afx-dev code after spec approval.
 ```
+
+---
+
+### Timestamp Format (MANDATORY)
+
+When creating or updating frontmatter (`last_verified`, `approved_at`, `signed_at`, `created`), all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-spec`**: Requirement deferred during review, spec gap identified, approval with conditions.
 
 ---
 
@@ -183,15 +195,16 @@ Do not auto-write spec files. Before persisting any changes to `spec.md`, `desig
 | After `approve` (design.md)         | `/afx-spec tasks <name>` to author tasks.md                  |
 | After `approve --reviewer`          | `/afx-work plan <name>` to generate implementation tasks     |
 
-**Suggestion Format** (5 ranked options, ideal → less ideal):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-spec discuss docs/specs/{feature}    # Ideal: Iterate on spec
-  2. /afx-spec review {feature}                # Review quality
-  3. /afx-spec approve {feature}               # Approve if ready
-  4. /afx-work pick {feature}                  # Start implementation
-  5. /afx-session log "<note>"                # Capture findings
+  1. /afx-spec discuss docs/specs/{feature}      # Context-driven: Iterate on spec
+  2. /afx-spec review {feature}                  # Context-driven: Review quality
+  3. /afx-spec approve {feature}                 # Context-driven: Approve if ready
+  ──
+  4. /afx-work pick {feature}                    # Start implementation
+  5. /afx-session note "<note>"                   # Capture findings
 ```
 
 ---
