@@ -1522,7 +1522,7 @@ step_docs() {
     local dir="$TARGET_DIR/docs/agenticflowx"
     [[ "$DRY_RUN" != "true" ]] && mkdir -p "$dir"
 
-    for doc in "agenticflowx.md" "guide.md" "cheatsheet.md" "multi-agent.md"; do
+    for doc in "agenticflowx.md" "agenticflowx-llm.md" "guide.md" "cheatsheet.md" "multi-agent.md" "packs-and-skills.md" "vscode-extension.md"; do
         if [ -f "$AFX_DIR/docs/agenticflowx/$doc" ]; then
             install_file "$AFX_DIR/docs/agenticflowx/$doc" "$dir/$doc" "AFX Doc: $doc" "$UPDATE_MODE"
         fi
