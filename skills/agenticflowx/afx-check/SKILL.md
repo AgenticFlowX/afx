@@ -802,6 +802,6 @@ Next: /afx-dev code   # Address the issues first
 
 | Command        | Relationship                                          |
 | -------------- | ----------------------------------------------------- |
-| `/afx-work`    | Work next blocks until path check passes              |
+| `/afx-work`    | Work pick blocks until path check passes              |
 | `/afx-task`    | Task audit checks spec alignment; check verifies code |
 | `/afx-session` | No direct integration                                 |

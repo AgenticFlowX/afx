@@ -1153,7 +1153,7 @@ gh pr create        → Creates PR for the work
 | ------------------ | -------------------------------------------------------------------------------- |
 | `/afx-spec`        | Spec-centric navigation and validation; work manages workflow state across specs |
 | `/afx-task`        | Verify specific tasks; work manages workflow state                               |
-| `/afx-check`       | Quality gates; work next blocks until verified                                   |
+| `/afx-check`       | Quality gates; work pick blocks until verified                                   |
 | `/afx-session`     | Captures discussions; work reads session logs                                    |
 | `/afx-work complete` | Completes human verification stage                                               |
 | `/afx-work reopen` | Reopens task that failed verification                                            |
