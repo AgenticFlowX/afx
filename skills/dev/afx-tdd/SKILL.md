@@ -22,6 +22,28 @@ Use this skill when you need to:
 - Apply test-driven development — _"Help me do TDD"_
 - Write code that currently has no tests — _"What should I test first?"_
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Create/modify test files and source code in application directories
+- Run test commands
+
+### Forbidden
+
+- Modify spec files (`spec.md`, `design.md`, `tasks.md`, `journal.md`)
+- Modify `.afx.yaml` or `.afx/` configuration
+- Run deploy/migration commands
+
+If spec changes are requested, respond with:
+
+```text
+Out of scope for afx-tdd (test-driven development mode). Use /afx-spec to modify specifications.
+```
+
+---
+
 ## The Iron Law
 
 ```

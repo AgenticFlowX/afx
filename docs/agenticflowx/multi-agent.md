@@ -13,8 +13,8 @@ AFX supports multiple AI agents through platform-specific command implementation
 
 | Agent                             | Command Format             | Provider Target        |
 | --------------------------------- | -------------------------- | ---------------------- |
-| **Claude + Codex + Antigravity**  | `/afx-work next user-auth` | `.agents/skills/afx-*` |
-| **GitHub Copilot**                | `afx-work next user-auth`  | `.github/agents/afx-*` |
+| **Claude + Codex + Antigravity**  | `/afx-work pick user-auth` | `.agents/skills/afx-*` |
+| **GitHub Copilot**                | `afx-work pick user-auth`  | `.github/agents/afx-*` |
 
 ## Parity Map
 

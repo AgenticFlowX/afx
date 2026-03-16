@@ -66,7 +66,7 @@ prefixes:
 # ─────────────────────────────────────────────────────────────────────────────
 quality_gates:
   require_path_check: true               # Must run /afx-check path before closing
-  require_human_approval: true           # Must run /afx-work approve before closing
+  require_human_approval: true           # Must run /afx-work complete before closing
   block_on_mock_code: true               # Block PRs with setTimeout, // Mock patterns
 
 # ─────────────────────────────────────────────────────────────────────────────

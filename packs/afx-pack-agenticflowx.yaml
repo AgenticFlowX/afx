@@ -24,4 +24,5 @@ includes:
       - afx-init        # Feature scaffolding and ADR creation
       - afx-context     # Session context transfer between agents
       - afx-update      # Framework update check and apply
+      - afx-research    # Research workflow and promotion pipeline
       - afx-help        # Command reference and workflow guides

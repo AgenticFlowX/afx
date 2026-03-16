@@ -1,6 +1,6 @@
 ---
 name: afx-work
-description: Work orchestration — check status, pick next tasks, resume work, sync with GitHub, generate plans, and approve completed tasks
+description: Work orchestration — check status, pick tasks, resume work, sync with GitHub, generate plans, and complete verified tasks
 license: MIT
 metadata:
   afx-owner: "@rix"
@@ -25,14 +25,44 @@ If neither file exists, use defaults.
 
 ```bash
 /afx-work status              # Quick state check
-/afx-work next <spec-path>    # Pick next task from spec
+/afx-work pick <spec-path>    # Pick next task from spec
 /afx-work resume [spec|num]   # Continue in-progress work
 /afx-work sync [spec] [issue] # Bidirectional GitHub sync
 /afx-work plan [instruction]  # Generate tickets from specs
-/afx-work approve [feature] <task> "<note>"  # Human approval complete
+/afx-work complete [feature] <task> "<note>"  # Human approval complete
 /afx-work reopen [feature] <task> "<reason>" # Reopen task for fixes
 /afx-work close [feature] <issue> "<summary>" # Close issue and update docs
 ```
+
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Modify `docs/specs/**/tasks.md` (Work Sessions table and task checkboxes only)
+- Run shell commands for GitHub sync (`gh` CLI)
+- Append to `docs/specs/**/journal.md` (Captures only, via Proactive Capture Protocol)
+
+### Forbidden
+
+- Create/modify/delete source code in application directories
+- Modify spec content (`spec.md`, `design.md`)
+- Delete any files
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for /afx-work (work orchestration mode). Use /afx-dev code to implement.
+```
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-work`**: Task blocked/deferred, scope change during planning, priority shift.
+
+---
 
 ## Agent Instructions
 
@@ -43,26 +73,33 @@ If neither file exists, use defaults.
 | Context                           | Suggested Next Command                                        |
 | --------------------------------- | ------------------------------------------------------------- |
 | After `status` (has pending work) | `/afx-work resume` or `/afx-dev code`                         |
-| After `status` (no active work)   | `/afx-spec list` or `/afx-work next <spec>` to start new task |
-| After `next` (task assigned)      | `/afx-dev code` to implement                                  |
-| After `next` (blocked by verify)  | `/afx-check path <path>` to unblock                           |
+| After `status` (no active work)   | `/afx-spec list` or `/afx-work pick <spec>` to start new task |
+| After `pick` (task assigned)      | `/afx-dev code` to implement                                  |
+| After `pick` (blocked by verify)  | `/afx-check path <path>` to unblock                           |
 | After `resume` (context restored) | `/afx-dev code` to continue implementation                    |
-| After `sync` (synced)             | `/afx-work next <spec>` or `/afx-dev code`                    |
+| After `sync` (synced)             | `/afx-work pick <spec>` or `/afx-dev code`                    |
 | After `plan` (tickets generated)  | `/afx-spec validate <spec>` then create GitHub issues         |
-| After `approve` (task approved)   | `/afx-work next <spec>` to continue                           |
+| After `complete` (task completed) | `/afx-work pick <spec>` to continue                           |
 | After `reopen` (task reopened)    | `/afx-dev code` to fix the issue                              |
 | After `close` (issue closed)      | `gh pr create` or `/afx-spec status <spec>`                   |
 
-**Suggestion Format** (5 ranked options, ideal → less ideal):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-dev code                              # Ideal: Continue implementation
-  2. /afx-check path <path>                     # Verify before moving on
-  3. /afx-task audit <task-id>                  # Audit task completion
-  4. /afx-session capture "<note>"              # Capture context if switching
-  5. /afx-work status                           # Re-orient if confused
+  1. /afx-dev code                               # Context-driven: Continue implementation
+  2. /afx-check path <path>                      # Context-driven: Verify before moving on
+  3. /afx-task verify <task-id>                   # Context-driven: Verify task completion
+  ──
+  4. /afx-session note "<note>"                   # Capture context if switching
+  5. /afx-work status                             # Re-orient after action
 ```
+
+---
+
+### Timestamp Format (MANDATORY)
+
+When creating or updating Work Sessions entries, task checkboxes, and metadata, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
 
 ---
 
@@ -174,9 +211,9 @@ No active AgenticFlowX issues.
 
 To start new work:
 1. Check docs/specs/ for available features
-2. Run `/afx-work next <spec-path>` to pick next task
+2. Run `/afx-work pick <spec-path>` to pick next task
 
-Next: /afx-work next docs/specs/{feature}
+Next: /afx-work pick docs/specs/{feature}
 ```
 
 **Multiple open issues:**
@@ -193,7 +230,7 @@ Next: /afx-work resume {spec-name}   # Pick one spec to continue
 
 ---
 
-## 2. next
+## 2. pick
 
 Pick up the next available task(s) from a feature spec and generate agent assignment briefs.
 
@@ -205,9 +242,9 @@ Pick up the next available task(s) from a feature spec and generate agent assign
 ### Usage
 
 ```bash
-/afx-work next
-/afx-work next user-auth
-/afx-work next docs/specs/user-auth
+/afx-work pick
+/afx-work pick user-auth
+/afx-work pick docs/specs/user-auth
 ```
 
 ### Context
@@ -229,7 +266,7 @@ Pick up the next available task(s) from a feature spec and generate agent assign
 3. **Update Work Log**:
    - Open `docs/specs/{feature}/tasks.md`
    - Append row to `## Work Sessions` table:
-     `| {date} | {task_id} | Started {task_title} | - | [ ] | [ ] |`
+     `| {YYYY-MM-DDTHH:MM:SS.mmmZ} | {task_id} | Started {task_title} | - | [ ] | [ ] |`
 
 ### Task Readiness
 
@@ -328,7 +365,7 @@ Cannot assign Task 2.2 until verification passes.
 - [ ] `npx tsc --noEmit`
 - [ ] `npx nx build {app}`
 - [ ] `npx nx test {package}`
-- [ ] `/afx-task audit {task}` - Spec compliance
+- [ ] `/afx-task verify {task}` - Spec compliance
 
 ### On Every Subtask Completion
 
@@ -381,7 +418,7 @@ Next: /afx-check path {feature-path}   # Verify before next task
 
 ```
 Error: Spec path required
-Usage: /afx-work next docs/specs/user-auth
+Usage: /afx-work pick docs/specs/user-auth
 ```
 
 **No tasks ready:**
@@ -415,7 +452,7 @@ Continue work on an in-progress spec after interruption.
 
 ### Purpose
 
-Unlike `/afx-work next` which finds the next ready task, `/afx-work resume` continues an **existing in-progress task** after interruption (break, context loss, new session).
+Unlike `/afx-work pick` which finds the next ready task, `/afx-work resume` continues an **existing in-progress task** after interruption (break, context loss, new session).
 
 ### Workflow
 
@@ -532,14 +569,14 @@ Available specs: user-auth, users-permissions
 No in-progress sessions found.
 All specs are either complete or not started.
 
-Next: /afx-work next docs/specs/{feature}   # Start a new task
+Next: /afx-work pick docs/specs/{feature}   # Start a new task
 ```
 
 ### Comparison
 
 | Command            | Use Case                       | Input            |
 | ------------------ | ------------------------------ | ---------------- |
-| `/afx-work next`   | Find next ready task from spec | Spec path        |
+| `/afx-work pick`   | Find next ready task from spec | Spec path        |
 | `/afx-work resume` | List all in-progress sessions  | (none)           |
 | `/afx-work resume` | Continue specific spec         | Spec name/number |
 | `/afx-work status` | Quick "where was I?" check     | (none)           |
@@ -587,7 +624,7 @@ Ensure **Session Continuity** by syncing:
 ```markdown
 Synced 3 session entries from Issue #123 to tasks.md
 
-Next: /afx-work next docs/specs/{feature} # Continue with next task
+Next: /afx-work pick docs/specs/{feature} # Continue with next task
 ```
 
 ---
@@ -664,25 +701,25 @@ Next: gh issue create --title "{title}" --body "{body}"   # Create ticket
 Or if tasks.md updated:
 
 ```
-Next: /afx-work next docs/specs/{feature}   # Pick up next task
+Next: /afx-work pick docs/specs/{feature}   # Pick up next task
 ```
 
 ---
 
-## 6. approve
+## 6. complete
 
 Complete the human approval stage of a task after functional testing and code review.
 
 ### Usage
 
 ```bash
-/afx-work approve [feature] <task> "<note>"
+/afx-work complete [feature] <task> "<note>"
 ```
 
 Examples:
 
-- `/afx-work approve 7.4 "Tested supplier filter, all 5 suppliers work"`
-- `/afx-work approve user-auth 7.4 "Code reviewed, filter works"`
+- `/afx-work complete 7.4 "Tested supplier filter, all 5 suppliers work"`
+- `/afx-work complete user-auth 7.4 "Code reviewed, filter works"`
 
 ### Context
 
@@ -695,7 +732,7 @@ Examples:
 Marks the **human approval** stage complete. This is the final step in the two-stage verification process:
 
 1. **Agent** completes implementation → marks Agent `[x]`
-2. **Human** tests + reviews code → runs `/afx-work approve` → marks Human `[x]`
+2. **Human** tests + reviews code → runs `/afx-work complete` → marks Human `[x]`
 3. **Documentation Audit**: Ensure any history, failed attempts, or architectural decisions from this task are logged in `journal.md`, and that `design.md` reflects only the final clean state.
 
 ### Flexible Verification (Override)
@@ -707,7 +744,7 @@ Marks the **human approval** stage complete. This is the final step in the two-s
 
 1. **Always Suggest Tests**: "Tests are missing. Should we generate them? `/afx-dev test`"
 2. **Accept Override**: If user explicitly says "Legacy code, skip tests", proceed with approval but **Log the Override** in the note.
-   - Example: `/afx-work approve 7.4 "Manual verify only (Legacy UI). Filter works."`
+   - Example: `/afx-work complete 7.4 "Manual verify only (Legacy UI). Filter works."`
 
 ### Actions
 
@@ -725,7 +762,7 @@ Marks the **human approval** stage complete. This is the final step in the two-s
 
 3. **Update Work Sessions table**:
    - Add new row with verification entry
-   - Format: `| {date} | {task} | VERIFIED | {note} | - | [x] | [x] |`
+   - Format: `| {YYYY-MM-DDTHH:MM:SS.mmmZ} | {task} | VERIFIED | {note} | - | [x] | [x] |`
 
 4. **Confirm tasks.md** (optional):
    - Verify task is marked `[x]` in `docs/specs/{feature}/tasks.md`
@@ -741,10 +778,12 @@ Marks the **human approval** stage complete. This is the final step in the two-s
 **Updated:** docs/specs/{feature}/tasks.md
 
 Next (ranked):
-
-1.  /afx-work next docs/specs/{feature}/tasks.md # Pick up next task
-2.  /afx-session recap {feature} # Review progress
-3.  gh pr create # Create PR if ready
+  1. /afx-work pick docs/specs/{feature}/tasks.md  # Context-driven: Pick up next task
+  2. gh pr create                                   # Context-driven: Create PR if ready
+  3. /afx-session recap {feature}                   # Context-driven: Review progress
+  ──
+  4. /afx-work status                               # Re-orient after completion
+  5. /afx-session note "<note>"                      # Capture context
 ```
 
 ### Work Sessions Update
@@ -770,21 +809,21 @@ After:
 
 ```
 Error: Task number required
-Usage: /afx-work approve 7.4 "approval note"
+Usage: /afx-work complete 7.4 "approval note"
 ```
 
 **Missing note:**
 
 ```
 Error: Verification note required
-Usage: /afx-work approve 7.4 "what you tested"
+Usage: /afx-work complete 7.4 "what you tested"
 ```
 
 **Feature not found:**
 
 ```
 Error: Cannot detect feature from branch 'main'
-Specify feature: /afx-work approve user-auth 7.4 "note"
+Specify feature: /afx-work complete user-auth 7.4 "note"
 ```
 
 ---
@@ -827,7 +866,7 @@ When human verification finds issues that need fixing:
    - Change `[x]` back to `[ ]`
 
 3. **Update Work Sessions table**:
-   - Add new row: `| {date} | {task} | REOPENED | {reason} | - | [ ] | [ ] |`
+   - Add new row: `| {YYYY-MM-DDTHH:MM:SS.mmmZ} | {task} | REOPENED | {reason} | - | [ ] | [ ] |`
 
 ### Output Format
 
@@ -841,10 +880,12 @@ Task {task} reopened
 - docs/specs/{feature}/tasks.md (unchecked + Work Sessions updated)
 
 Next (ranked):
-
-1.  /afx-dev code # Fix the issue
-2.  /afx-session capture "<note>" # Capture details
-3.  /afx-work status # Check current state
+  1. /afx-dev code                               # Context-driven: Fix the issue
+  2. /afx-dev debug                              # Context-driven: Investigate root cause
+  3. /afx-session note "<note>"                   # Context-driven: Capture details
+  ──
+  4. /afx-work status                            # Re-orient after reopen
+  5. /afx-check path <path>                      # Verify after fix
 ```
 
 ### Work Sessions Update
@@ -935,13 +976,13 @@ Continue anyway? (issue will be closed)
 Read `docs/specs/{feature}/tasks.md` Work Sessions table:
 
 - Check last entry has Human = `[x]`
-- If Human = `[ ]`, **BLOCK** and require `/afx-work approve` first
+- If Human = `[ ]`, **BLOCK** and require `/afx-work complete` first
 
 ```
 BLOCKED: Human verification pending
 
 Last entry shows Human = [ ]
-Run: /afx-work verify {task} "verification note"
+Run: /afx-work complete {task} "verification note"
 
 Cannot close issue until human verification complete.
 ```
@@ -972,7 +1013,7 @@ gh issue view {issue-number} --json body,comments
 Add final closure entry to Work Sessions:
 
 ```markdown
-| {date} | - | CLOSED #{issue} | {summary} | [x] | [x] |
+| {YYYY-MM-DDTHH:MM:SS.mmmZ} | - | CLOSED #{issue} | {summary} | [x] | [x] |
 ```
 
 **Update `tasks.md` checkboxes (required):**
@@ -1020,10 +1061,12 @@ Issue #{issue-number} closed
 - **Local → GitHub:** Completion summary posted
 
 Next (ranked):
-
-1.  `gh pr create` # Create PR for this work
-2.  `/afx-work next docs/specs/{feature}` # Continue with next phase
-3.  `/afx-session recap {feature}` # Review completed work
+  1. gh pr create                                # Context-driven: Create PR for this work
+  2. /afx-work pick docs/specs/{feature}          # Context-driven: Continue with next phase
+  3. /afx-session recap {feature}                  # Context-driven: Review completed work
+  ──
+  4. /afx-work status                             # Re-orient after close
+  5. /afx-session note "<note>"                    # Capture context
 ```
 
 ### Pre-Close Checklist (Auto-Verified)
@@ -1066,7 +1109,7 @@ To reopen: gh issue reopen 51
 BLOCKED: Human verification incomplete
 
 Task 7.4 has Agent [x] but Human [ ]
-Run: /afx-work verify 7.4 "verification note"
+Run: /afx-work complete 7.4 "verification note"
 
 Cannot close until human verification complete.
 ```
@@ -1091,11 +1134,11 @@ The `close` command ensures consistency between GitHub and local files:
 ### Workflow Integration
 
 ```
-/afx-work next      → Assigns task, creates session entry
+/afx-work pick      → Assigns task, creates session entry
      ↓
 /afx-dev code       → Implements, updates session-log
      ↓
-/afx-work verify    → Human confirms, marks Human [x]
+/afx-work complete    → Human confirms, marks Human [x]
      ↓
 /afx-work close     → Syncs, updates docs, closes issue  ← YOU ARE HERE
      ↓
@@ -1112,6 +1155,6 @@ gh pr create        → Creates PR for the work
 | `/afx-task`        | Verify specific tasks; work manages workflow state                               |
 | `/afx-check`       | Quality gates; work next blocks until verified                                   |
 | `/afx-session`     | Captures discussions; work reads session logs                                    |
-| `/afx-work verify` | Completes human verification stage                                               |
+| `/afx-work complete` | Completes human verification stage                                               |
 | `/afx-work reopen` | Reopens task that failed verification                                            |
 | `/afx-work close`  | Closes issue with bidirectional sync                                             |

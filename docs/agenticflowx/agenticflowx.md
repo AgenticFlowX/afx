@@ -145,22 +145,22 @@ journey
 | Step             | Command                  | What It Does                                             |
 | :--------------- | :----------------------- | :------------------------------------------------------- |
 | **1. Status**    | `/afx-work status`       | Check current state: What's in progress? What's blocked? |
-| **2. Assign**    | `/afx-work next <spec>`  | Get the next unassigned task from the spec               |
+| **2. Assign**    | `/afx-work pick <spec>`  | Get the next unassigned task from the spec               |
 | **3. Implement** | `/afx-dev code`          | Write the code with `@see` backlinks                     |
 | **4. Verify**    | `/afx-check path <path>` | Trace execution from UI to DB (no mocks allowed)         |
-| **5. Audit**     | `/afx-task audit <task>` | Confirm implementation matches spec requirements         |
-| **6. Log**       | `/afx-session save`      | Record what was done for the next session                |
+| **5. Audit**     | `/afx-task verify <task>` | Confirm implementation matches spec requirements         |
+| **6. Log**       | `/afx-session log`       | Record what was done for the next session                |
 
 ### Example: Implementing a Login Button
 
 | Step | Action                   | Result                                               |
 | :--- | :----------------------- | :--------------------------------------------------- |
-| 1    | `/afx-work next auth`    | Returns "Task 1.2: Create Login Button"              |
+| 1    | `/afx-work pick auth`    | Returns "Task 1.2: Create Login Button"              |
 | 2    | Implement button         | Create component with onClick handler                |
 | 3    | Add backlink             | `@see docs/specs/auth/design.md#ui-tokens`           |
 | 4    | `/afx-check path /login` | Verifies button → action → service → DB              |
-| 5    | `/afx-task audit 1.2`    | Confirms files match task definition                 |
-| 6    | `/afx-session save`      | Logs "Implemented login button with primary variant" |
+| 5    | `/afx-task verify 1.2`   | Confirms files match task definition                 |
+| 6    | `/afx-session log`       | Logs "Implemented login button with primary variant" |
 
 ---
 
@@ -225,7 +225,7 @@ flowchart TD
 Traces code execution through the stack (UI→DB) to prove the feature actually works. **Mocking is forbidden.** Without this, agents hallucinate completion.
 
 ### Gate 2: Annotation Compliance
-**Command**: `/afx-check lint`
+**Command**: `/afx-check trace`
 Verifies every function has valid `@see` annotations linking to specs. Finds orphaned code.
 
 ### Gate 3: Spec Integrity
@@ -233,7 +233,7 @@ Verifies every function has valid `@see` annotations linking to specs. Finds orp
 Validates internal cross-references between the 4 specification files.
 
 ### Gate 4: Requirements Alignment
-**Command**: `/afx-task audit`
+**Command**: `/afx-task verify`
 Compares implementation against task acceptance criteria.
 
 ---
@@ -256,7 +256,7 @@ sequenceDiagram
 ```
 
 ### The Journal (`journal.md`)
-Each feature has a journal for capturing discussions during development. Make sure your agent runs `/afx-session save` continuously.
+Each feature has a journal for capturing discussions during development. Make sure your agent runs `/afx-session log` continuously.
 
 ---
 
@@ -279,7 +279,7 @@ The AFX command suite. See `afx/skills.json` for full integrations.
 | Command                         | Purpose                              |
 | :------------------------------ | :----------------------------------- |
 | `/afx-work status`              | Quick state check after interruption |
-| `/afx-work next <spec-path>`    | Pick next task from spec             |
+| `/afx-work pick <spec-path>`    | Pick next task from spec             |
 | `/afx-work resume [spec/num]`   | Continue in-progress work            |
 | `/afx-work sync [spec] [issue]` | Bidirectional GitHub sync            |
 
@@ -288,9 +288,9 @@ The AFX command suite. See `afx/skills.json` for full integrations.
 | Command                       | Purpose                            |
 | :---------------------------- | :--------------------------------- |
 | `/afx-task verify <task-id>`  | Verify task implementation vs spec |
-| `/afx-task summary <task-id>` | Get implementation summary         |
+| `/afx-task brief <task-id>`   | Get implementation summary         |
 | `/afx-task list [phase]`      | List tasks by phase                |
-| `/afx-task audit <task>`      | Check spec alignment               |
+| `/afx-task verify <task>`     | Check spec alignment               |
 
 ---
 

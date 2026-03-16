@@ -46,11 +46,11 @@ STATUS → ASSIGN → IMPLEMENT → VERIFY → AUDIT → LOG
 ```
 
 1. `/afx-work status`
-2. `/afx-work next <spec>`
+2. `/afx-work pick <spec>`
 3. `/afx-dev code` — implement, add `@see` backlinks
 4. `/afx-check path <path>` — trace execution, NO mocks
-5. `/afx-task audit <task>`
-6. `/afx-session save "Summary of actions"`
+5. `/afx-task verify <task>`
+6. `/afx-session log "Summary of actions"`
 
 ---
 
@@ -129,7 +129,7 @@ export function login(credentials) { ... }
 
 You have no memory between sessions. When context ends, memory dies.
 
-- **MUST DO**: Run `/afx-session save "notes"` frequently. Logs decisions to `journal.md`.
+- **MUST DO**: Run `/afx-session log "notes"` frequently. Logs decisions to `journal.md`.
 - **MUST DO**: Run `/afx-context save` before the session ends.
 - **MUST DO**: Read `journal.md` before starting any work to recover the previous agent's decisions.
 

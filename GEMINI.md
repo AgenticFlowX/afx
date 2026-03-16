@@ -26,7 +26,7 @@ Since AFX is primarily a framework of documentation and instructions, there is n
 - **Development/Testing:**
   - To test changes to skills, install them to a test project via `./afx-cli` and verify they are discovered correctly.
 - **Validation:**
-  - AFX commands are self-validating through `/afx-check` subcommands (e.g., `/afx-check links`, `/afx-check lint`).
+  - AFX commands are self-validating through `/afx-check` subcommands (e.g., `/afx-check links`, `/afx-check trace`).
 
 ## Development Conventions
 

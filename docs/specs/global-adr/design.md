@@ -169,7 +169,7 @@ echo "ADR created: $FILE"
 Next (ranked):
 
 1. Edit docs/adr/ADR-NNNN-{slug}.md # Fill in context & decision
-2. /afx-session capture specs "ADR discussion" # Capture related discussion
+2. /afx-session note specs "ADR discussion" # Capture related discussion
 3. /afx-work status # Check project state
 ```
 

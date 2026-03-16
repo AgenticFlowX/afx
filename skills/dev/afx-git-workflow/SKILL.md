@@ -23,6 +23,28 @@ Use this skill when you need to:
 - Recover from git mistakes — _"How do I recover from this git mistake?"_
 - Manage complex branch workflows — _"Help me manage these branches"_
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Run git operations (rebase, cherry-pick, bisect, stash, reset)
+- Modify git history with user confirmation
+
+### Forbidden
+
+- Create/modify/delete source code in application directories
+- Run build/test/deploy/migration commands
+- Force-push without explicit user confirmation
+
+If code changes are requested, respond with:
+
+```text
+Out of scope for afx-git-workflow (git operations mode). Use /afx-dev code to modify source code.
+```
+
+---
+
 ## Interactive Rebase
 
 Clean up before merging — squash noise, reword unclear messages.

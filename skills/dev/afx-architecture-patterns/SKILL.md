@@ -22,6 +22,26 @@ Use this skill when you need to:
 - Design a new system or refactor an existing one — _"Should I use Clean Architecture or Hexagonal?"_
 - Document architecture decisions — _"Help me write an ADR"_
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Analyze architecture patterns, evaluate trade-offs, recommend approaches
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for afx-architecture-patterns (read-only guidance mode). Use /afx-dev code to implement.
+```
+
+---
+
 ## Pattern Selection
 
 | Pattern                          | Use When                                            | Avoid When                      |

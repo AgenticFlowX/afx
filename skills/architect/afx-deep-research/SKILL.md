@@ -1,5 +1,5 @@
 ---
-name: afx-research
+name: afx-deep-research
 description: Conduct deep evidence-based investigation — trace code execution paths, cite sources with confidence ratings, and produce structured research findings
 license: MIT
 metadata:
@@ -8,7 +8,7 @@ metadata:
   afx-tags: "research,investigation,evidence,analysis"
 ---
 
-# AFX Research
+# AFX Deep Research
 
 Deep, evidence-based investigation — no shallow summaries, no guesswork.
 
@@ -23,6 +23,26 @@ Use this skill when you need to:
 - Conduct technical research or competitive analysis — _"Deep dive into this codebase"_
 - Answer questions requiring depth beyond a surface answer — _"Research how this component integrates"_
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Trace code paths, analyze dependencies, inspect implementations
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for afx-deep-research (read-only investigation mode). Use /afx-dev code to implement findings.
+```
+
+---
+
 ## Core Rules (Non-Negotiable)
 
 1. **Trace actual code paths** — don't guess from file names
@@ -33,13 +53,13 @@ Use this skill when you need to:
 
 ## Evidence Standard
 
-| Claim | Required Evidence |
-|---|---|
-| "X calls Y" | File path + function name |
-| "Data flows through Z" | Entry point → transformations → destination |
-| "This is the entry point" | Where it's invoked (config, main, route) |
-| "These are coupled" | Import/dependency chain |
-| "This is dead code" | No call sites exist |
+| Claim                     | Required Evidence                           |
+| ------------------------- | ------------------------------------------- |
+| "X calls Y"               | File path + function name                   |
+| "Data flows through Z"    | Entry point → transformations → destination |
+| "This is the entry point" | Where it's invoked (config, main, route)    |
+| "These are coupled"       | Import/dependency chain                     |
+| "This is dead code"       | No call sites exist                         |
 
 ## Research Process (5 Iterations)
 
@@ -67,6 +87,7 @@ Use this skill when you need to:
 ## AFX Integration
 
 <!-- @afx:provider-commands -->
+
 - Use `/afx-session note` to capture research findings
 - Use `/afx-session promote <id>` to turn findings into ADRs
 <!-- @afx:/provider-commands -->
@@ -74,4 +95,5 @@ Use this skill when you need to:
 ## Output
 
 Always end your response with:
-> AFX skill: `afx-research`
+
+> AFX skill: `afx-deep-research`

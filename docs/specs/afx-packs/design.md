@@ -910,7 +910,7 @@ The canonical file uses HTML comment markers to delineate provider-specific comm
 <!-- @afx:provider-commands -->
 
 - Use `/afx-check path` to verify execution flow from UI to DB
-- Use `/afx-task audit` to verify test coverage against spec
+- Use `/afx-task verify` to verify test coverage against spec
 <!-- @afx:/provider-commands -->
 - Follow the spec → design → tasks → code traceability chain
 ```
@@ -1482,7 +1482,7 @@ This skill activates when the user asks about:
 ### AFX Integration
 
 - Use `/afx-check path` to verify execution flow from UI to DB
-- Use `/afx-task audit` to verify test coverage against spec
+- Use `/afx-task verify` to verify test coverage against spec
 - Follow the spec → design → tasks → code traceability chain
 ```
 

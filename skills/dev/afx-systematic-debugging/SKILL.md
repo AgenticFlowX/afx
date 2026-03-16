@@ -22,6 +22,26 @@ Use this skill when you need to:
 - Find root cause when a fix didn't work — _"My fix didn't work, what's the root cause?"_
 - Investigate unexpected behavior — _"Why isn't this working?"_
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Analyze errors, trace root causes, form and test hypotheses
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If a fix is requested, respond with:
+
+```text
+Out of scope for afx-systematic-debugging (read-only analysis mode). Use /afx-dev debug to apply fixes.
+```
+
+---
+
 ## The Iron Law
 
 ```

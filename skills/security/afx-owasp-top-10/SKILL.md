@@ -20,6 +20,26 @@ Use this skill when you need to:
 - Assess endpoint or API security — _"Is this endpoint secure?"_
 - Classify vulnerabilities by severity — _"Review for vulnerabilities"_
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Review code against OWASP Top 10, classify vulnerabilities, recommend mitigations
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If fixes are requested, respond with:
+
+```text
+Out of scope for afx-owasp-top-10 (read-only audit mode). Use /afx-dev code to apply fixes.
+```
+
+---
+
 ## Instructions
 
 ### OWASP Top 10 Checklist

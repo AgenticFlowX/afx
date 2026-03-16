@@ -14,7 +14,7 @@ Check for upstream AFX updates and apply them safely.
 
 ## Configuration
 
-Read config using two-tier resolution: `.afx/.afx.yaml` (managed defaults) + `.afx.yaml` (user overrides). Use defaults when neither exists:
+**Read config** using two-tier resolution: `.afx/.afx.yaml` (managed defaults) + `.afx.yaml` (user overrides). Use defaults when neither exists:
 
 - upstream repo: `rixrix/afx`
 - upstream ref: `main`
@@ -25,6 +25,27 @@ Read config using two-tier resolution: `.afx/.afx.yaml` (managed defaults) + `.a
 /afx-update check [--repo <owner/repo>] [--ref <branch>]
 /afx-update apply [--repo <owner/repo>] [--ref <branch>] [--skills-only] [--no-docs] [--no-claude-md] [--no-agents-md] [--with-gemini-md] [--dry-run] [--force] [--yes]
 ```
+
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read files to compare versions (check mode)
+- Run `afx-cli --update` to apply updates (requires user confirmation first)
+
+### Forbidden
+
+- Directly modify `.claude/skills/`, `.agents/skills/`, CLAUDE.md, AGENTS.md, GEMINI.md
+- All framework file changes MUST go through `afx-cli`
+- Run any commands other than `afx-cli --update` with user-approved flags
+
+If the user requests `/afx-update apply`, ALWAYS confirm before running:
+
+```text
+This will update AFX framework files via afx-cli. Proceed? (y/n)
+```
+
+---
 
 ## Agent Instructions
 
@@ -119,11 +140,12 @@ fi
 
 ```text
 Next (ranked):
-  1. /afx-update apply
-  2. /afx-update apply --dry-run
-  3. /afx-help
-  4. /afx-check links <spec-path>
-  5. /afx-next
+  1. /afx-update apply                           # Context-driven: Apply available updates
+  2. /afx-update apply --dry-run                  # Context-driven: Preview changes first
+  3. /afx-check links <spec-path>                 # Context-driven: Verify after update
+  ──
+  4. /afx-help                                    # See all options
+  5. /afx-work status                             # Re-orient after update
 ```
 
 ---
@@ -164,9 +186,10 @@ curl -fsSL "https://raw.githubusercontent.com/${REPO}/${REF}/afx-cli" \
 
 ```text
 Next (ranked):
-  1. /afx-update check
-  2. /afx-help
-  3. /afx-check links <spec-path>
-  4. /afx-next
-  5. /afx-session save "AFX updated"
+  1. /afx-update check                           # Context-driven: Verify update applied
+  2. /afx-check links <spec-path>                 # Context-driven: Verify after update
+  3. /afx-help                                    # Context-driven: Review new features
+  ──
+  4. /afx-work status                             # Re-orient after update
+  5. /afx-session note "AFX updated"               # Capture update details
 ```

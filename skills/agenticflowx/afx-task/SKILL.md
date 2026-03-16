@@ -1,11 +1,11 @@
 ---
 name: afx-task
-description: Task verification and auditing — audit implementation vs spec, show progress, list tasks by phase, and generate summaries
+description: Task verification — verify implementation vs spec and generate implementation briefs
 license: MIT
 metadata:
   afx-owner: "@rix"
   afx-status: Living
-  afx-tags: "workflow,task,verification,audit,progress"
+  afx-tags: "workflow,task,verification,verify,progress"
 ---
 
 # /afx-task
@@ -23,18 +23,18 @@ If neither file exists, use defaults.
 ## Usage
 
 ```bash
-/afx-task audit <task-id>              # Verify task implementation
-/afx-task audit <spec>#<task-id>       # Explicit spec (e.g., user-auth#7.1)
-/afx-task audit <task-id> <tasks.md>   # Explicit path to tasks.md
+/afx-task verify <task-id>              # Verify task implementation
+/afx-task verify <spec>#<task-id>       # Explicit spec (e.g., user-auth#7.1)
+/afx-task verify <task-id> <tasks.md>   # Explicit path to tasks.md
 
-/afx-task summary <task-id>             # Get implementation summary
-/afx-task list [phase]                  # List tasks (optionally filtered by phase)
-/afx-task progress                      # Show status across all phases
+/afx-task brief <task-id>             # Get implementation summary
 ```
+
+> **Note:** Task listing and phase progress are available in the VSCode AFX extension (Tasks Tab, Pipeline Tab). These subcommands focus on operations that require agent reasoning.
 
 ## Purpose
 
-Close the loop between "task marked done" and "task actually implemented correctly". Unlike `/afx-check path` (execution path) which verifies **runtime integrity**, this audits if a **specific task matches its spec** (static verification).
+Close the loop between "task marked done" and "task actually implemented correctly". Unlike `/afx-check path` (execution path) which verifies **runtime integrity**, this verifies if a **specific task matches its spec** (static verification).
 
 ## Context Resolution
 
@@ -43,7 +43,34 @@ When task ID alone is provided (e.g., `7.1`), resolve spec in this order:
 1. **Conversation context** - Recently discussed spec (file reads, GitHub issues, prior commands)
 2. **Branch name** - Extract from `feat/{feature-name}` pattern
 3. **Open GitHub issues** - If only one feature has open issues
-4. **Fallback** - Require explicit: `/afx-task audit user-auth#7.1`
+4. **Fallback** - Require explicit: `/afx-task verify user-auth#7.1`
+
+---
+
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Analyze task completion status against spec requirements
+- Append to `docs/specs/**/journal.md` (Captures only, via Proactive Capture Protocol)
+
+### Forbidden
+
+- Create/modify/delete any files (except journal captures above)
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for /afx-task (read-only verification mode). Use /afx-dev code to implement or /afx-work pick to assign.
+```
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-task`**: Spec-implementation mismatch that requires decision.
 
 ---
 
@@ -55,22 +82,21 @@ When task ID alone is provided (e.g., `7.1`), resolve spec in this order:
 
 | Context                               | Suggested Next Command                         |
 | ------------------------------------- | ---------------------------------------------- |
-| After `audit` ([OK] Implemented)      | `/afx-work next <spec>` for next task          |
-| After `audit` ([PARTIAL])             | `/afx-dev code` to complete implementation     |
-| After `audit` ([MISSING])             | `/afx-dev code` to implement                   |
-| After `summary` (understanding task)  | `/afx-dev code` or `/afx-work next`            |
-| After `list` (seeing tasks)           | `/afx-task audit <task-id>` or `/afx-dev code` |
-| After `progress` (reviewing progress) | `/afx-work next <spec>` for next pending task  |
+| After `verify` ([OK] Implemented)      | `/afx-work pick <spec>` for next task          |
+| After `verify` ([PARTIAL])             | `/afx-dev code` to complete implementation     |
+| After `verify` ([MISSING])             | `/afx-dev code` to implement                   |
+| After `brief` (understanding task)  | `/afx-dev code` or `/afx-work pick`            |
 
-**Suggestion Format** (5 ranked options, ideal → less ideal):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-work next docs/specs/{feature}        # Ideal: Move to next task
-  2. /afx-dev code                              # Implement if task incomplete
-  3. /afx-check path <path>                     # Verify execution path
-  4. /afx-task audit {next-task-id}             # Audit another task
-  5. /afx-session capture "<note>"              # Note findings before switching
+  1. /afx-dev code                               # Context-driven: Implement if task incomplete
+  2. /afx-work pick docs/specs/{feature}          # Context-driven: Move to next task
+  3. /afx-check path <path>                      # Context-driven: Verify execution path
+  ──
+  4. /afx-session note "<note>"                   # Note findings before switching
+  5. /afx-work status                             # Re-orient after verification
 ```
 
 ---
@@ -78,14 +104,14 @@ Next (ranked):
 ### 1. Parse Arguments
 
 ```bash
-/afx-task audit 7.1                    # Infer spec
-/afx-task audit user-auth#7.1    # Explicit spec#task
-/afx-task audit 7.1 docs/specs/user-auth/tasks.md  # Explicit path
+/afx-task verify 7.1                    # Infer spec
+/afx-task verify user-auth#7.1    # Explicit spec#task
+/afx-task verify 7.1 docs/specs/user-auth/tasks.md  # Explicit path
 ```
 
 Extract:
 
-- `subcommand`: audit | summary | list | progress
+- `subcommand`: verify | brief
 - `task_id`: e.g., "7.1"
 - `spec_name`: e.g., "user-auth" (optional)
 - `tasks_path`: e.g., "docs/specs/user-auth/tasks.md" (optional)
@@ -106,14 +132,14 @@ git branch --show-current
 gh issue list --state open --json title | grep -i "feature\|claims"
 
 # 4. If ambiguous, error:
-Error: Ambiguous spec. Use: /afx-task audit user-auth#7.1
+Error: Ambiguous spec. Use: /afx-task verify user-auth#7.1
 ```
 
 ---
 
-### 3. Audit Mode
+### 3. Verify Mode
 
-**Usage**: `/afx-task audit <task-id>`
+**Usage**: `/afx-task verify <task-id>`
 
 Steps:
 
@@ -145,7 +171,7 @@ Steps:
 4. **Output verification result**:
 
 ```markdown
-## Task 7.1 Audit
+## Task 7.1 Verify
 
 **Spec**: user-auth
 **Task**: Create supplier constants
@@ -176,14 +202,14 @@ Steps:
 
 [OK] **Task 7.1 is fully implemented**
 
-Next: /afx-work next docs/specs/{feature} # Proceed to next task
+Next: /afx-work pick docs/specs/{feature} # Proceed to next task
 ```
 
 ---
 
-### 4. Summary Mode
+### 4. Brief Mode
 
-**Usage**: `/afx-task summary <task-id>`
+**Usage**: `/afx-task brief <task-id>`
 
 Generate concise summary of what was built:
 
@@ -195,7 +221,7 @@ Generate concise summary of what was built:
 **Output**:
 
 ```markdown
-## Task 7.1 Summary
+## Task 7.1 Brief
 
 **Task**: Create supplier constants
 **Completed**: 2025-12-13
@@ -224,65 +250,6 @@ Next: /afx-dev code # Continue with related work
 
 ---
 
-### 5. List Mode
-
-**Usage**: `/afx-task list [phase]`
-
-List tasks from tasks.md:
-
-```markdown
-## Tasks - user-auth
-
-### Phase 7: Supplier Assignment
-
-| Task | Description                      | Status    |
-| ---- | -------------------------------- | --------- |
-| 7.1  | Create supplier constants        | [x]      |
-| 7.2  | Add supplier dropdown to Portal  | [x]      |
-| 7.3  | Add supplier assignment to Admin | [x]      |
-| 7.4  | Add supplier filter (optional)   | [PENDING] |
-
-### Phase 6: Testing
-
-| Task | Description           | Status    |
-| ---- | --------------------- | --------- |
-| 6.1  | Repository unit tests | [MISSING] |
-| 6.2  | Service unit tests    | [MISSING] |
-
-Next: /afx-task audit 7.1 # Audit a specific task
-```
-
----
-
-### 6. Progress Mode
-
-**Usage**: `/afx-task progress`
-
-Show overall task completion:
-
-```markdown
-## Task Progress - user-auth
-
-| Phase | Total | Done | Remaining |
-| ----- | ----- | ---- | --------- |
-| 0     | 4     | 4    | 0         |
-| 1     | 3     | 3    | 0         |
-| 2     | 4     | 4    | 0         |
-| 3     | 5     | 5    | 0         |
-| 4     | 4     | 4    | 0         |
-| 5     | 3     | 2    | 1         |
-| 6     | 5     | 0    | 5         |
-| 7     | 4     | 3    | 1         |
-
-**Overall**: 32/37 tasks (86%)
-
-**Next**: Phase 5.3 or Phase 6.1
-
-Next: /afx-work next docs/specs/{feature} # Pick up next pending task
-```
-
----
-
 ## Verification Status Definitions
 
 | Status            | Meaning                     | Criteria                                 |
@@ -297,7 +264,7 @@ Next: /afx-work next docs/specs/{feature} # Pick up next pending task
 
 | Command        | Relationship                                            |
 | -------------- | ------------------------------------------------------- |
-| `/afx-check`   | Checks execution path; `/afx-task` audits spec usage    |
+| `/afx-check`   | Checks execution path; `/afx-task` verifies spec usage    |
 | `/afx-work`    | Shows workflow state; `/afx-task` shows task completion |
 | `/afx-session` | Captures discussions; `/afx-task` reads session logs    |
 | `/afx-dev`     | Implements code; `/afx-task` validates implementation   |
@@ -310,36 +277,22 @@ Next: /afx-work next docs/specs/{feature} # Pick up next pending task
 
 ```bash
 # On branch feat/user-auth
-/afx-task audit 7.1
+/afx-task verify 7.1
 # → Checks user-auth task 7.1
 ```
 
 ### Verify with explicit spec
 
 ```bash
-/afx-task audit user-auth#7.1
+/afx-task verify user-auth#7.1
 # → Explicitly checks user-auth task 7.1
 ```
 
 ### Get summary of completed task
 
 ```bash
-/afx-task summary 7.1
+/afx-task brief 7.1
 # → Shows what was built for task 7.1
-```
-
-### List all Phase 6 tasks
-
-```bash
-/afx-task list 6
-# → Shows all testing tasks
-```
-
-### Check overall progress
-
-```bash
-/afx-task progress
-# → Shows completion across all phases
 ```
 
 ---
@@ -360,8 +313,8 @@ Error: Cannot determine spec context.
 Recent activity spans multiple specs: user-auth, users-permissions
 
 Specify explicitly:
-  /afx-task audit user-auth#7.1
-  /afx-task audit users-permissions#3.2
+  /afx-task verify user-auth#7.1
+  /afx-task verify users-permissions#3.2
 ```
 
 **No tasks.md found**:
@@ -372,5 +325,5 @@ Error: No tasks.md found at docs/specs/user-auth/tasks.md
 Check:
   1. Spec name is correct
   2. tasks.md exists in spec folder
-  3. Use explicit path: /afx-task audit 7.1 path/to/tasks.md
+  3. Use explicit path: /afx-task verify 7.1 path/to/tasks.md
 ```

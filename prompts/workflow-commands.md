@@ -23,10 +23,10 @@ The spec tells you _what_ to build. The GitHub ticket tells you _where you left 
 ### Session Log Format
 
 \`\`\`markdown
-| Date | Task | Action | Files Modified |
+| Date             | Task | Action                       | Files Modified         |
 | ---------------- | ---- | ---------------------------- | ---------------------- |
-| 2025-12-07 14:30 | 4.1 | Completed email templates | mailer/templates/\*.ts |
-| 2025-12-07 15:00 | 4.2 | Integrated mailer in actions | claim.action.ts |
+| 2025-12-07 14:30 | 4.1  | Completed email templates    | mailer/templates/\*.ts |
+| 2025-12-07 15:00 | 4.2  | Integrated mailer in actions | claim.action.ts        |
 \`\`\`
 
 ### GitHub Ticket Workflow
@@ -59,7 +59,7 @@ When starting or resuming work on a ticket:
 **Work Orchestration**
 
 - `/afx-work status` - Quick state check after interruption
-- `/afx-work next <spec-path>` - Pick next task from spec
+- `/afx-work pick <spec-path>` - Pick next task from spec
 - `/afx-work resume [spec|num]` - Continue in-progress work
 - `/afx-work sync [spec] [issue]` - Bidirectional GitHub sync
 - `/afx-work plan [instruction]` - Generate tickets from specs
@@ -67,14 +67,14 @@ When starting or resuming work on a ticket:
 **Task Verification**
 
 - `/afx-task verify <task-id>` - Verify task implementation vs spec
-- `/afx-task summary <task-id>` - Get implementation summary
+- `/afx-task brief <task-id>` - Get implementation summary
 - `/afx-task list [phase]` - List tasks by phase
 - `/afx-task status` - Overall task completion
 
 **Quality Checks**
 
 - `/afx-check path <feature-path>` - Trace execution path UI → DB (Gate 1)
-- `/afx-check lint [path]` - Audit annotations for PRD compliance
+- `/afx-check trace [path]` - Audit annotations for PRD compliance
 - `/afx-check links <spec-path>` - Verify cross-references
 - `/afx-check all <feature-path>` - Run all checks
 
@@ -89,7 +89,7 @@ When starting or resuming work on a ticket:
 **Session Capture**
 
 - `/afx-session note "content" [tags]` - Smart note (unifies capture/append)
-- `/afx-session save [feature]` - Save session to log
+- `/afx-session log [feature]` - Save session to log
 - `/afx-session show [feature|all]` - Show recent discussions
 - `/afx-session active [feature|all]` - Show active discussions
 - `/afx-session search "query"` - Search notes across journals
@@ -119,7 +119,7 @@ Use `/afx-session` to capture important discussions with AI agents:
 /afx-next # "What do I do now?"
 /afx-session note "content" # Smart note (auto-tags)
 /afx-session note --ref UA-D001 "content" # Append to discussion
-/afx-session save [feature] # Summarize session to log
+/afx-session log [feature] # Summarize session to log
 /afx-session show [feature|all] # Show recent discussions
 /afx-session search "query" # Search notes
 /afx-session promote <id> # Promote to ADR

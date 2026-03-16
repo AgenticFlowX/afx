@@ -1,6 +1,6 @@
 ---
 name: afx-report
-description: Traceability metrics and project health reporting — spec completeness, orphaned code detection, coverage mapping, and stale spec detection
+description: Traceability reporting — orphaned code detection, spec-to-code coverage mapping, and stale spec detection
 license: MIT
 metadata:
   afx-owner: "@rix"
@@ -25,11 +25,32 @@ If neither file exists, use defaults.
 ## Usage
 
 ```bash
-/afx-report health [spec]           # Overall traceability metrics
 /afx-report orphans [path]          # Code without @see links
 /afx-report coverage <spec>         # Spec → Code coverage map
 /afx-report stale [days]            # Specs not updated recently
 ```
+
+> **Note:** Overall health metrics and spec completeness scores are available in the VSCode AFX extension (Pipeline Tab). These subcommands focus on discovery operations that require codebase scanning.
+
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Generate traceability reports, coverage maps, orphan lists
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If fixes are requested, respond with:
+
+```text
+Out of scope for /afx-report (read-only reporting mode). Use /afx-dev code to fix orphans or /afx-check trace to audit.
+```
+
+---
 
 ## Agent Instructions
 
@@ -39,9 +60,7 @@ If neither file exists, use defaults.
 
 | Context                         | Suggested Next Command               |
 | ------------------------------- | ------------------------------------ |
-| After `health` (issues found)   | `/afx-check lint` or `/afx-dev code` |
-| After `health` (all good)       | `/afx-work next <spec>`              |
-| After `orphans` (orphans found) | `/afx-check lint <file>:<line>`      |
+| After `orphans` (orphans found) | `/afx-check trace <file>:<line>`      |
 | After `coverage` (gaps found)   | `/afx-dev code` to implement         |
 | After `stale` (stale specs)     | `/afx-check links <spec>`            |
 
@@ -51,108 +70,7 @@ If neither file exists, use defaults.
 
 ---
 
-## 1. health
-
-Generate overall traceability health metrics.
-
-### Usage
-
-```bash
-/afx-report health              # All specs
-/afx-report health <spec>       # Specific spec
-```
-
-### Process
-
-Run this inline script to check health:
-
-```bash
-echo "## Traceability Health Report"
-echo "**Generated**: $(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
-echo ""
-
-TOTAL_DOCS=$(find docs -name "*.md" | grep -v "templates" | wc -l)
-VALID_DOCS=$(find docs -name "*.md" | grep -v "templates" | xargs grep -l "afx: true" | wc -l)
-MISSING=$((TOTAL_DOCS - VALID_DOCS))
-
-echo "### Summary"
-echo ""
-echo "| Metric | Value |"
-echo "| --- | --- |"
-echo "| Total Docs | $TOTAL_DOCS |"
-echo "| Valid Frontmatter | $VALID_DOCS |"
-echo "| Missing Frontmatter | $MISSING |"
-echo ""
-
-echo "### Spec Completeness"
-echo "| Feature | Completeness |"
-echo "| --- | --- |"
-
-# Identify feature folders
-find docs/specs -maxdepth 1 -type d | grep -v "docs/specs$" | while read -r DIR; do
-  FEATURE=$(basename "$DIR")
-  if [ "$FEATURE" != "_templates" ]; then
-    REQUIRED=("spec.md" "design.md" "tasks.md" "journal.md")
-    MISSING_FILES=""
-    for FILE in "${REQUIRED[@]}"; do
-      if [ ! -f "$DIR/$FILE" ]; then
-        MISSING_FILES="$MISSING_FILES $FILE"
-      fi
-    done
-
-    if [ -z "$MISSING_FILES" ]; then
-      echo "| $FEATURE | ✅ |"
-    else
-      echo "| $FEATURE | ⚠️ Missing: $MISSING_FILES |"
-    fi
-  fi
-done
-```
-
-### Output
-
-```markdown
-## Traceability Health Report
-
-**Generated**: 2025-12-16
-
-### Summary
-
-| Metric            | Score | Status  |
-| ----------------- | ----- | ------- |
-| Spec Completeness | 95%   | OK      |
-| Link Validity     | 87%   | WARNING |
-| Code Coverage     | 72%   | WARNING |
-| Session Activity  | 100%  | OK      |
-
-**Overall Score**: 88/100 WARNING
-
-### By Feature
-
-| Feature           | Complete | Links   | Coverage | Last Update |
-| ----------------- | -------- | ------- | -------- | ----------- |
-| user-auth         | OK       | OK      | 85%      | 2025-12-15  |
-| users-permissions | OK       | WARNING | 65%      | 2025-12-10  |
-| agenticflow       | OK       | OK      | N/A      | 2025-12-16  |
-
-### Issues Found
-
-1. **Broken link**: users-permissions/design.md#auth-flow (anchor missing)
-2. **Low coverage**: users-permissions has 12 uncovered requirements
-3. **Orphaned code**: 5 files missing @see links
-
-Next (ranked):
-
-1. /afx-report orphans # Find code without @see
-2. /afx-check links users-permissions # Fix broken links
-3. /afx-report coverage users-permissions # See coverage details
-4. /afx-dev code # Address gaps
-5. /afx-work next <spec> # Continue if healthy
-```
-
----
-
-## 2. orphans
+## 1. orphans
 
 Find code files missing required @see references.
 
@@ -205,15 +123,17 @@ For each orphan, add @see reference:
 ```
 
 Next (ranked):
-
-1. /afx-check lint notification.service.ts:1 # Fix first orphan
-2. /afx-dev code # Add @see links
-3. /afx-report health # Re-check after fixes
+  1. /afx-check trace notification.service.ts:1  # Context-driven: Fix first orphan
+  2. /afx-dev code                               # Context-driven: Add @see links
+  3. /afx-report health                          # Context-driven: Re-check after fixes
+  ──
+  4. /afx-work status                            # Re-orient after report
+  5. /afx-session note "<note>"                   # Capture findings
 ````
 
 ---
 
-## 3. coverage
+## 2. coverage
 
 Show requirements coverage - which spec items have implementations.
 
@@ -283,15 +203,17 @@ done
    - Task: Phase 2 (deferred)
 
 Next (ranked):
-
-1. /afx-work next docs/specs/user-auth # Implement uncovered
-2. /afx-task list 7 # See Phase 7 tasks
-3. /afx-dev code # Start implementation
+  1. /afx-work pick docs/specs/user-auth         # Context-driven: Implement uncovered
+  2. /afx-task list 7                             # Context-driven: See Phase 7 tasks
+  3. /afx-dev code                               # Context-driven: Start implementation
+  ──
+  4. /afx-work status                            # Re-orient after report
+  5. /afx-session note "<note>"                   # Capture findings
 ```
 
 ---
 
-## 4. stale
+## 3. stale
 
 Find specs that haven't been updated recently.
 
@@ -340,10 +262,12 @@ find docs/specs -name "*.md" -mtime +$DAYS -print0 | xargs -0 ls -lt | awk '{pri
 | agenticflow | 2025-12-16  | 0    |
 
 Next (ranked):
-
-1. /afx-check links users-permissions # Verify stale spec
-2. /afx-session recap users-permissions # Review discussions
-3. /afx-work status # Check overall state
+  1. /afx-check links users-permissions          # Context-driven: Verify stale spec
+  2. /afx-session recap users-permissions         # Context-driven: Review discussions
+  3. /afx-spec review users-permissions           # Context-driven: Check spec quality
+  ──
+  4. /afx-work status                            # Re-orient after report
+  5. /afx-session note "<note>"                   # Capture findings
 ```
 
 ---
@@ -363,6 +287,6 @@ Next (ranked):
 
 | Command            | Relationship             |
 | ------------------ | ------------------------ |
-| `/afx-check lint`  | Fix orphaned annotations |
+| `/afx-check trace`  | Fix orphaned annotations |
 | `/afx-check links` | Fix broken links         |
 | `/afx-work status` | See active work state    |

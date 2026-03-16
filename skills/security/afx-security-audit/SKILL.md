@@ -20,6 +20,26 @@ Use this skill when you need to:
 - Perform threat modeling — _"Help me threat model this"_
 - Get hardening recommendations — _"What should I harden?"_
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Conduct security audits, perform threat modeling, recommend hardening measures
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If fixes are requested, respond with:
+
+```text
+Out of scope for afx-security-audit (read-only audit mode). Use /afx-dev code to apply fixes.
+```
+
+---
+
 ## Instructions
 
 ### Audit Workflow

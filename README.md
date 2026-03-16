@@ -144,7 +144,7 @@ stateDiagram-v2
 
 **4. Stateful Session Contexts & Continuity**
 
-Close your laptop without losing context. `/afx-session save` records your train of thought, and `/afx-context save` bundles it so another agent can instantly resume tomorrow.
+Close your laptop without losing context. `/afx-session log` records your train of thought, and `/afx-context save` bundles it so another agent can instantly resume tomorrow.
 
 ```mermaid
 sequenceDiagram
@@ -318,17 +318,17 @@ Write code with automatic `@see` annotation insertion. Claude links every functi
 
 ### Verification
 
-**`/afx-check path|lint|links`** - Quality gates
+**`/afx-check path|trace|links`** - Quality gates
 
 - `path` - **BLOCKING GATE**: Trace execution from UI → business logic → database
-- `lint` - Verify all code has valid `@see` annotations
+- `trace` - Verify all code has valid `@see` annotations
 - `links` - Check spec integrity and cross-references
 
-**`/afx-task verify|audit|close`** - Task management
+**`/afx-task verify|close`** - Task management
 
 ### Session Management
 
-**`/afx-session save|recall|list`** - Context preservation
+**`/afx-session log|recall|list`** - Context preservation
 
 **`/afx-context save|load`** - Context transitions
 Package current context for transfer to another agent or future session. Includes spec state, task progress, verification status, and discussion history.
@@ -348,13 +348,13 @@ stateDiagram-v2
     [*] --> Init : init feature
     Init --> WriteSpec : edit spec
     WriteSpec --> Approve : get approval
-    Approve --> SelectTask : work next
+    Approve --> SelectTask : work pick
     SelectTask --> Develop : dev code
     Develop --> PathCheck : check path
     PathCheck --> Failed : path broken
     PathCheck --> SaveSession : gate passed
     Failed --> Develop : fix path
-    SaveSession --> [*] : session save
+    SaveSession --> [*] : session log
 
     SaveSession --> Resume : next session
     Resume --> SelectTask : work resume
@@ -420,7 +420,7 @@ Please act as my Product Manager and Technical Architect:
 2. Once answered, use the `/afx-init` command to scaffold the folder structure.
 3. Write the `spec.md`, `design.md`, and `tasks.md` files based on our discussion. Remember to check `CLAUDE.md` for global UI conventions before writing the design document.
 
-When you're done, ask me if I'm ready to run `/afx-work next` to start coding!
+When you're done, ask me if I'm ready to run `/afx-work pick` to start coding!
 ```
 
 **Step 3: Answer the Questions**

@@ -20,6 +20,26 @@ Use this skill when you need to:
 - Map tests to acceptance criteria — _"What tests do I need for these requirements?"_
 - Detect gaps in test coverage — _"Find gaps in my test coverage"_
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Derive test plans from specs, map acceptance criteria, detect coverage gaps
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for afx-spec-test-planning (read-only planning mode). Use /afx-dev test to write tests.
+```
+
+---
+
 ## Instructions
 
 ### Derive Tests from Spec
@@ -58,7 +78,7 @@ After planning, check for:
 
 <!-- @afx:provider-commands -->
 - Use `/afx-check path` to verify execution flow from UI to DB
-- Use `/afx-task audit` to verify test coverage against spec
+- Use `/afx-task verify` to verify test coverage against spec
 <!-- @afx:/provider-commands -->
 - Follow the spec → design → tasks → code traceability chain
 

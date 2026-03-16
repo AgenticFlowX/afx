@@ -94,11 +94,11 @@ Code MUST link back to specs via JSDoc `@see` annotations:
 /afx-next                      # What do I do now?
 /afx-discover capabilities     # Understand project setup
 /afx-work status               # Check current state
-/afx-work next <spec>          # Pick next task
+/afx-work pick <spec>          # Pick next task
 /afx-dev code                  # Implement with @see links
 /afx-check path                # Trace execution flow (BLOCKING)
-/afx-task audit                # Verify against spec
-/afx-session save              # Save discussion to journal
+/afx-task verify               # Verify against spec
+/afx-session log               # Save discussion to journal
 ```
 
 ### Quality Gates

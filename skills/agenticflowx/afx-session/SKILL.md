@@ -1,6 +1,6 @@
 ---
 name: afx-session
-description: Session discussion capture — smart notes, session logs, discussion recall, multi-topic summaries, and ADR promotion
+description: Session discussion capture — smart notes, session logging, context recaps, and ADR promotion
 license: MIT
 metadata:
   afx-owner: "@rix"
@@ -22,17 +22,42 @@ Session discussion capture and recall for multi-agent workflows.
 
 If neither file exists, use defaults.
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Create/modify markdown files only in:
+  - `docs/specs/**/journal.md` (feature session logs)
+  - `docs/specs/journal.md` (global session log)
+  - `docs/specs/**/research/` (ADR promotion only)
+  - `docs/adr/` (ADR promotion only)
+
+### Forbidden
+
+- Create/modify/delete source code in application directories
+- Modify spec files (`spec.md`, `design.md`, `tasks.md`)
+- Delete any files
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for /afx-session (session capture mode). Use /afx-dev code to implement.
+```
+
+---
+
 ## Usage
 
 ```bash
-/afx-session note "content" [tags] [--ref id]    # Smart Note (New! Unifies note/capture/append)
-/afx-session save [feature]                      # Save session to log
-/afx-session show [feature|all]                  # Show recent discussions
-/afx-session active [feature|all]                # Show only active discussions
-/afx-session search "<query>"                    # Search notes
-/afx-session recap [feature|all]                 # Recap contexts
+/afx-session note "content" [tags] [--ref id]    # Smart Note (unifies note/capture/append)
+/afx-session log [feature]                       # Save session to log
+/afx-session recap [feature|all]                 # AI synthesis of context for resumption
 /afx-session promote <id>                        # Promote to ADR
 ```
+
+> **Note:** Discussion browsing, search, and status filtering are available in the VSCode AFX extension (Journal Tab). These subcommands focus on operations that require agent reasoning or file mutation.
 
 ## Purpose
 
@@ -52,27 +77,32 @@ When no feature is specified, discussions go to `docs/specs/journal.md`. This is
 
 **CRITICAL**: After EVERY `/afx-session` action, suggest the most appropriate next command based on context:
 
-| Context                           | Suggested Next Command                          |
-| --------------------------------- | ----------------------------------------------- |
-| After `capture` (more to discuss) | Continue discussion or `/afx-session record`    |
-| After `capture` (ready to work)   | `/afx-work next <spec>` or `/afx-dev code`      |
-| After `note` (quick note added)   | Continue working or `/afx-session show`         |
-| After `record`                    | `/afx-work next <spec>` or `/afx-dev code`      |
-| After `recap` (resuming work)     | `/afx-work status` then `/afx-dev code`         |
-| After `show` (reviewing)          | `/afx-session recap <feature>` for full context |
-| After `search` (found results)    | `/afx-session show <feature>` for full context  |
-| After `promote` (ADR created)     | `/afx-dev code` to implement the decision       |
+| Context                         | Suggested Next Command                     |
+| ------------------------------- | ------------------------------------------ |
+| After `note` (more to discuss)  | Continue discussion or `/afx-session log`  |
+| After `note` (ready to work)    | `/afx-work pick <spec>` or `/afx-dev code` |
+| After `note` (quick note added) | Continue working or `/afx-session recap`   |
+| After `log`                     | `/afx-work pick <spec>` or `/afx-dev code` |
+| After `recap` (resuming work)   | `/afx-work status` then `/afx-dev code`    |
+| After `promote` (ADR created)   | `/afx-dev code` to implement the decision  |
 
-**Suggestion Format** (5 ranked options, ideal → less ideal):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-dev code                              # Ideal: Implement what was discussed
-  2. /afx-work next docs/specs/{feature}        # Start next task from spec
-  3. /afx-session record {feature}              # Summarize before moving on
-  4. /afx-session promote UA-D001               # Elevate to ADR if significant
-  5. /afx-session recap all                     # Review broader context
+  1. /afx-dev code                               # Context-driven: Implement what was discussed
+  2. /afx-session log {feature}                   # Context-driven: Summarize before moving on
+  3. /afx-session promote UA-D001                 # Context-driven: Elevate to ADR if significant
+  ──
+  4. /afx-work status                             # Re-orient after capture
+  5. /afx-help                                    # See all options
 ```
+
+---
+
+### Timestamp Format (MANDATORY)
+
+When creating or updating journal entries, captures, notes, and discussion metadata, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
 
 ---
 
@@ -80,26 +110,21 @@ Next (ranked):
 
 Determine action from first argument:
 
-| Subcommand | Purpose                                               |
-| ---------- | ----------------------------------------------------- |
-| `note`     | Smart capture (handles notes, tags, and appending)    |
-| `save`     | Summarize conversation into permanent record          |
-| `show`     | Display recent discussions                            |
-| `active`   | Show only active discussions (tagged `status:active`) |
-| `search`   | Search notes and discussions across all journals      |
-| `recap`    | Generate comprehensive recap for session resumption   |
-| `promote`  | Promote discussion to ADR or new feature spec         |
+| Subcommand | Purpose                                             |
+| ---------- | --------------------------------------------------- |
+| `note`     | Smart capture (handles notes, tags, and appending)  |
+| `log`      | Summarize conversation into permanent record        |
+| `recap`    | Generate comprehensive recap for session resumption |
+| `promote`  | Promote discussion to ADR or new feature spec       |
 
 **Stores discussions in**: `docs/specs/journal.md` (global) or `docs/specs/{feature}/journal.md` (feature-specific).
 
 ### When to use
 
-- **Capture**: Agent captures during discussion "Forgot to handle null case"
-- **Note**: Human writes directly "look into Pulumi for IaC" (without needing agent conversation)
-- **Record**: Summarize a conversation into a permanent record
-- **Search**: Find past notes "What did we say about monitoring?"
-- **Recap**: "What did we discuss last time?"
-- **Promote**: "This discussion is now an ADR or a new Feature"
+- **note**: Capture thoughts during discussion or write directly — "Forgot to handle null case" or "look into Pulumi for IaC"
+- **log**: Summarize a conversation into a permanent record
+- **recap**: "What did we discuss last time?"
+- **promote**: "This discussion is now an ADR or a new Feature"
 
 ---
 
@@ -148,9 +173,9 @@ to: docs/specs/user-auth/journal.md
 
 ---
 
-## 2. save
+## 2. log
 
-**Usage**: `/afx-session save [feature]`
+**Usage**: `/afx-session log [feature]`
 
 Summarize the current session's captures into a permanent discussion entry.
 
@@ -167,7 +192,7 @@ Summarize the current session's captures into a permanent discussion entry.
 ### Active Inference Protocol (CRITICAL)
 
 **When to suggest saving**:
-The Agent MUST actively monitor the conversation depth. Suggest `/afx-session save` when:
+The Agent MUST actively monitor the conversation depth. Suggest `/afx-session log` when:
 
 1.  **key decisions** are made ("Let's use Postgres").
 2.  **complex logic** is explained ("The flow requires step A then B").
@@ -177,175 +202,59 @@ The Agent MUST actively monitor the conversation depth. Suggest `/afx-session sa
 
 > "Before we move on, should I save this decision about Postgres to the session log?
 
-> `> /afx-session save`"
+> `> /afx-session log`"
 
----
+### Proactive Capture Protocol (MANDATORY)
 
----
+**Cross-cutting rule**: This protocol applies to ALL AFX skills, not just `/afx-session`. When any skill detects a high-impact context change during its operation, it MUST auto-capture to `journal.md` without waiting for the user to invoke `/afx-session`.
 
-### 5. Show Mode
+#### Trigger Conditions
 
-**Usage**: `/afx-session show [feature|all]` or `/afx-session show [feature|all] --tag <tag>`
+Auto-capture (without asking) when the agent detects:
 
-Display recent discussions:
+| Trigger              | Example                               | What to capture                        |
+| -------------------- | ------------------------------------- | -------------------------------------- |
+| Decision deferred    | "not now", "later", "future phase"    | Decision + reason + what it blocks     |
+| ADR-impacting choice | "let's use Postgres instead of Mongo" | The decision + alternatives considered |
+| Spec deviation       | "skip that requirement for MVP"       | Which FR/NFR is affected + why         |
+| Research finding     | "turns out X doesn't support Y"       | Finding + source + impact              |
+| Architecture change  | "move auth to a separate service"     | What changed + what's affected         |
+| Scope cut            | "drop feature X from this release"    | What's cut + where to track it         |
 
-1. **If feature specified**: Read `docs/specs/{feature}/journal.md`
-2. **If "all"**: Scan all `docs/specs/*/journal.md` files
-3. **If `--tag` specified**: Filter to discussions containing that tag
-4. **Output** formatted table with tags:
+#### Capture Format
 
-```markdown
-## Recent Discussions
-
-| Date       | Feature     | Topic                    | Tags                        |
-| ---------- | ----------- | ------------------------ | --------------------------- |
-| 2025-12-15 | user-auth   | Supplier assignment flow | supplier, email, phase-2    |
-| 2025-12-14 | agenticflow | PRD-first traceability   | architecture, documentation |
-
-Next: /afx-session recap {feature} # For full context
-```
-
----
-
-### 5b. Active Mode
-
-**Usage**: `/afx-session active [feature|all]`
-
-Show only discussions tagged with `status:active`. Use this to see what ad-hoc work is in progress across features.
-
-#### Status Keywords
-
-Discussions use inline status tags for tracking:
-
-| Keyword          | Meaning                             |
-| ---------------- | ----------------------------------- |
-| `status:active`  | Work in progress, has pending items |
-| `status:blocked` | Waiting on external dependency      |
-| `status:closed`  | Completed or abandoned              |
-| _(no status)_    | Treated as closed (legacy)          |
-
-#### Discussion Format with Status
+Append to `## Captures` section in the appropriate `journal.md`:
 
 ```markdown
-### INF-D001 - 2025-12-22 - Warranty Claims Dev Deployment
-
-`status:active` `[deployment, aws, user-auth]`
-
-**Context**: First deployment of user-auth feature...
-
-**Progress**:
-
-- [x] RDS PostgreSQL setup _(N1)_
-- [x] Local environment connected _(N2)_
-- [ ] Deploy user-auth branch to Amplify
-- [ ] Document Amplify configuration
+- **{YYYY-MM-DDTHH:MM:SS.mmmZ}** - [AUTO:{skill}] {one-line summary}
+  `[{auto-tags}, auto-capture]`
+  **Impact**: {what this affects: ADR/spec/code/research}
+  **Action**: {deferred|decided|changed|cut} → {when/what to revisit}
 ```
 
-> **Note**: Completed items show `_(N{X})_` reference linking to the note that confirmed completion.
+#### Rules
 
-#### Process
+1. **Write to `## Captures`** — not `## Discussions` (that's for `/afx-session log`)
+2. **Tag with `auto-capture`** — so entries are filterable
+3. **Include source skill** — prefix: `[AUTO:afx-dev]`, `[AUTO:afx-spec]`, etc.
+4. **No duplicates** — if the same decision was just captured, skip
+5. **Feature routing** — if the context has an active feature, write to `docs/specs/{feature}/journal.md`. Otherwise write to `docs/specs/journal.md`
+6. **Consolidation** — still suggest `/afx-session log` at natural breakpoints to consolidate captures into full discussion entries
 
-1. **Scan journals**: Read all `docs/specs/*/journal.md` files (or specific feature)
-2. **Filter by status**: Find discussions with `status:active` tag
-3. **Extract pending items**: Count unchecked `- [ ]` boxes in Progress section
-4. **Format output**:
+#### Example
+
+During `/afx-dev code`, the user says "let's skip pagination for now, we'll do it in Phase 2":
 
 ```markdown
-## Active Discussions
-
-| Feature        | ID       | Title                          | Pending |
-| -------------- | -------- | ------------------------------ | ------- |
-| infrastructure | INF-D001 | Warranty Claims Dev Deployment | 2 items |
-
-### INF-D001 - Warranty Claims Dev Deployment
-
-- [ ] Deploy user-auth branch to Amplify
-- [ ] Document Amplify configuration
-
----
-
-Next: /afx-session append INF-D001 "update note" # Add progress
-```
-
-#### No Active Discussions
-
-```
-No active discussions found.
-
-To start tracking ad-hoc work:
-  /afx-session record infrastructure   # Record current discussion
-
-Or for formal tasks:
-  /afx-work next docs/specs/{feature}  # Pick up next spec task
+- **2025-03-17T14:30:00.000Z** - [AUTO:afx-dev] Pagination deferred to Phase 2
+  `[pagination, deferred, phase-2, auto-capture]`
+  **Impact**: spec — FR-7 (pagination) remains unimplemented
+  **Action**: deferred → revisit in Phase 2 planning
 ```
 
 ---
 
-### 5c. Search Mode
-
-**Usage**: `/afx-session search "<query>" [--tag <tag>] [--feature <feature>]`
-
-Search notes and discussions across all journals. Returns matching captures and discussion entries.
-
-1. **Determine scope**:
-   - If `--feature` specified: Search only `docs/specs/{feature}/journal.md`
-   - Otherwise: Search all `docs/specs/*/journal.md` files
-2. **Search content**:
-   - Match query against note text (case-insensitive)
-   - If `--tag` specified: Also filter by tag
-3. **Return results** grouped by feature:
-
-```markdown
-## Search Results: "Pulumi"
-
-### infrastructure (2 matches)
-
-**Captures:**
-
-- **2025-12-17 15:30** - evaluate Terraform vs Pulumi `[iac, decision]`
-
-**Discussions:**
-
-- **INF-D002** - IaC Tool Selection (2025-12-18)
-  > "...decided to use Pulumi over Terraform for better TypeScript support..."
-
-### general (1 match)
-
-**Captures:**
-
-- **2025-12-17 14:00** - look into Pulumi for AFX MCP server `[mcp, tooling]`
-
----
-
-Total: 3 matches across 2 features
-
-Next: /afx-session show infrastructure # See full context
-```
-
-**Examples**:
-
-```bash
-# Search all journals
-/afx-session search "monitoring"
-
-# Search with tag filter
-/afx-session search "AWS" --tag infrastructure
-
-# Search specific feature
-/afx-session search "email" --feature user-auth
-```
-
-**Implementation**:
-
-```bash
-# Agent executes grep across journal files
-grep -ri "<query>" docs/specs/*/journal.md
-grep -ri "<query>" docs/specs/journal.md
-```
-
----
-
-### 6. Recap Mode
+## 3. Recap Mode
 
 **Usage**: `/afx-session recap [feature|all]` or `/afx-session recap [feature|all] --tag <tag>`
 
@@ -363,12 +272,12 @@ Generate comprehensive recap for session resumption:
 
 #### user-auth (2 discussions)
 
-- **2025-12-15**: Supplier assignment - Decided on hardcoded Phase 1 approach
-- **2025-12-14**: Email notifications - Deferred to Phase 2
+- **2025-12-15T10:30:00.000Z**: Supplier assignment - Decided on hardcoded Phase 1 approach
+- **2025-12-14T16:00:00.000Z**: Email notifications - Deferred to Phase 2
 
 #### agenticflow (1 discussion)
 
-- **2025-12-15**: PRD-first traceability - Validated uniqueness vs competitors
+- **2025-12-15T09:15:00.000Z**: PRD-first traceability - Validated uniqueness vs competitors
 
 ### Key Decisions Made
 
@@ -389,20 +298,20 @@ Next: /afx-work status # Then continue with suggested task
 
 ---
 
-### 7. Promote Mode
+## 4. Promote Mode
 
 **Usage**:
 
 - `/afx-session promote <discussion-id>` - Promote to ADR (e.g., `UA-D001` promotes within user-auth)
 - `/afx-session promote <discussion-id> --to <new-feature>` - Promote from `_sessions` to new feature spec (e.g., `GEN-D001 --to multi-tenant`)
 
-#### 7a. Promote to ADR (within feature)
+#### 4a. Promote to ADR (within feature)
 
 1. **Parse prefix** from discussion ID to determine feature (e.g., `UA-D001` → user-auth)
 2. **Find** discussion by ID in `docs/specs/{feature}/journal.md`
 3. **Create** ADR in `docs/specs/{feature}/research/{topic-slug}.md`
 
-#### 7b. Promote to New Feature (from \_sessions)
+#### 4b. Promote to New Feature (from \_sessions)
 
 1. **Find** discussion by ID in `docs/specs/journal.md`
 2. **Create** new feature spec structure:
@@ -461,7 +370,7 @@ Next: /afx-dev code   # Implement the decision from the ADR
 Or for new feature promotion:
 
 ```
-Next: /afx-work next docs/specs/{new-feature}/tasks.md   # Start implementing new feature
+Next: /afx-work pick docs/specs/{new-feature}/tasks.md   # Start implementing new feature
 ```
 
 ---
@@ -484,9 +393,9 @@ Next: /afx-work next docs/specs/{new-feature}/tasks.md   # Start implementing ne
 
 <!-- Quick notes during active chat - cleared when recorded -->
 
-- **2025-12-17 14:30** - Remember to handle edge case X
+- **2025-12-17T14:30:00.000Z** - Remember to handle edge case X
   `[validation, edge-case]`
-- **2025-12-17 14:45** - User prefers approach B over A
+- **2025-12-17T14:45:00.000Z** - User prefers approach B over A
   `[architecture, decision]`
 
 ---
@@ -522,7 +431,7 @@ Next: /afx-work next docs/specs/{new-feature}/tasks.md   # Start implementing ne
 
 **Notes**:
 
-- **[XX-D002.N1]** **[2025-12-16 10:30]** Later insight after testing `[testing]`
+- **[XX-D002.N1]** **[2025-12-16T10:30:00.000Z]** Later insight after testing `[testing]`
 
 **Related Files**: file1.ts, file2.ts
 **Participants**: @rix, Claude
@@ -534,7 +443,6 @@ Next: /afx-work next docs/specs/{new-feature}/tasks.md   # Start implementing ne
 `[api, refactor]`
 
 ...
-
 ```
 
 > **Note**: Work Sessions table lives in `tasks.md`, not `journal.md`. It is updated by `/afx-work` and `/afx-dev` commands, NOT by `/afx-session`.
@@ -620,9 +528,9 @@ Tags are automatically generated to enable filtering and recall across sessions.
 | Process      | decision, bug, edge-case, phase-1, phase-2  |
 | Integration  | email, notification, webhook, third-party   |
 
-### Tag Aggregation in Record Mode
+### Tag Aggregation in Log Mode
 
-When recording a discussion:
+When logging a discussion:
 
 1. Collect all tags from captures in this session
 2. Analyze discussion summary for additional tags
@@ -637,14 +545,14 @@ This command supports working across multiple agent windows:
 
 ```
 Window 1: Discussing feature A
-  > /afx-session capture feature-a "important point"
+  > /afx-session note feature-a "important point"
   > Continue discussing...
-  > /afx-session record feature-a
+  > /afx-session log feature-a
 
 Window 2: Discussing feature B
-  > /afx-session capture feature-b "different topic"
+  > /afx-session note feature-b "different topic"
   > Continue discussing...
-  > /afx-session record feature-b
+  > /afx-session log feature-b
 
 Later (any window):
   > /afx-session recap all
@@ -683,38 +591,28 @@ Later (any window):
 
 → Saves to `docs/specs/infrastructure/journal.md`
 
-### Quick capture (agent context)
+### Quick note (agent context)
 
 ```
-/afx-session capture "interesting approach for multi-tenant auth"
+/afx-session note "interesting approach for multi-tenant auth"
 ```
 
 → Saves to `docs/specs/journal.md`
 → Agent infers tags from conversation
 
-### Quick capture (feature-specific)
+### Quick note (feature-specific)
 
 ```
-/afx-session capture user-auth "supplier email should include claim number in subject"
+/afx-session note user-auth "supplier email should include claim number in subject"
 ```
 
 → Saves to `docs/specs/user-auth/journal.md`
 
-### Search notes
+### Log session summary
 
 ```
-/afx-session search "monitoring"
-/afx-session search "AWS" --tag infrastructure
-```
-
-→ Searches all journal.md files
-→ Returns grouped results with context
-
-### Record session summary
-
-```
-/afx-session save                      # Save to _sessions
-/afx-session save user-auth      # Save to specific feature
+/afx-session log                       # Log to _sessions
+/afx-session log user-auth             # Log to specific feature
 ```
 
 ### Append to existing discussion

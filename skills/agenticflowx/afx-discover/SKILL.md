@@ -31,6 +31,26 @@ If neither file exists, use defaults.
 /afx-discover capabilities                # High-level project automation overview
 ```
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Discover infrastructure scripts, automation tools, deployment workflows
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for /afx-discover (read-only discovery mode). Use /afx-dev code to implement or /afx-init to scaffold.
+```
+
+---
+
 ## Agent Instructions
 
 ### Next Command Suggestion (MANDATORY)
@@ -42,16 +62,19 @@ If neither file exists, use defaults.
 | After `infra` (scripts found)    | Use the discovered script or `/afx-dev code`        |
 | After `infra` (nothing found)    | `/afx-init` to scaffold or create the script        |
 | After `scripts` (found relevant) | Run the script or document in AFX                   |
-| After `tools` (inventory shown)  | `/afx-dev code` or `/afx-work next`                 |
+| After `tools` (inventory shown)  | `/afx-dev code` or `/afx-work pick`                 |
 | After `capabilities` (overview)  | `/afx-discover <specific>` for deeper investigation |
 
-**Suggestion Format** (3 ranked options):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. Run discovered script: {command}                # If script found
-  2. /afx-init script {name}                         # If nothing found
-  3. /afx-session note "Missing: {capability}"       # Document gap
+  1. Run discovered script: {command}                # Context-driven: If script found
+  2. /afx-init script {name}                         # Context-driven: If nothing found
+  3. /afx-session note "Missing: {capability}"        # Context-driven: Document gap
+  ──
+  4. /afx-work status                                # Re-orient after discovery
+  5. /afx-help                                       # See all options
 ```
 
 ---
@@ -207,10 +230,12 @@ Searched locations:
 3. **Document in AFX**: Add to `docs/infrastructure/{type}-setup.md`
 
 Next (ranked):
-
-1. /afx-init script provision-{type} # Create new script
-2. /afx-session note "Infrastructure gap: {type} provisioning" # Document gap
-3. /afx-discover scripts deploy # Check related scripts
+  1. /afx-init script provision-{type}           # Context-driven: Create new script
+  2. /afx-discover scripts deploy                 # Context-driven: Check related scripts
+  3. /afx-session note "Infrastructure gap: {type}" # Context-driven: Document gap
+  ──
+  4. /afx-work status                            # Re-orient after discovery
+  5. /afx-help                                   # See all options
 ```
 
 ### Natural Language Parsing
@@ -360,7 +385,7 @@ List development and deployment tools configured in the project.
 
 - **{manager}**: {description}
 
-Next: /afx-work next # Continue with development
+Next: /afx-work pick # Continue with development
 ```
 
 ---

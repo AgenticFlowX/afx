@@ -2,7 +2,7 @@
 
 > **Pause. Think. Plan. Ship.**
 
-Commands like `/afx-work next` and `/afx-spec review` are powered by **Skills** — prompt files following the **agentskills.io** standard that teach your AI coding agent how to run an AFX workflow.
+Commands like `/afx-work pick` and `/afx-spec review` are powered by **Skills** — prompt files following the **agentskills.io** standard that teach your AI coding agent how to run an AFX workflow.
 
 Skills are grouped into **Packs** — curated bundles of related skills that you install once via `afx-cli`. AFX ships with 7 packs out of the box.
 

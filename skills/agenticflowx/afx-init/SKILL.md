@@ -33,6 +33,44 @@ If neither file exists, use defaults.
 /afx-init config <action> <key> [value]     # Manage .afx.yaml config
 ```
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Create new directories and markdown files in:
+  - `docs/specs/` (feature scaffolding)
+  - `docs/adr/` (ADR creation)
+  - `.afx/templates/` (template management)
+- Modify `.afx.yaml` (feature registration, prefix assignment, config changes)
+
+### Forbidden
+
+- Create/modify/delete source code in application directories
+- Modify existing spec content (only scaffolds new empty specs)
+- Delete any files or directories
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for /afx-init (scaffolding mode). Use /afx-dev code after spec approval.
+```
+
+---
+
+### Timestamp Format (MANDATORY)
+
+When creating frontmatter (`created`, `last_verified`) and journal headers, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-init`**: Feature scope decision during scaffolding.
+
+---
+
 ## Agent Instructions
 
 ### Next Command Suggestion (MANDATORY)
@@ -44,17 +82,18 @@ If neither file exists, use defaults.
 | After `feature` created  | `/afx-spec show <name>`               |
 | After `adr` created      | `Edit docs/adr/ADR-NNNN-*.md`         |
 | After `template` created | `/afx-init feature --from <template>` |
-| After `prefix` set       | `/afx-session capture <feature>`      |
+| After `prefix` set       | `/afx-session note <feature>`      |
 
-**Suggestion Format** (5 ranked options):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-spec show {feature}                # View spec overview
-  2. Edit docs/specs/{feature}/spec.md       # Define requirements
-  3. Edit docs/specs/{feature}/design.md     # Plan architecture
-  4. /afx-work plan                          # Generate tasks from spec
-  5. /afx-session capture {feature} "note"   # Capture initial ideas
+  1. /afx-spec show {feature}                    # Context-driven: View spec overview
+  2. Edit docs/specs/{feature}/spec.md           # Context-driven: Define requirements
+  3. Edit docs/specs/{feature}/design.md         # Context-driven: Plan architecture
+  ──
+  4. /afx-work plan                              # Generate tasks from spec
+  5. /afx-session note {feature} "note"           # Capture initial ideas
 ```
 
 ---
@@ -213,12 +252,12 @@ echo "Feature '$FEATURE' initialized at $SPEC_DIR"
 - research/ - ADRs directory
 
 Next (ranked):
-
-1. /afx-spec show {name} # View spec overview
-2. Edit docs/specs/{name}/spec.md # Define requirements first
-3. Edit docs/specs/{name}/design.md # Plan architecture
-4. /afx-work plan # Generate tasks from spec
-5. /afx-session capture {name} "note" # Capture initial ideas
+  1. /afx-spec show {name}                       # Context-driven: View spec overview
+  2. Edit docs/specs/{name}/spec.md               # Context-driven: Define requirements first
+  3. Edit docs/specs/{name}/design.md             # Context-driven: Plan architecture
+  ──
+  4. /afx-work plan                              # Generate tasks from spec
+  5. /afx-session note {name} "note"              # Capture initial ideas
 ```
 
 ### Template Files
@@ -318,7 +357,7 @@ Set or update the discussion ID prefix for a feature.
 
 Discussion IDs will be: {XX}-D001, {XX}-D002, etc.
 
-Next: /afx-session capture {feature} "note"
+Next: /afx-session note {feature} "note"
 ```
 
 ## 4. config
@@ -448,10 +487,12 @@ Then use the **Write tool** to create `$ADR_DIR/ADR-$NEXT-{slug}.md` with the ge
 **Status**: Proposed
 
 Next (ranked):
-
-1. Edit docs/adr/ADR-NNNN-{slug}.md # Fill in context & decision
-2. /afx-session capture specs "ADR discussion" # Capture related discussion
-3. /afx-work status # Check project state
+  1. Edit docs/adr/ADR-NNNN-{slug}.md            # Context-driven: Fill in context & decision
+  2. /afx-session note specs "ADR discussion"     # Context-driven: Capture related discussion
+  3. /afx-research explore "<title>"              # Context-driven: Research before deciding
+  ──
+  4. /afx-work status                            # Re-orient after creation
+  5. /afx-help                                   # See all options
 ```
 
 ---

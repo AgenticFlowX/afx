@@ -22,6 +22,26 @@ Use this skill when you need to:
 - Improve naming, functions, or structure — _"How should I name this?"_
 - Refactor legacy code or reduce technical debt — _"Refactor this for readability"_
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Review code quality, identify smells, suggest improvements
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If refactoring is requested, respond with:
+
+```text
+Out of scope for afx-clean-code (read-only review mode). Use /afx-dev refactor to apply changes.
+```
+
+---
+
 ## Principles
 
 ### Names

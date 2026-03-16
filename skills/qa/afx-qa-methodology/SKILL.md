@@ -20,6 +20,26 @@ Use this skill when you need to:
 - Triage and classify bugs — _"Help me triage these bugs"_
 - Map test coverage to spec requirements — _"Check test coverage against the spec"_
 
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Plan test strategies, triage bugs, map test coverage to spec requirements
+
+### Forbidden
+
+- Create/modify/delete any files
+- Run build/test/deploy/migration commands
+
+If implementation is requested, respond with:
+
+```text
+Out of scope for afx-qa-methodology (read-only planning mode). Use /afx-dev test to write tests.
+```
+
+---
+
 ## Instructions
 
 ### Test Strategy
@@ -43,7 +63,7 @@ Use this skill when you need to:
 
 <!-- @afx:provider-commands -->
 - Use `/afx-check path` to verify execution flow from UI to DB
-- Use `/afx-task audit` to verify test coverage against spec
+- Use `/afx-task verify` to verify test coverage against spec
 <!-- @afx:/provider-commands -->
 - Follow the spec → design → tasks → code traceability chain
 

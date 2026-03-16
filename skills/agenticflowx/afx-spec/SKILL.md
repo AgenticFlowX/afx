@@ -1,6 +1,6 @@
 ---
 name: afx-spec
-description: Spec management — view requirements, track progress, compare versions, validate completeness, manage lifecycle, and link specs to code
+description: Spec management — validate structure, analyze gaps, review quality, author design/tasks, and manage approval lifecycle
 license: MIT
 metadata:
   afx-owner: "@rix"
@@ -10,7 +10,7 @@ metadata:
 
 # /afx-spec
 
-Specification management, navigation, review, and approval for spec-centric workflows.
+Specification management, review, authoring, and approval for spec-centric workflows.
 
 ## Configuration
 
@@ -24,30 +24,135 @@ If neither file exists, use defaults.
 ## Usage
 
 ```bash
-# Discovery & Navigation
-/afx-spec list                              # Show all specs with status
-/afx-spec show <name>                       # Display spec overview + metrics
-/afx-spec create <name>                     # Initialize new spec
-/afx-spec status <name>                     # Show completion metrics
+# Scaffolding
+/afx-spec create <name>                     # Initialize new spec (delegates to /afx-init)
 
-# Validation & Analysis
-/afx-spec validate <name>                   # Check spec integrity
-/afx-spec phases <name>                     # List phases and their status
-/afx-spec requirements <name> [--type=FR]   # List requirements from spec.md
-/afx-spec coverage <name>                   # Show requirements vs tasks gaps
+# Analysis (agent reasoning required)
+/afx-spec validate <name>                   # Check spec structure integrity
+/afx-spec gaps <name>                       # Requirements vs tasks gap analysis
 
-# Collaboration & Review
-/afx-spec discuss <name>                    # Interactive spec discussion
-/afx-spec review <name>                     # Comprehensive automated review
+# Collaboration (LLM-driven)
+/afx-spec discuss <name>                    # Interactive gap analysis + journal capture
+/afx-spec review <name>                     # Automated quality scoring
+
+# Content Authoring (lifecycle-gated)
+/afx-spec design <name>                     # Author design.md (requires spec approved)
+/afx-spec tasks <name>                      # Author tasks.md (requires design approved)
 
 # Approval Workflow
-/afx-spec approve <name>                    # Mark spec as approved
-/afx-spec sign-off <name> --reviewer "@handle"  # Human approval with signature
+/afx-spec approve <name> [--design] [--reviewer "@handle"]  # Lifecycle gate + optional human sign-off
 ```
+
+> **Note:** Spec listing, status, phase breakdown, and discussion browsing are available in the VSCode AFX extension (Specs Tree, Pipeline Tab, Tasks Tab, Journal Tab). These subcommands focus on operations that require agent reasoning.
 
 ## Purpose
 
-Provides a spec-centric interface for managing specifications throughout their lifecycle. Consolidates operations currently scattered across `/afx-init`, `/afx-work`, `/afx-check`, `/afx-task`, and `/afx-session`.
+Provides a spec-centric interface for managing specifications throughout their lifecycle. Focuses on operations that require agent reasoning — validation, gap analysis, quality review, content authoring, and approval workflows.
+
+---
+
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Create/update markdown artifacts only in:
+  - `docs/specs/**` (spec files)
+  - `docs/adr/**` (linked ADRs)
+- Update `.afx.yaml` (feature registration, prefix assignment)
+
+### Forbidden
+
+- Create/modify/delete source code in application directories
+- Create/modify/delete folders (spec folders are scaffolded by `/afx-init`)
+- Delete any spec files
+- Run build/test/deploy/migration commands
+- Modify runtime config used by application execution
+
+If implementation is requested, return:
+
+```text
+Out of scope for /afx-spec (specification-management mode). Use /afx-dev code after spec approval.
+```
+
+---
+
+### Timestamp Format (MANDATORY)
+
+When creating or updating frontmatter (`last_verified`, `approved_at`, `signed_at`, `created`), all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-spec`**: Requirement deferred during review, spec gap identified, approval with conditions.
+
+---
+
+## Lifecycle Preconditions (BLOCKING)
+
+**CRITICAL**: The spec lifecycle enforces a strict authoring sequence. Content authoring into downstream documents is **blocked** until upstream documents are approved.
+
+### Document Authoring Gates
+
+| Target Document       | Precondition                          | Check                          |
+| --------------------- | ------------------------------------- | ------------------------------ |
+| `spec.md`             | None                                  | Always allowed (entry point)   |
+| `design.md` (content) | `spec.md` status == `Approved`        | Read spec.md frontmatter       |
+| `tasks.md` (content)  | `design.md` status == `Approved`      | Read design.md frontmatter     |
+| `journal.md`          | None                                  | Always allowed (session log)   |
+
+### Gate Enforcement
+
+Before writing content to `design.md`, the agent **MUST**:
+
+1. Read the `spec.md` frontmatter for the target feature
+2. Check the `status` field
+3. If `status` is NOT `Approved`, **STOP** and output:
+
+```text
+BLOCKED: Cannot author design.md content.
+
+Precondition not met:
+  spec.md status is "{current_status}" (required: "Approved")
+
+Approve the spec first:
+  /afx-spec review {name}
+  /afx-spec approve {name}
+```
+
+Before writing content to `tasks.md`, the agent **MUST**:
+
+1. Read the `design.md` frontmatter for the target feature
+2. Check the `status` field
+3. If `status` is NOT `Approved`, **STOP** and output:
+
+```text
+BLOCKED: Cannot author tasks.md content.
+
+Precondition not met:
+  design.md status is "{current_status}" (required: "Approved")
+
+Approve the design first:
+  /afx-spec design {name}
+  /afx-spec approve {name} --design
+```
+
+### Scaffold vs Content
+
+- **Scaffold** (template placeholders created by `/afx-init feature`): Always allowed. Empty template files are not content.
+- **Content** (full technical design, task breakdowns, requirements): Gated behind approval.
+- **journal.md**: Always writable — session capture is never gated.
+
+### Approval Chain
+
+```
+spec.md (Draft → Approved)
+  → /afx-spec design unlocked
+    → design.md (Draft → Approved)
+      → /afx-spec tasks unlocked
+        → /afx-work plan available
+```
 
 ---
 
@@ -62,176 +167,69 @@ Provides a spec-centric interface for managing specifications throughout their l
 
 ## Agent Instructions
 
+### Persistence Checkpoint (MANDATORY)
+
+Do not auto-write spec files. Before persisting any changes to `spec.md`, `design.md`, or `tasks.md`:
+
+1. Present the proposed content to the user
+2. Wait for explicit confirmation before writing
+3. `journal.md` append-only entries may be written without checkpoint (session log)
+
 ### Next Command Suggestion (MANDATORY)
 
 **CRITICAL**: After EVERY `/afx-spec` action, suggest the most appropriate next command based on context:
 
-| Context                             | Suggested Next Command                                    |
-| ----------------------------------- | --------------------------------------------------------- |
-| After `list` (no specs exist)       | `/afx-spec create <name>` to initialize first spec        |
-| After `list` (specs exist)          | `/afx-spec show <name>` to view first Draft spec          |
-| After `show` (status: Draft)        | `/afx-spec discuss <name>` to review and iterate          |
-| After `show` (status: Approved)     | `/afx-work next <name>` to start implementation           |
-| After `create`                      | `/afx-spec show <name>` to view created spec              |
-| After `status`                      | `/afx-spec phases <name>` for detailed breakdown          |
-| After `validate` (passed)           | `/afx-spec review <name>` for quality check               |
-| After `validate` (failed)           | Fix missing files or broken links                         |
-| After `phases`                      | `/afx-work next <name>` if tasks exist                    |
-| After `requirements`                | `/afx-spec coverage <name>` to check task coverage        |
-| After `coverage` (gaps found)       | `/afx-spec discuss <name>` to address gaps                |
-| After `discuss`                     | `/afx-spec review <name>` to validate changes             |
-| After `review` (critical issues)    | `/afx-spec discuss <name>` to fix issues                  |
-| After `review` (no critical issues) | `/afx-spec approve <name>` to approve spec                |
-| After `approve`                     | `/afx-spec sign-off <name> --reviewer` for human sign-off |
-| After `sign-off`                    | `/afx-work plan <name>` to generate implementation tasks  |
+| Context                             | Suggested Next Command                                       |
+| ----------------------------------- | ------------------------------------------------------------ |
+| After `create`                      | `/afx-spec discuss <name>` to iterate on spec requirements   |
+| After `validate` (passed)           | `/afx-spec review <name>` for quality check                  |
+| After `validate` (failed)           | Fix missing files or broken links                            |
+| After `gaps` (gaps found)           | `/afx-spec discuss <name>` to address gaps                   |
+| After `gaps` (100% coverage)        | `/afx-spec review <name>` for quality check                  |
+| After `discuss`                     | `/afx-spec review <name>` to validate changes                |
+| After `review` (critical issues)    | `/afx-spec discuss <name>` to fix issues                     |
+| After `review` (no critical issues) | `/afx-spec approve <name>` to approve spec                   |
+| After `design`                      | `/afx-spec approve <name> --design` to approve design        |
+| After `tasks`                       | `/afx-spec gaps <name>` to verify coverage                   |
+| After `approve` (spec.md)           | `/afx-spec design <name>` to author design.md                |
+| After `approve` (design.md)         | `/afx-spec tasks <name>` to author tasks.md                  |
+| After `approve --reviewer`          | `/afx-work plan <name>` to generate implementation tasks     |
 
-**Suggestion Format** (5 ranked options, ideal → less ideal):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-spec discuss docs/specs/{feature}    # Ideal: Iterate on spec
-  2. /afx-spec review {feature}                # Review quality
-  3. /afx-spec approve {feature}               # Approve if ready
-  4. /afx-work next {feature}                  # Start implementation
-  5. /afx-session save "<note>"                # Capture findings
+  1. /afx-spec discuss docs/specs/{feature}      # Context-driven: Iterate on spec
+  2. /afx-spec review {feature}                  # Context-driven: Review quality
+  3. /afx-spec approve {feature}                 # Context-driven: Approve if ready
+  ──
+  4. /afx-work pick {feature}                    # Start implementation
+  5. /afx-session note "<note>"                   # Capture findings
 ```
 
 ---
 
 ## Subcommands
 
-### list
-
-**Purpose:** Show all specs with status, owner, and progress
-
-**Implementation:**
-
-1. Read `.afx.yaml` to get `paths.specs` (default: `docs/specs`)
-2. Scan spec directory for subdirectories
-3. For each spec found:
-   - Read `spec.md` frontmatter for: status, owner, version, tags
-   - Read `tasks.md` to count total vs completed tasks
-   - Calculate overall progress percentage
-   - Get last modified timestamp from `journal.md`
-4. Output table sorted by status (Draft → Approved → Living):
-
-```
-Spec                 Status    Owner    Progress    Last Updated
--------------------------------------------------------------------
-user-authentication  Draft     @alice   0/12 (0%)   2 hours ago
-payment-flow         Approved  @bob     8/15 (53%)  1 day ago
-api-gateway          Living    @carol   12/12 (100%) 3 days ago
-```
-
-**Next Command:**
-
-- If no specs exist: `/afx-spec create <name>`
-- If Draft specs exist: `/afx-spec show <first-draft-spec>`
-- If only Approved specs: `/afx-work status` (show workflow)
-
----
-
-### show <name>
-
-**Purpose:** Display spec overview with metrics and recent activity
-
-**Implementation:**
-
-1. Validate spec exists at `docs/specs/<name>/`
-2. Read and display `spec.md` overview (frontmatter + top sections)
-3. Calculate and display metrics:
-   - Phase completion table (from tasks.md)
-   - Task summary (completed/total by phase)
-   - Recent journal entries (last 3)
-   - Verification status (Gate 1-4 from tasks.md)
-4. Output format:
-
-```markdown
-# User Authentication Spec
-
-**Status:** Draft
-**Owner:** @alice
-**Version:** 1.0
-**Tags:** auth, security, api
-
-## Phase Completion
-
-| Phase      | Tasks | Status        |
-| ---------- | ----- | ------------- |
-| 1. Setup   | 0/3   | ░░░░░░░░░░ 0% |
-| 2. Core    | 0/6   | ░░░░░░░░░░ 0% |
-| 3. Testing | 0/3   | ░░░░░░░░░░ 0% |
-
-## Recent Activity
-
-- 2 hours ago: Initial spec created
-- 1 hour ago: Requirements defined
-- 30 min ago: Design approach documented
-```
-
-**Next Command:**
-
-- If status=Draft: `/afx-spec discuss <name>` or `/afx-spec review <name>`
-- If status=Approved + tasks incomplete: `/afx-work next <name>`
-- If status=Approved + tasks complete: `/afx-check all`
-
----
-
 ### create <name>
 
 **Purpose:** Initialize new spec (delegates to /afx-init)
 
-**Implementation:**
-
-1. Delegate to `/afx-init feature <name>`
-2. Provide context: "Created via /afx-spec create"
-3. After creation completes, suggest next command
-
-**Next Command:**
-
-- `/afx-spec show <name>` to view created spec
-- Then edit spec.md to define requirements
-
----
-
-### status <name>
-
-**Purpose:** Show detailed completion metrics
+**Lifecycle Gate:** None — `create` is the entry point.
 
 **Implementation:**
 
-1. Read all 4 spec files
-2. Calculate comprehensive metrics:
-   - Total requirements count (from spec.md FR-xxx, NFR-xxx)
-   - Total tasks (from tasks.md)
-   - Completed tasks (both `[x]` columns marked)
-   - Phase completion percentages
-   - Gate verification status (Gate 1-4 pass/fail from tasks)
-   - Last journal update timestamp
-   - Days since spec creation
-3. Output format:
+1. Delegate to `/afx-init feature <name>` for scaffold (creates template files)
+2. After scaffold, author **`spec.md` content only** (requirements, scope, acceptance criteria)
+3. `design.md` and `tasks.md` remain as template scaffolds — content authoring is **blocked** until upstream documents are approved
+4. `journal.md` gets initial discussion entry (always allowed)
 
-```
-Status: user-authentication
-
-Requirements: 8 total (5 FR, 3 NFR)
-Tasks: 12 total, 0 completed (0%)
-Phases: 3 total, 0 complete (0%)
-
-Gate Status:
-  Gate 1 (Path):  0/12 tasks verified
-  Gate 2 (Lint):  0/12 tasks verified
-  Gate 3 (Links): Not run
-  Gate 4 (Audit): Not run
-
-Last Updated: 2 hours ago (journal.md)
-Created: 3 days ago
-```
+**CRITICAL**: Do NOT author full `design.md` or `tasks.md` content during create. The spec must be reviewed, iterated, and approved first. Use `/afx-spec design <name>` and `/afx-spec tasks <name>` after approval.
 
 **Next Command:**
 
-- `/afx-spec phases <name>` for detailed phase breakdown
-- `/afx-work next <name>` if tasks exist
+- `/afx-spec discuss <name>` to iterate on spec requirements
+- `/afx-spec review <name>` when ready for approval
 
 ---
 
@@ -285,84 +283,13 @@ Status: FAILED (2 critical issues)
 
 ---
 
-### phases <name>
+### gaps <name>
 
-**Purpose:** List all phases with completion status
-
-**Implementation:**
-
-1. Parse `tasks.md` to extract phases (level 2 headers: `## Phase N:...`)
-2. For each phase:
-   - Extract phase number and name
-   - Count total tasks in phase
-   - Count completed tasks (`[x][x]`)
-   - Calculate percentage
-3. Output table with progress bars:
-
-```
-Phases: user-authentication
-
-Phase  Name             Tasks      Status
-------------------------------------------------
-1      Setup            0/3 (0%)   ░░░░░░░░░░
-2      Core Auth        0/6 (0%)   ░░░░░░░░░░
-3      Testing          0/3 (0%)   ░░░░░░░░░░
-------------------------------------------------
-Total                   0/12 (0%)  ░░░░░░░░░░
-```
-
-**Next Command:**
-
-- `/afx-work next <name>` if tasks exist
-- `/afx-spec coverage <name>` to check task coverage
-
----
-
-### requirements <name> [--type=FR|NFR]
-
-**Purpose:** List functional and non-functional requirements from spec.md
+**Purpose:** Analyze requirements vs tasks gap — find missing task coverage and orphaned tasks
 
 **Implementation:**
 
-1. Parse `spec.md` to extract requirements:
-   - Functional Requirements: Lines matching `FR-\d+:` pattern
-   - Non-Functional Requirements: Lines matching `NFR-\d+:` pattern
-   - User Stories: Lines matching `US-\d+:` or `As a...` pattern
-2. Apply filter if `--type` specified
-3. Output numbered list:
-
-```
-Requirements: user-authentication
-
-Functional Requirements (FR):
-  FR-1: Users can log in with email and password
-  FR-2: Users can request password reset via email
-  FR-3: System validates email format
-  FR-4: System enforces password complexity rules
-  FR-5: Users can logout
-
-Non-Functional Requirements (NFR):
-  NFR-1: Login response time < 200ms (p95)
-  NFR-2: Password hashed with bcrypt (cost factor 12)
-  NFR-3: JWT tokens expire after 24 hours
-
-Total: 5 FR, 3 NFR
-```
-
-**Next Command:**
-
-- `/afx-spec coverage <name>` to check which requirements have tasks
-- `/afx-spec phases <name>` to see task breakdown
-
----
-
-### coverage <name>
-
-**Purpose:** Show requirements vs tasks gap analysis
-
-**Implementation:**
-
-1. Extract requirements from `spec.md` (FR-xxx, NFR-xxx)
+1. Extract requirements from `spec.md` (FR-xxx, NFR-xxx, US-xxx)
 2. Extract tasks from `tasks.md` with their `@see` references
 3. Cross-reference:
    - Find requirements without corresponding tasks (gaps)
@@ -371,7 +298,7 @@ Total: 5 FR, 3 NFR
 4. Output gap analysis:
 
 ```
-Coverage: user-authentication
+Gap Analysis: user-authentication
 
 Requirements Coverage: 6/8 (75%)
 
@@ -585,11 +512,229 @@ Recommendations:
 
 ---
 
-### approve <name>
+### design <name>
 
-**Purpose:** Mark spec as approved (automated validation + status change)
+**Purpose:** Author technical design document from approved spec
+
+**Lifecycle Gate:** `spec.md` status MUST be `Approved`.
+
+**Gate Enforcement:**
+
+Before authoring, the agent **MUST**:
+
+1. Read `spec.md` frontmatter for the target feature
+2. Check the `status` field
+3. If `status` is NOT `Approved`, **STOP** and output:
+
+```text
+BLOCKED: Cannot author design.md content.
+
+Precondition not met:
+  spec.md status is "{current_status}" (required: "Approved")
+
+Approve the spec first:
+  /afx-spec review {name}
+  /afx-spec approve {name}
+```
 
 **Implementation:**
+
+1. **Read Approved Spec**
+   - Load `spec.md` — extract requirements (FR-xxx, NFR-xxx), user stories, acceptance criteria, dependencies
+   - Load `journal.md` — extract any design discussions or decisions already captured
+
+2. **Generate Design Content**
+   - Architecture overview (system components, boundaries, data flow)
+   - Data models / schemas (derived from requirements)
+   - API contracts / interfaces (if applicable)
+   - Component design (mapping each FR to a design section)
+   - NFR strategies (how each NFR is addressed architecturally)
+   - Integration points and external dependencies
+   - Error handling strategy
+   - Design decisions with rationale (link to ADRs if they exist)
+
+3. **Persistence Checkpoint** (MANDATORY)
+   - Present the proposed design.md content to the user
+   - Wait for explicit confirmation before writing
+   - Do NOT auto-write
+
+4. **Write design.md**
+   - Replace scaffold content with authored design
+   - Preserve frontmatter (update `last_verified` timestamp)
+   - Ensure every design section links back to spec requirements via `@see`
+
+5. **Update journal.md**
+   - Append entry recording design authoring session
+
+**Output Format:**
+
+```markdown
+# {Feature} - Technical Design
+
+@see docs/specs/{feature}/spec.md
+
+## Architecture Overview
+{High-level system design}
+
+## Data Models
+{Schemas, entities, relationships}
+
+## Component Design
+
+### {Component 1}
+@see spec.md#FR-1
+{Design details}
+
+### {Component 2}
+@see spec.md#FR-2
+{Design details}
+
+## NFR Strategies
+
+### Performance
+@see spec.md#NFR-1
+{How performance targets are met}
+
+### Security
+@see spec.md#NFR-2
+{Security approach}
+
+## Error Handling
+{Error scenarios and recovery strategies}
+
+## Design Decisions
+{Key decisions with rationale — promote to ADR if significant}
+```
+
+**Next Command:**
+
+- `/afx-spec approve <name> --design` to approve the design
+- `/afx-spec review <name>` to validate design quality
+- `/afx-spec discuss <name>` to iterate on design issues
+
+---
+
+### tasks <name>
+
+**Purpose:** Author implementation task breakdown from approved design
+
+**Lifecycle Gate:** `design.md` status MUST be `Approved`.
+
+**Gate Enforcement:**
+
+Before authoring, the agent **MUST**:
+
+1. Read `design.md` frontmatter for the target feature
+2. Check the `status` field
+3. If `status` is NOT `Approved`, **STOP** and output:
+
+```text
+BLOCKED: Cannot author tasks.md content.
+
+Precondition not met:
+  design.md status is "{current_status}" (required: "Approved")
+
+Approve the design first:
+  /afx-spec design {name}
+  /afx-spec approve {name} --design
+```
+
+**Implementation:**
+
+1. **Read Approved Spec + Design**
+   - Load `spec.md` — extract requirements for traceability
+   - Load `design.md` — extract components, interfaces, data models
+   - Load `journal.md` — extract any task-related decisions
+
+2. **Generate Task Breakdown**
+   - Organize into phases (setup, core, integration, testing, docs)
+   - Each task must have:
+     - Clear description of what to implement
+     - `@see` link to design.md section AND spec.md requirement
+     - Acceptance criteria (how to verify the task is done)
+     - Two verification columns: `[Agent]` and `[Human]`
+   - Order tasks by dependency (setup before core, core before integration)
+   - Identify parallelizable tasks within each phase
+
+3. **Persistence Checkpoint** (MANDATORY)
+   - Present the proposed tasks.md content to the user
+   - Wait for explicit confirmation before writing
+   - Do NOT auto-write
+
+4. **Write tasks.md**
+   - Replace scaffold content with authored tasks
+   - Preserve frontmatter (update `last_verified` timestamp)
+
+**Output Format:**
+
+```markdown
+# {Feature} - Implementation Tasks
+
+@see docs/specs/{feature}/spec.md
+@see docs/specs/{feature}/design.md
+
+## Work Sessions
+
+| Session | Date | Tasks | Agent | Human |
+|---------|------|-------|-------|-------|
+
+## Phase 1: Setup
+
+### 1.1 {Task title}
+@see design.md#{section}
+@see spec.md#FR-{n}
+
+- [ ] [Agent] {What to implement}
+- [ ] [Human] {What to verify}
+
+**Acceptance criteria:**
+- {Criterion 1}
+- {Criterion 2}
+
+## Phase 2: Core Implementation
+
+### 2.1 {Task title}
+@see design.md#{section}
+@see spec.md#FR-{n}
+
+- [ ] [Agent] {What to implement}
+- [ ] [Human] {What to verify}
+
+## Phase 3: Testing & Verification
+
+### 3.1 {Task title}
+...
+```
+
+**Next Command:**
+
+- `/afx-spec gaps <name>` to verify all requirements have tasks
+- `/afx-work plan <name>` to start implementation
+
+---
+
+### approve <name> [--design] [--reviewer "@handle"]
+
+**Purpose:** Mark spec or design as approved (automated validation + status change), with optional human sign-off
+
+**Modes:**
+
+- `/afx-spec approve <name>` — approve `spec.md` (unlocks `/afx-spec design`)
+- `/afx-spec approve <name> --design` — approve `design.md` (unlocks `/afx-spec tasks`)
+- `/afx-spec approve <name> --reviewer "@handle"` — add human sign-off (requires spec already approved)
+
+**Optional Arguments (with `--reviewer`):**
+
+- `--scope "description"` - What is being approved (default: "Full spec")
+- `--notes "context"` - Additional review notes
+
+**Lifecycle Gate:**
+
+- `approve` (spec.md): No precondition — spec is the entry point
+- `approve --design`: `spec.md` status must be `Approved`
+- `approve --reviewer`: `spec.md` status must be `Approved`
+
+**Implementation (spec.md — default):**
 
 1. **Check Current Status**
    - Read spec.md frontmatter
@@ -603,7 +748,7 @@ Recommendations:
 3. **Approval Decision**
    - If Critical issues > 0: **BLOCK APPROVAL**
 
-     ```
+     ```text
      Approval BLOCKED: user-authentication
 
      Cannot approve with Critical issues:
@@ -617,14 +762,15 @@ Recommendations:
 
    - If Critical issues = 0: **APPROVE**
 
-     ```
-     Approved: user-authentication
+     ```text
+     Approved: user-authentication (spec.md)
 
      ✓ Validation passed (structure intact)
      ✓ Review passed (0 Critical issues)
      ✓ Status changed: Draft → Approved
      ✓ Spec frozen (further changes require version bump)
      ✓ Journal updated with approval record
+     ✓ /afx-spec design UNLOCKED
 
      Note: 3 Major and 5 Minor issues remain. Address in future versions if needed.
      ```
@@ -638,12 +784,13 @@ Recommendations:
    status: Approved # Changed from Draft
    owner: "@alice"
    version: 1.0
-   approved_at: "2024-01-15T14:30:00Z" # Added timestamp
+   approved_at: "2024-01-15T14:30:00.000Z" # Added timestamp
    ---
    ```
 
 5. **Freeze spec.md**
    - Add comment at top:
+
      ```markdown
      <!-- APPROVED: 2024-01-15 - Do not edit without version bump -->
      ```
@@ -654,52 +801,53 @@ Recommendations:
    ## Approval: Spec Approved (2024-01-15 14:30)
 
    Spec approved and frozen. Further changes require version bump.
+   /afx-spec design now unlocked.
 
    Approved by: Claude (automated validation)
    Review score: 72% compliant (0 Critical, 3 Major, 5 Minor issues)
 
-   Validation Summary:
-   ✓ Structure: All 4 files present
-   ✓ Frontmatter: Valid
-   ✓ Cross-references: All links valid
-   ✓ Quality: 0 Critical issues
-
-   Next step: Human sign-off via `/afx-spec sign-off user-authentication --reviewer "@handle"`
+   Next step: `/afx-spec design <name>`
    ```
 
-**Next Command:**
+**Implementation (design.md — with `--design` flag):**
 
-- `/afx-spec sign-off <name> --reviewer "@handle"` for human approval
-- `/afx-work plan <name>` to generate implementation tasks (if tasks exist)
+1. **Check Lifecycle Precondition**
+   - Read `spec.md` frontmatter
+   - If `spec.md` status is NOT `Approved`: **BLOCK**
 
----
+     ```text
+     Approval BLOCKED: Cannot approve design.md
 
-### sign-off <name> --reviewer "@handle"
+     Precondition not met:
+       spec.md status is "Draft" (required: "Approved")
 
-**Purpose:** Human approval with signature and timestamp (compliance/audit trail)
+     Approve the spec first:
+       /afx-spec approve user-authentication
+     ```
 
-**Arguments:**
+2. **Check Design Status**
+   - Read `design.md` frontmatter
+   - If already "Approved", exit with error: "Design already approved."
 
-- `<name>` - Spec name (required)
-- `--reviewer "@handle"` - Who is signing off (required)
-- `--scope "description"` - What is being approved (optional, defaults to "Full spec")
-- `--notes "context"` - Additional review notes (optional)
+3. **Approve Design**
+   - Update `design.md` frontmatter: `status: Draft → Approved`
+   - Add `approved_at` timestamp
+   - Add journal entry recording design approval
 
-**Implementation:**
+     ```text
+     Approved: user-authentication (design.md)
+
+     ✓ spec.md is Approved (precondition met)
+     ✓ design.md status changed: Draft → Approved
+     ✓ /afx-spec tasks UNLOCKED
+     ✓ Journal updated with design approval record
+     ```
+
+**Implementation (human sign-off — with `--reviewer` flag):**
 
 1. **Validate Preconditions**
    - Spec status must be "Approved" (automated approval first)
-   - If not approved, exit with error:
-
-     ```
-     Sign-off BLOCKED: user-authentication
-
-     Spec must be approved before human sign-off.
-     Current status: Draft
-
-     Run this first:
-       /afx-spec approve user-authentication
-     ```
+   - If not approved, exit with error
 
 2. **Record Sign-Off in journal.md**
 
@@ -707,7 +855,7 @@ Recommendations:
    ## Sign-Off: Human Approval (2024-01-15 15:00)
 
    Reviewed and approved by: @alice
-   Timestamp: 2024-01-15T15:00:00Z
+   Timestamp: 2024-01-15T15:00:00.000Z
    Scope: Full spec (functional requirements, design architecture, task breakdown)
 
    Approval attestation:
@@ -730,30 +878,17 @@ Recommendations:
    status: Approved
    owner: "@alice"
    reviewer: "@alice" # Added reviewer
-   approved_at: "2024-01-15T14:30:00Z"
-   signed_at: "2024-01-15T15:00:00Z" # Added sign-off timestamp
+   approved_at: "2024-01-15T14:30:00.000Z"
+   signed_at: "2024-01-15T15:00:00.000Z" # Added sign-off timestamp
    version: 1.0
    ---
    ```
 
-4. **Output Confirmation**
-
-   ```
-   Signed Off: user-authentication
-
-   ✓ Human approval recorded
-   ✓ Reviewer: @alice
-   ✓ Timestamp: 2024-01-15 15:00:00
-   ✓ Scope: Full spec
-   ✓ Frontmatter updated with reviewer and timestamp
-
-   Spec is now fully approved and ready for implementation.
-   ```
-
 **Next Command:**
 
-- `/afx-work plan <name>` to generate implementation tasks from approved spec
-- `/afx-work next <name>` to start first task
+- After spec approval: `/afx-spec design <name>` to author design.md
+- After design approval: `/afx-spec tasks <name>` to author tasks.md
+- After human sign-off: `/afx-work plan <name>` to generate implementation tasks
 
 ---
 
@@ -771,7 +906,6 @@ Recommendations:
 
    Did you mean:
      /afx-spec create payment-flow
-     /afx-spec list
    ```
 
 2. **Missing Files**
@@ -813,32 +947,40 @@ Recommendations:
      4. Run /afx-spec approve user-auth again
    ```
 
+5. **Invalid Subcommand**
+
+   ```
+   Error: Unknown subcommand "list"
+
+   Available subcommands: create, validate, gaps, discuss, review, design, tasks, approve
+
+   Tip: Spec listing and status are available in the VSCode AFX extension (Specs Tree sidebar).
+   ```
+
 ---
 
-## Integration with Other Commands
+## Related Commands
 
 ### From Other Commands → `/afx-spec`
 
-- `/afx-init feature` → Suggest `/afx-spec show <name>` after creation
-- `/afx-work status` → Suggest `/afx-spec list` when multiple specs exist
-- `/afx-task audit` → Suggest `/afx-spec coverage` if gaps detected
+- `/afx-init feature` → Suggest `/afx-spec discuss <name>` after creation
+- `/afx-task verify` → Suggest `/afx-spec gaps` if gaps detected
 - `/afx-check links` → Suggest `/afx-spec validate` for full validation
 
 ### From `/afx-spec` → Other Commands
 
-- `/afx-spec show` → Suggest `/afx-work next` if tasks pending
 - `/afx-spec create` → Suggest editing spec.md to define requirements
-- `/afx-spec coverage` → Suggest `/afx-work plan` if tasks missing
-- `/afx-spec approve` → Suggest `/afx-work plan` to generate tasks
-- `/afx-spec sign-off` → Suggest `/afx-work next` to start implementation
+- `/afx-spec approve` (spec) → Suggest `/afx-spec design <name>`
+- `/afx-spec approve` (design) → Suggest `/afx-spec tasks <name>`
+- `/afx-spec gaps` → Suggest `/afx-work plan` if tasks missing
+- `/afx-spec approve --reviewer` → Suggest `/afx-work pick` to start implementation
 
 ---
 
 ## Notes
 
-- This command consolidates spec-centric operations scattered across 6 commands
+- Focuses on operations requiring agent reasoning — display-only operations are handled by the VSCode AFX extension
 - Follows AFX patterns: YAML frontmatter, subcommand structure, agent instructions
-- Does NOT duplicate functionality - delegates where appropriate (e.g., create → /afx-init)
-- Provides spec discovery and navigation currently missing from AFX workflow
+- Delegates scaffolding to `/afx-init` (create)
 - Interactive `discuss` and automated `review` ensure spec quality before approval
-- Two-stage approval (`approve` → `sign-off`) balances automation with human oversight
+- Unified `approve` command handles automated approval, design approval, and human sign-off via flags

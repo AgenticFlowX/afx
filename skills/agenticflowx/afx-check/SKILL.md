@@ -25,10 +25,37 @@ If neither file exists, use defaults.
 
 ```bash
 /afx-check path <feature-path>   # Trace execution path UI → DB
-/afx-check lint [path]           # Audit annotations for PRD compliance
+/afx-check trace [path]          # Audit @see annotations for PRD compliance
 /afx-check links <spec-path>     # Verify cross-references and update changelog
 /afx-check all <feature-path>    # Run all checks
 ```
+
+## Execution Contract (STRICT)
+
+### Allowed
+
+- Read/list/search files anywhere in workspace
+- Trace execution paths, audit annotations, verify cross-references
+- Append to `docs/specs/**/journal.md` (Captures only, via Proactive Capture Protocol)
+
+### Forbidden
+
+- Create/modify/delete any files (except journal captures above)
+- Run build/test/deploy/migration commands
+
+If fixes are requested, respond with:
+
+```text
+Out of scope for /afx-check (read-only audit mode). Use /afx-dev code to fix issues found.
+```
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-check`**: Critical path failure, missing traceability that reveals design gap.
+
+---
 
 ## Agent Instructions
 
@@ -38,24 +65,25 @@ If neither file exists, use defaults.
 
 | Context                        | Suggested Next Command                           |
 | ------------------------------ | ------------------------------------------------ |
-| After `path` (ALL VERIFIED)    | `/afx-work next <spec>` for next task            |
+| After `path` (ALL VERIFIED)    | `/afx-work pick <spec>` for next task            |
 | After `path` (FAILED)          | `/afx-dev code` to fix the gaps                  |
-| After `lint` (no orphans)      | `/afx-check path` or `/afx-work next`            |
-| After `lint` (orphans found)   | `/afx-check lint <file>:<line>` to fix each      |
-| After `links` (all valid)      | `/afx-work next <spec>` or `/afx-dev code`       |
+| After `trace` (no orphans)     | `/afx-check path` or `/afx-work pick`            |
+| After `trace` (orphans found)  | `/afx-check trace <file>:<line>` to fix each     |
+| After `links` (all valid)      | `/afx-work pick <spec>` or `/afx-dev code`       |
 | After `links` (broken found)   | Fix broken links, then re-run `/afx-check links` |
-| After `all` (READY FOR REVIEW) | `/afx-work next <spec>` or create PR             |
+| After `all` (READY FOR REVIEW) | `/afx-work pick <spec>` or create PR             |
 | After `all` (issues found)     | `/afx-dev code` to address issues                |
 
-**Suggestion Format** (5 ranked options, ideal → less ideal):
+**Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-work next docs/specs/{feature}        # Ideal: Move to next task (if verified)
-  2. /afx-dev code                              # Fix gaps if verification failed
-  3. /afx-task audit <task-id>                  # Confirm task matches spec
-  4. /afx-check lint <path>                     # Check annotation compliance
-  5. /afx-session capture "<note>"              # Note issues before switching
+  1. /afx-dev code                               # Context-driven: Fix gaps if verification failed
+  2. /afx-work pick docs/specs/{feature}          # Context-driven: Move to next task (if verified)
+  3. /afx-task verify <task-id>                   # Context-driven: Confirm task matches spec
+  ──
+  4. /afx-session note "<note>"                   # Note issues before switching
+  5. /afx-work status                             # Re-orient after check
 ```
 
 ---
@@ -183,7 +211,7 @@ Repository: insert()
 
 **Result:** ALL PATHS VERIFIED
 
-Next: /afx-work next docs/specs/{feature} # Proceed to next task
+Next: /afx-work pick docs/specs/{feature} # Proceed to next task
 ```
 
 #### If Gaps Found
@@ -266,16 +294,16 @@ Check the path and try again.
 
 ---
 
-## 2. lint
+## 2. trace
 
-Audit code annotations for PRD compliance.
+Audit @see annotations for PRD compliance.
 
 ### Usage
 
 ```bash
-/afx-check lint              # Scan entire codebase
-/afx-check lint packages/db  # Scan specific directory
-/afx-check lint file.ts:22   # Check specific line
+/afx-check trace              # Scan entire codebase
+/afx-check trace packages/db  # Scan specific directory
+/afx-check trace file.ts:22   # Check specific line
 ```
 
 ### Modes
@@ -302,9 +330,9 @@ Audit code annotations for PRD compliance.
    | claim.action.ts    | 397  | TODO  | Send email notification | docs/specs/user-auth/tasks.md#phase-2 |
    | booking.service.ts | 45   | FIXME | Race condition          | docs/specs/bookings/design.md#locking |
 
-   Run `/afx-check lint <file>:<line>` for detailed fix suggestions.
+   Run `/afx-check trace <file>:<line>` for detailed fix suggestions.
 
-   Next: /afx-check lint claim.action.ts:397 # Fix first orphan
+   Next: /afx-check trace claim.action.ts:397 # Fix first orphan
    ```
 
 4. **PRD inference**: Suggest PRD based on file path (see mapping below).
@@ -346,7 +374,7 @@ Audit code annotations for PRD compliance.
 
    Apply fix? [y/n]
 
-   Next: /afx-check lint {next-file}:{line} # Fix next orphan
+   Next: /afx-check trace {next-file}:{line} # Fix next orphan
 
    ```
 
@@ -723,7 +751,7 @@ Run all verification checks in sequence.
 ### Process
 
 1. **Run path check**: `/afx-check path <feature-path>`
-2. **Run lint check**: `/afx-check lint <feature-path>`
+2. **Run trace check**: `/afx-check trace <feature-path>`
 3. **Run links check**: Infer spec from feature path
 4. **Run schema check**: `/afx-check schema <spec-path>` (if design.md has CREATE TABLE)
 
@@ -738,7 +766,7 @@ Run all verification checks in sequence.
 
 ### 2. Annotation Audit
 
-{lint check results}
+{trace check results}
 
 ### 3. Spec Integrity
 
@@ -753,13 +781,13 @@ Run all verification checks in sequence.
 | Check  | Status     |
 | ------ | ---------- |
 | Path   | Pass       |
-| Lint   | 3 warnings |
+| Trace  | 3 warnings |
 | Links  | Pass       |
 | Schema | Pass       |
 
 **Overall**: READY FOR REVIEW (with warnings)
 
-Next: /afx-work next docs/specs/{feature} # Continue to next task
+Next: /afx-work pick docs/specs/{feature} # Continue to next task
 ```
 
 Or if issues found:

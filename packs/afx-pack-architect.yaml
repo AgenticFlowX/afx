@@ -12,8 +12,7 @@ includes:
   - repo: rixrix/afx
     path: skills/architect/
     items:
-      - afx-architect              # System design, pattern selection, quality attributes
-      - afx-research               # Deep codebase investigation
+      - afx-deep-research          # Deep codebase investigation
 
   - repo: rixrix/afx
     path: skills/dev/

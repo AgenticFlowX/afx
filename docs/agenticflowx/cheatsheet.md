@@ -28,13 +28,13 @@ tags: [afx, reference, cheatsheet]
 | **Find Scripts**        | `/afx-discover scripts [keyword]` | Find automation/deployment scripts   |
 | **New Tasks**           | `/afx-work plan "Add search"`     | Generates tasks from spec            |
 | **Resume Work**         | `/afx-work status`                | "Where was I?" (After break)         |
-| **Pick Task**           | `/afx-work next <spec>`           | Assigns next unchecked task          |
+| **Pick Task**           | `/afx-work pick <spec>`           | Assigns next unchecked task          |
 
 ---
 
 ## Phase 2: Develop (The Loop)
 
-**Cycle**: Assign Task (`work next`) → Code (`dev code`) → Verify (`check path`)
+**Cycle**: Assign Task (`work pick`) → Code (`dev code`) → Verify (`check path`)
 
 | Goal             | Command                       | Notes                                  |
 | :--------------- | :---------------------------- | :------------------------------------- |
@@ -42,7 +42,7 @@ tags: [afx, reference, cheatsheet]
 | **Debug**        | `/afx-dev debug <error>`      | Trace error against spec.              |
 | **Refactor**     | `/afx-dev refactor`           | Clean code, preserve `@see` links.     |
 | **Capture Idea** | `/afx-session note "content"` | Save thought without stopping.         |
-| **Save Context** | `/afx-session save`           | Summarize discussion to `journal.md`.  |
+| **Save Context** | `/afx-session log`            | Summarize discussion to `journal.md`.  |
 
 ---
 
@@ -53,8 +53,8 @@ tags: [afx, reference, cheatsheet]
 | Goal              | Command                     | Notes                                   |
 | :---------------- | :-------------------------- | :-------------------------------------- |
 | **Check Runtime** | `/afx-check path <path>`    | **Mandatory**. Traces execution flow.   |
-| **Audit Task**    | `/afx-task audit <task-id>` | Static check: Does file match spec?     |
-| **Lint Specs**    | `/afx-check lint`           | Find orphaned code (missing `@see`).    |
+| **Audit Task**    | `/afx-task verify <task-id>` | Static check: Does file match spec?    |
+| **Lint Specs**    | `/afx-check trace`          | Find orphaned code (missing `@see`).    |
 | **Verify Links**  | `/afx-check links <spec>`   | Ensure specs don't have broken anchors. |
 
 ---
@@ -63,7 +63,7 @@ tags: [afx, reference, cheatsheet]
 
 | Goal             | Command                             | Notes                                  |
 | :--------------- | :---------------------------------- | :------------------------------------- |
-| **Human Verify** | `/afx-work approve <task> "note"`   | Mark task as human-verified.           |
+| **Human Verify** | `/afx-work complete <task> "note"`  | Mark task as human-verified.           |
 | **Close Issue**  | `/afx-work close <issue> "summary"` | Updates docs, syncing logs, closes.    |
 | **Context**      | `/afx-context save`                 | Bundle context for next agent/session. |
 | **Load Context** | `/afx-context load`                 | Load context from previous agent.      |
