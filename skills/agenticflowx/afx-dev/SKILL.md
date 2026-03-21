@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,development,code,debug,refactor,review,test"
+  afx-argument-hint: "code | debug | refactor | review | test | optimize"
 ---
 
 # /afx-dev

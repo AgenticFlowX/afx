@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,task,verification,verify,progress"
+  afx-argument-hint: "verify | brief"
 ---
 
 # /afx-task

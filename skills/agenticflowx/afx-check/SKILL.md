@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,check,quality,compliance,traceability"
+  afx-argument-hint: "path | trace | links | schema | all"
 ---
 
 # /afx-check

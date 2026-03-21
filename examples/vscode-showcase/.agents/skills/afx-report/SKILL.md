@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,report,metrics,health,coverage"
+  afx-argument-hint: "orphans | coverage | stale"
 ---
 
 # /afx-report

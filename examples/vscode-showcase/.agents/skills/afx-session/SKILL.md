@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,session,notes,discussion,journal"
+  afx-argument-hint: "note | log | recap | promote"
 ---
 
 # /afx-session

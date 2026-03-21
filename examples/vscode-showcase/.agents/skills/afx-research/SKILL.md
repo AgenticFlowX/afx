@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,research,discovery,analysis,adr"
+  afx-argument-hint: "explore | compare | summarize | finalize"
 ---
 
 # /afx-research

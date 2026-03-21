@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,context,session,handoff,continuity"
+  afx-argument-hint: "save | load | history | impact"
 ---
 
 # 🤝 Session Context protocol for seamless context transfer between AI sessions.

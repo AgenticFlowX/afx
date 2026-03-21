@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,spec,requirements,validation,lifecycle"
+  afx-argument-hint: "validate | gaps | discuss | review | design | tasks | approve | create"
 ---
 
 # /afx-spec

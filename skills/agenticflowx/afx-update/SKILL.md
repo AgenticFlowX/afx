@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,update,maintenance,versioning"
+  afx-argument-hint: "check | apply"
 ---
 
 # /afx-update

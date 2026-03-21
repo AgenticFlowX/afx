@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,discovery,infrastructure,tools,capabilities"
+  afx-argument-hint: "infra | scripts | tools | capabilities"
 ---
 
 # /afx-discover

@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,work,orchestration,status,planning,github"
+  afx-argument-hint: "status | pick | resume | sync | plan | complete | reopen | close"
 ---
 
 # /afx-work

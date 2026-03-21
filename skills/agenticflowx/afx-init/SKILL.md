@@ -6,6 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,init,scaffolding,feature,adr,config"
+  afx-argument-hint: "feature | adr | template | prefix | config"
 ---
 
 # /afx-init
