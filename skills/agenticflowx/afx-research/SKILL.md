@@ -70,6 +70,33 @@ When this skill detects a high-impact context change, auto-capture to `journal.m
 
 **Triggers for `/afx-research`**: Research finding that invalidates assumption, technology limitation discovered.
 
+### Timestamp Format (MANDATORY)
+
+When creating or updating research artifacts, ADRs, spec drafts, or frontmatter (`last_verified`, `created`), all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17` or `2025-12-17 14:30`.
+
+### Frontmatter (MANDATORY)
+
+All research artifacts created by this skill MUST include AFX frontmatter:
+
+```yaml
+---
+afx: true
+type: RES
+status: Living
+owner: "@handle"
+created: YYYY-MM-DDTHH:MM:SS.mmmZ
+last_verified: YYYY-MM-DDTHH:MM:SS.mmmZ
+tags: [research, <dynamic-topic>, <dynamic-context>]
+---
+```
+
+**Tag rules:**
+- First tag is always `research`
+- Remaining tags are **dynamic** — derived from the research topic, target feature, and relevant domain (e.g., `[research, auth, token-storage]` or `[research, afx, skill-format]`)
+- Do not use generic placeholders like `topic` — infer specific tags from context
+
+When `finalize --to adr` or `finalize --to spec`, use `type: ADR` or `type: SPEC` respectively with the same frontmatter schema.
+
 ---
 
 ## Agent Instructions
@@ -105,7 +132,8 @@ Agent must ask exactly one checkpoint question:
 
 ```text
 Save this result now or keep refining?
-1) Save to <research-path>/res-<slug>.md
+1) Save to <resolved-research-path>/res-<slug>.md
+   (resolved via: library.research → paths.research → docs/research)
 2) Continue refining in chat
 3) Promote to ADR flow
 ```

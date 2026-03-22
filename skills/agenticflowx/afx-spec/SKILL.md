@@ -18,7 +18,9 @@ Specification management, review, authoring, and approval for spec-centric workf
 **Read config** using two-tier resolution: `.afx/.afx.yaml` (managed defaults) + `.afx.yaml` (user overrides).
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
+- `paths.adr` - Where global ADRs live (default: `docs/adr`)
 - `paths.templates` - Where spec templates live (default: `docs/agenticflowx/templates`)
+- `library.research` - Global research library path (default: `docs/research`)
 
 If neither file exists, use defaults.
 
@@ -81,6 +83,31 @@ Out of scope for /afx-spec (specification-management mode). Use /afx-dev code af
 ### Timestamp Format (MANDATORY)
 
 When creating or updating frontmatter (`last_verified`, `approved_at`, `signed_at`, `created`), all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+
+### Frontmatter (MANDATORY)
+
+When creating or modifying spec documents, preserve and enforce the full AFX frontmatter schema:
+
+```yaml
+---
+afx: true
+type: SPEC              # or DESIGN, TASKS
+status: Draft            # Draft | Approved | Living
+owner: "@handle"
+version: 1.0
+created: YYYY-MM-DDTHH:MM:SS.mmmZ
+last_verified: YYYY-MM-DDTHH:MM:SS.mmmZ
+tags: [<dynamic-feature>, <dynamic-type>]
+---
+```
+
+**During approval**, add these fields (do NOT remove existing fields):
+- `approved_at: YYYY-MM-DDTHH:MM:SS.mmmZ`
+- `signed_at: YYYY-MM-DDTHH:MM:SS.mmmZ`
+- `reviewer: "@handle"`
+- Update `status: Approved` and `last_verified` to current timestamp
+
+**Immutable fields** (must NOT be changed during approval): `afx`, `type`, `owner`, `created`.
 
 ### Proactive Journal Capture
 

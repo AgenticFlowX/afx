@@ -20,6 +20,10 @@ Feature spec scaffolding for AgenticFlowX projects.
 - `paths.specs` - Where spec files live (default: `docs/specs`)
 - `paths.adr` - Where global ADRs live (default: `docs/adr`)
 - `paths.templates` - Where templates live (default: `docs/agenticflowx/templates`)
+- `paths.sessions` - Global discussion location (default: `docs/specs`)
+- `library.research` - Global research library path (default: `docs/research`)
+- `library.docs` - AFX framework documentation (default: `docs/agenticflowx`)
+- `library.architecture` - System constraints & patterns (default: `docs/architecture`)
 
 If neither file exists, use defaults.
 
@@ -164,6 +168,17 @@ PREFIX=$(echo "$FEATURE" | awk -F- '{print toupper(substr($1,0,1) substr($2,0,1)
 
 # 1. SPEC
 cat <<EOF > "$SPEC_DIR/spec.md"
+---
+afx: true
+type: SPEC
+status: Draft
+owner: "@handle"
+version: 1.0
+created: $DATE
+last_verified: $DATE
+tags: [$FEATURE, spec]
+---
+
 # Requirements: $FEATURE
 
 ## Functional Requirements
@@ -181,6 +196,18 @@ EOF
 
 # 2. DESIGN
 cat <<EOF > "$SPEC_DIR/design.md"
+---
+afx: true
+type: DESIGN
+status: Draft
+owner: "@handle"
+version: 1.0
+created: $DATE
+last_verified: $DATE
+tags: [$FEATURE, design]
+spec: spec.md
+---
+
 # Design: $FEATURE
 
 > NOTE: This is a living document. Do not include historical decisions or abandoned paths here. Keep this factual to the current state.
@@ -199,6 +226,19 @@ EOF
 
 # 3. TASKS
 cat <<EOF > "$SPEC_DIR/tasks.md"
+---
+afx: true
+type: TASKS
+status: Draft
+owner: "@handle"
+version: 1.0
+created: $DATE
+last_verified: $DATE
+tags: [$FEATURE, tasks]
+spec: spec.md
+design: design.md
+---
+
 # Tasks: $FEATURE
 
 ## Phase 1: Core
@@ -216,6 +256,9 @@ cat <<EOF > "$SPEC_DIR/journal.md"
 afx: true
 type: JOURNAL
 status: Living
+owner: "@handle"
+created: $DATE
+last_verified: $DATE
 tags: [$FEATURE, journal]
 ---
 

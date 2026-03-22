@@ -18,7 +18,9 @@ Session discussion capture and recall for multi-agent workflows.
 **Read config** using two-tier resolution: `.afx/.afx.yaml` (managed defaults) + `.afx.yaml` (user overrides).
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
+- `paths.adr` - Where global ADRs live (default: `docs/adr`)
 - `paths.sessions` - Global discussion location (default: `docs/specs`)
+- `library.research` - Global research library path (default: `docs/research`)
 - `prefixes` - Feature prefix mappings for discussion IDs
 
 If neither file exists, use defaults.
@@ -104,6 +106,25 @@ Next (ranked):
 ### Timestamp Format (MANDATORY)
 
 When creating or updating journal entries, captures, notes, and discussion metadata, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+
+### Frontmatter (MANDATORY)
+
+All ADRs created via `promote` MUST include AFX frontmatter:
+
+```yaml
+---
+afx: true
+type: ADR
+status: Proposed
+owner: "@handle"
+created: YYYY-MM-DDTHH:MM:SS.mmmZ
+last_verified: YYYY-MM-DDTHH:MM:SS.mmmZ
+tags: [<dynamic-feature>, <dynamic-topic>]
+source: journal.md#<discussion-id>
+---
+```
+
+**Tag rules:** Tags are **dynamic** — derived from the feature name and discussion topic (e.g., `[auth, token-storage]`). Do not use generic placeholders.
 
 ---
 
@@ -330,11 +351,13 @@ Next: /afx-work status # Then continue with suggested task
 
 ```markdown
 ---
+afx: true
 type: ADR
 status: Accepted
-owner: @rix
-date: {original date}
-tags: [{feature}, {topic}]
+owner: "@handle"
+created: YYYY-MM-DDTHH:MM:SS.mmmZ
+last_verified: YYYY-MM-DDTHH:MM:SS.mmmZ
+tags: [<dynamic-feature>, <dynamic-topic>]
 source: journal.md#{discussion-id}
 ---
 
