@@ -68,7 +68,7 @@ The `journal.md` file has two sections:
 1. **Captures** - Quick notes during active chat (cleared when recorded)
 2. **Discussions** - Permanent records with IDs (e.g., `UA-D001`)
 
-> **Note:** Work Sessions (task execution log) are stored in `tasks.md`, not `journal.md`. Updated by `/afx-work`.
+> **Note:** Work Sessions (task execution log) are stored in `tasks.md`, not `journal.md`. Updated by `/afx-task`.
 
 #### Discussion Status Keywords
 
@@ -298,10 +298,10 @@ docs/
 
 ## Creating a New Feature Spec
 
-1. Copy templates to new folder:
+1. Scaffold the feature spec:
 
-   ```bash
-   cp -r docs/agenticflowx/templates docs/specs/{feature-name}
+   ```text
+   /afx-scaffold spec {feature-name}
    ```
 
 2. Fill out `spec.md` with requirements

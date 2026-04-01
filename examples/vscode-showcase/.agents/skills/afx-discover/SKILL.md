@@ -19,7 +19,6 @@ Discover what exists in your project: infrastructure scripts, automation tools, 
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
 - `paths.adr` - Where global ADR files live (default: `docs/adr`)
-- `paths.templates` - Where templates are located (default: `docs/agenticflowx/templates`)
 
 If neither file exists, use defaults.
 
@@ -47,7 +46,7 @@ If neither file exists, use defaults.
 If implementation is requested, respond with:
 
 ```text
-Out of scope for /afx-discover (read-only discovery mode). Use /afx-dev code to implement or /afx-init to scaffold.
+Out of scope for /afx-discover (read-only discovery mode). Use /afx-dev code to implement or /afx-scaffold to scaffold.
 ```
 
 ---
@@ -61,9 +60,9 @@ Out of scope for /afx-discover (read-only discovery mode). Use /afx-dev code to 
 | Context                          | Suggested Next Command                              |
 | -------------------------------- | --------------------------------------------------- |
 | After `infra` (scripts found)    | Use the discovered script or `/afx-dev code`        |
-| After `infra` (nothing found)    | `/afx-init` to scaffold or create the script        |
+| After `infra` (nothing found)    | `/afx-scaffold spec` or `/afx-dev code`             |
 | After `scripts` (found relevant) | Run the script or document in AFX                   |
-| After `tools` (inventory shown)  | `/afx-dev code` or `/afx-work pick`                 |
+| After `tools` (inventory shown)  | `/afx-dev code` or `/afx-task pick`                 |
 | After `capabilities` (overview)  | `/afx-discover <specific>` for deeper investigation |
 
 **Suggestion Format** (top 3 context-driven, bottom 2 static):
@@ -71,10 +70,10 @@ Out of scope for /afx-discover (read-only discovery mode). Use /afx-dev code to 
 ```
 Next (ranked):
   1. Run discovered script: {command}                # Context-driven: If script found
-  2. /afx-init script {name}                         # Context-driven: If nothing found
+  2. /afx-scaffold spec {name}                        # Context-driven: If nothing found
   3. /afx-session note "Missing: {capability}"        # Context-driven: Document gap
   ──
-  4. /afx-work status                                # Re-orient after discovery
+  4. /afx-next                                       # Re-orient after discovery
   5. /afx-help                                       # See all options
 ```
 
@@ -226,16 +225,16 @@ Searched locations:
 
 ### Suggestions
 
-1. **Create provisioning script**: Use `/afx-init script provision-{type}`
+1. **Create provisioning script**: Use `/afx-dev code` to create `provision-{type}` script
 2. **Check cloud console**: Manual provisioning may be in use
 3. **Document in AFX**: Add to `docs/infrastructure/{type}-setup.md`
 
 Next (ranked):
-  1. /afx-init script provision-{type}           # Context-driven: Create new script
+  1. /afx-dev code provision-{type}              # Context-driven: Create new script
   2. /afx-discover scripts deploy                 # Context-driven: Check related scripts
   3. /afx-session note "Infrastructure gap: {type}" # Context-driven: Document gap
   ──
-  4. /afx-work status                            # Re-orient after discovery
+  4. /afx-next                                    # Re-orient after discovery
   5. /afx-help                                   # See all options
 ```
 
@@ -386,7 +385,7 @@ List development and deployment tools configured in the project.
 
 - **{manager}**: {description}
 
-Next: /afx-work pick # Continue with development
+Next: /afx-task pick # Continue with development
 ```
 
 ---
@@ -479,7 +478,7 @@ High-level overview of project automation and tooling.
 **Commands:**
 
 - `/afx-discover infra {type}` - Investigate specific infrastructure
-- `/afx-init script {name}` - Create missing script
+- `/afx-dev code {name}` - Create missing script
 - `/afx-session note "Priority: {gap}"` - Document gap
 
 Next: /afx-discover infra {type} # Address highest priority gap
@@ -522,10 +521,10 @@ Or run without type to see all:
 
 | Command        | Relationship                                      |
 | -------------- | ------------------------------------------------- |
-| `/afx-init`    | Create missing scripts/infrastructure             |
+| `/afx-scaffold` | Scaffold new spec directories and ADRs           |
 | `/afx-session` | Document infrastructure gaps                      |
 | `/afx-dev`     | Implement discovered tooling improvements         |
-| `/afx-work`    | Continue with tasks after infrastructure is ready |
+| `/afx-task`    | Continue with tasks after infrastructure is ready |
 
 ---
 

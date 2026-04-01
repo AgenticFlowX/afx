@@ -1,103 +1,102 @@
 ---
 name: afx-hello
-description: Verify AFX installation and environment — detect which AI provider is running, confirm skill availability, and show a quick project health snapshot
+description: Verify AFX installation and environment — detect AI provider, confirm skill availability, and show project health snapshot
 license: MIT
 metadata:
   afx-owner: "@rix"
   afx-status: Living
-  afx-tags: "starter,health-check,installation,provider-detection"
+  afx-tags: "workflow,diagnostics,environment,onboarding"
 ---
 
-# AFX Hello
+# /afx-hello
 
-Your friendly neighborhood vibe check. Verifies AFX is installed, detects your provider, and gives a quick project health snapshot.
+Environment diagnostics and AFX installation verification. Useful for onboarding, troubleshooting, and confirming the framework is correctly configured.
 
-## Activation
+## Usage
 
-Use this skill when you need to:
-
-- Verify AFX is installed and working — _"Is AFX working?"_
-- Check which provider you're running as — _"Hello AFX"_
-- Get a quick project health snapshot — _"Vibe check"_
+```bash
+/afx-hello
+```
 
 ## Execution Contract (STRICT)
 
 ### Allowed
 
 - Read/list/search files anywhere in workspace
-- Detect AI provider, check skill availability, show project health
+- Read `.afx.yaml` configuration
+- Check for presence of skill files, templates, and spec directories
 
 ### Forbidden
 
 - Create/modify/delete any files
 - Run build/test/deploy/migration commands
 
+If changes are requested, return:
+
+```text
+Out of scope for /afx-hello (read-only diagnostics mode). Use /afx-scaffold to scaffold or /afx-spec to manage specs.
+```
+
 ---
 
-## Instructions
+## Agent Instructions
 
-When activated, perform these steps:
+### Diagnostics Process
 
-### 1. Detect Environment
+When invoked, perform these checks and report results:
 
-Identify which AI coding tool you are running as:
+1. **AI Provider Detection**
+   - Identify which AI agent is running (Claude Code, Copilot, Cursor, Cline, Codex, etc.)
+   - Report model name if available
 
-- **Claude Code** — you're inside Claude's CLI or IDE extension
-- **Codex CLI** — you're OpenAI's Codex agent
-- **Antigravity** — you're Anthropic's Antigravity agent
-- **GitHub Copilot** — you're a Copilot agent
+2. **AFX Installation Check**
+   - `.afx.yaml` exists and is parseable
+   - `.claude/skills/` directory exists with skill files
+   - `.agents/skills/` directory exists (if multi-agent)
+   - `CLAUDE.md` exists and references AFX
+   - `docs/agenticflowx/` directory exists with framework docs
 
-### 2. Read Project Config
+3. **Skill Availability**
+   - List all installed AFX skills (scan skill directories)
+   - Flag any expected skills that are missing
 
-Check for `.afx.yaml` in the project root. If found, extract:
+4. **Project Health Snapshot**
+   - Count specs under `docs/specs/` (total, by status if parseable)
+   - Check for `.afx.yaml` config completeness
+   - Report any obvious issues (missing templates dir, broken paths)
 
-- `version` — which AFX version/branch is installed
-- `providers` — which providers are enabled
-- `packs` — which packs are installed and their status
+### Output Format
 
-If `.afx.yaml` is missing, note that AFX is not installed.
+```markdown
+## AFX Environment Check
 
-### 3. Scan for Specs
+**Agent**: Claude Code (claude-opus-4-6)
+**Workspace**: /path/to/project
 
-Look for `docs/specs/` and count:
+### Installation
 
-- Total features (directories under `docs/specs/`)
-- Features with all four files (spec.md, design.md, tasks.md, journal.md)
-- Incomplete features (missing any of the four files)
+| Component          | Status | Path                        |
+| ------------------ | ------ | --------------------------- |
+| .afx.yaml          | ✓      | .afx.yaml                   |
+| CLAUDE.md          | ✓      | CLAUDE.md                   |
+| Skills (Claude)    | ✓      | .claude/skills/ (14 skills) |
+| Skills (Agents)    | ✓      | .agents/skills/ (14 skills) |
+| Templates          | ✓      | Bundled in skill assets/    |
+| Framework Docs     | ✓      | docs/agenticflowx/          |
 
-### 4. Report
+### Project Health
 
-Output a concise report in this format:
+| Metric        | Value |
+| ------------- | ----- |
+| Total Specs   | 12    |
+| Draft         | 3     |
+| Approved      | 7     |
+| Living        | 2     |
 
+### Quick Start
+
+Ready to go! Try:
+  /afx-next                    # What should I do now?
+  /afx-spec create <name>     # Start a new feature
+  /afx-discover capabilities  # Explore the project
 ```
- _____ _____ _  _
-|  _  |   __|_'_|
-|     |   __| _ |     AgenticFlowX
-|__|__|__|  |_'_|     vibe check passed
-
-Provider:   {detected provider}
-Version:    {version from .afx.yaml}
-Providers:  {comma-separated enabled providers}
-Packs:      {count} installed ({pack names})
-Specs:      {count} features ({complete} complete, {incomplete} incomplete)
-
-Everything looks good. Ship it.
-```
-
-If something is off (no .afx.yaml, no specs, no packs), replace the last line with a helpful suggestion:
-
-- No `.afx.yaml` → "Run the AFX installer to get started."
-- No specs → "Create your first feature with /afx-init feature <name>"
-- No packs → "Install a pack with: afx-cli --pack qa ."
-
-### AFX Integration
-
-<!-- @afx:provider-commands -->
-- Use `/afx-discover capabilities` for a deeper project overview
-- Use `/afx-work status` to check current work state
-<!-- @afx:/provider-commands -->
-
-## Output
-
-Always end your response with:
-> AFX skill: `afx-hello`

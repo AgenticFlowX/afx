@@ -49,7 +49,11 @@ skills:
     category: agenticflowx
     source: afx-pack-agenticflowx
     item_type: afx
-  - name: afx-init
+  - name: afx-scaffold
+    category: agenticflowx
+    source: afx-pack-agenticflowx
+    item_type: afx
+  - name: afx-adr
     category: agenticflowx
     source: afx-pack-agenticflowx
     item_type: afx
@@ -74,14 +78,6 @@ skills:
     source: afx-pack-agenticflowx
     item_type: afx
   - name: afx-task
-    category: agenticflowx
-    source: afx-pack-agenticflowx
-    item_type: afx
-  - name: afx-update
-    category: agenticflowx
-    source: afx-pack-agenticflowx
-    item_type: afx
-  - name: afx-work
     category: agenticflowx
     source: afx-pack-agenticflowx
     item_type: afx

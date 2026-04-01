@@ -46,8 +46,6 @@ The spec tells you _what_ to build. The GitHub ticket tells you _where you left 
 ### Commands
 
 - `/afx-next` - Context-aware guidance
-- `/afx-work status` - Quick state check
-- `/afx-work pick <spec-path>` - Pick next task from spec
 - `/afx-dev code [instruction]` - Implement with @see traceability
 - `/afx-check path <feature-path>` - Trace execution path (BLOCKING gate)
 - `/afx-session log [feature]` - Save session to journal
@@ -55,7 +53,6 @@ The spec tells you _what_ to build. The GitHub ticket tells you _where you left 
 
 <!-- AFX:START - Managed by AFX. Do not edit manually. -->
 <!-- AFX Version: 2.1.0 -->
-
 
 ## Documentation References (Living Documentation Traceability)
 
@@ -201,15 +198,7 @@ When starting or resuming work on a ticket:
 - `/afx-discover scripts [keyword]` - Find automation/deployment scripts
 - `/afx-discover tools` - List dev/deployment tools
 
-**Work Orchestration**
-
-- `/afx-work status` - Quick state check after interruption
-- `/afx-work pick <spec-path>` - Pick next task from spec
-- `/afx-work resume [spec|num]` - Continue in-progress work
-- `/afx-work sync [spec] [issue]` - Bidirectional GitHub sync
-- `/afx-work plan [instruction]` - Generate tickets from specs
-
-**Task Verification**
+**Task Management**
 
 - `/afx-task verify <task-id>` - Verify task implementation vs spec
 - `/afx-task brief <task-id>` - Get implementation summary
@@ -248,8 +237,8 @@ When starting or resuming work on a ticket:
 
 **Setup & Context**
 
-- `/afx-init feature <name>` - Create new feature spec
-- `/afx-init adr <title>` - Create global ADR in `docs/adr/`
+- `/afx-scaffold spec <name>` - Create new feature spec
+- `/afx-adr create <title>` - Create global ADR in `docs/adr/`
 - `/afx-context save [feature]` - Generate context bundle
 - `/afx-context load` - Load context from previous context
 - `/afx-help` - Show command reference
@@ -268,4 +257,5 @@ Use `/afx-session` to capture important discussions with AI agents:
 ```
 
 Discussions are stored in `docs/specs/{feature}/journal.md` with auto-generated tags for filtering.
+
 <!-- AFX:END -->

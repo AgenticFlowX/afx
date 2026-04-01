@@ -36,17 +36,17 @@ Use `/afx-xxx` slash commands (skills installed to project):
 | --------------- | --------------------------------------------------- |
 | `/afx-next`     | Context-aware "What should I do now?"               |
 | `/afx-discover` | Project discovery (scripts, tools, capabilities)    |
-| `/afx-work`     | Workflow orchestration (status, next, resume, sync) |
 | `/afx-dev`      | Development with @see traceability                  |
 | `/afx-check`    | Quality gates (path, lint, links)                   |
 | `/afx-task`     | Task verification and auditing                      |
 | `/afx-session`  | Discussion capture and recall                       |
-| `/afx-init`     | Feature scaffolding + ADR creation                  |
+| `/afx-scaffold` | Scaffold spec directories, research docs, and ADRs  |
+| `/afx-adr`      | ADR management — create, review, list, supersede    |
 | `/afx-context`  | Agent session context                               |
 | `/afx-spec`     | Spec querying/viewing                               |
 | `/afx-report`   | Reporting (health, orphans, coverage)               |
 | `/afx-help`     | Command reference                                   |
-| `/afx-update`   | Framework update check and apply                    |
+| `/afx-hello`    | Installation verification and health check          |
 
 ### Source of Truth
 
