@@ -46,7 +46,7 @@ Since AFX is primarily a framework of documentation and instructions, there is n
 - **Specialized Tools:**
   - Use `codebase_investigator` for high-level architectural analysis or mapping complex dependencies during `/afx-next` or `/afx-discover`.
   - Use `grep_search` and `read_file` for precise context scanning within specs and journals.
-  - Follow the "Smart Init Protocol" in `/afx-init` by leveraging these tools for pre-scaffold analysis.
+  - Follow the "Smart Init Protocol" in `/afx-scaffold` by leveraging these tools for pre-scaffold analysis.
 
 ## Git Commit Attribution
 

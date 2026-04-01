@@ -170,7 +170,7 @@ Next (ranked):
 
 Next (ranked):
   1. /afx-task pick <feature>                    # Context-driven: Pick next pending task
-  2. /afx-init feature <name>                    # Context-driven: Start something new
+  2. /afx-scaffold spec <name>                    # Context-driven: Start something new
   3. /afx-discover capabilities                   # Context-driven: Explore project state
   ──
   4. /afx-next                             # Check full project state

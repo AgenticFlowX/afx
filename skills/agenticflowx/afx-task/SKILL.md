@@ -18,7 +18,6 @@ Implementation lifecycle engine for `tasks.md` artifacts and source code. Owns t
 **Read config** using two-tier resolution: `.afx/.afx.yaml` (managed defaults) + `.afx.yaml` (user overrides).
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
-- `paths.templates` - Where spec templates live (default: `docs/agenticflowx/templates`)
 
 If neither file exists, use defaults.
 
@@ -249,7 +248,7 @@ After EVERY `/afx-task` action, suggest the next command:
 
    If critical sections are empty (`[DES-ARCH]`, `[DES-API]`, `[DES-DATA]`), warn the user but continue — do not block.
 
-3. **Generate Task Breakdown** using the tasks template (`docs/agenticflowx/templates/tasks.md`):
+3. **Generate Task Breakdown** using the tasks template (`assets/tasks-template.md`):
    - Organize into phases (setup, core, integration, testing, docs)
    - Each task must have:
      - WBS numbering (Phase.Task, e.g., `1.1`, `2.3`)

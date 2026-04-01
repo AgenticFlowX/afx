@@ -85,7 +85,7 @@ When creating or updating research artifacts, ADRs, spec drafts, or frontmatter 
 
 ### Frontmatter (MANDATORY)
 
-All research artifacts created by this skill MUST include AFX frontmatter:
+All research artifacts created by this skill MUST follow `assets/research-template.md` for canonical structure. Required frontmatter:
 
 ```yaml
 ---
@@ -276,6 +276,40 @@ Finalize research outcomes into ADR or Spec draft.
 - Preserve frontmatter conventions from AFX templates
 - Do not create implementation tasks or code
 - Before creating ADR/spec artifacts, ask for explicit confirmation to proceed with promotion write actions
+
+---
+
+## Error Handling
+
+**Topic not found / no related artifacts:**
+
+```
+No existing research, specs, or ADRs found for '{topic}'.
+Starting from scratch — explore will search broader context.
+```
+
+**Research doc already exists:**
+
+```
+Error: 'res-{slug}.md' already exists at {path}
+Use /afx-research explore {topic} to continue, or choose a different topic.
+```
+
+**Ambiguous topic:**
+
+```
+Multiple matches for '{topic}':
+  1. docs/research/res-caching-strategy.md
+  2. docs/specs/caching/research/res-cache-layer.md
+Which one? (1/2)
+```
+
+**Finalize without prior research:**
+
+```
+Warning: No existing research artifacts found for '{topic}'.
+Consider running /afx-research explore first, or proceed with finalize from conversation context.
+```
 
 ---
 

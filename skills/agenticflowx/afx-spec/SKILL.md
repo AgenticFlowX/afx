@@ -19,7 +19,6 @@ Specification management, review, authoring, and approval for spec-centric workf
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
 - `paths.adr` - Where global ADRs live (default: `docs/adr`)
-- `paths.templates` - Where spec templates live (default: `docs/agenticflowx/templates`)
 - `library.research` - Global research library path (default: `docs/research`)
 
 If neither file exists, use defaults.
@@ -28,7 +27,7 @@ If neither file exists, use defaults.
 
 ```bash
 # Scaffolding
-/afx-spec create <name>                     # Initialize new spec (delegates to /afx-init)
+/afx-spec create <name>                     # Initialize new spec directory with all artifacts
 
 # Analysis (agent reasoning required)
 /afx-spec validate <name>                   # Check spec structure integrity
@@ -62,7 +61,7 @@ Provides a spec-centric interface for managing specifications throughout their l
 ### Forbidden
 
 - Create/modify/delete source code in application directories
-- Create/modify/delete folders (spec folders are scaffolded by `/afx-init`)
+- Delete spec folders (only `create` subcommand scaffolds new ones)
 - Delete any spec files
 - Run build/test/deploy/migration commands
 - Modify runtime config used by application execution
@@ -81,7 +80,7 @@ When creating or updating frontmatter (`updated_at`, `approved_at`, `signed_at`,
 
 ### Frontmatter (MANDATORY)
 
-When creating or modifying spec documents, preserve and enforce the full AFX frontmatter schema:
+When creating or modifying spec documents, read `assets/spec-template.md` for the canonical structure and frontmatter schema:
 
 ```yaml
 ---
@@ -135,7 +134,7 @@ After completing any action that modifies `spec.md`, you MUST:
 
 ### Scaffold vs Content
 
-- **Scaffold** (template placeholders created by `/afx-init feature`): Always allowed. Empty template files are not content.
+- **Scaffold** (template placeholders created by `/afx-scaffold feature`): Always allowed. Empty template files are not content.
 - **Content** (full technical design, task breakdowns, requirements): Gated behind approval.
 - **journal.md**: Always writable — session capture is never gated.
 
@@ -168,6 +167,28 @@ Do not auto-write spec files. Before persisting any changes to `spec.md`, `desig
 1. Present the proposed content to the user
 2. Wait for explicit confirmation before writing
 3. `journal.md` append-only entries may be written without checkpoint (session log)
+
+### Context Resolution (MANDATORY)
+
+When `<name>` is omitted or ambiguous, resolve in this order:
+
+1. **Conversation context** — recently discussed feature, spec file reads, or prior `/afx-spec` commands
+2. **Branch name** — extract from `feat/{feature-name}` pattern
+3. **Open GitHub issues** — if only one feature has open/active issues
+4. **`.afx.yaml` features list** — if only one feature is registered
+5. **Fallback** — prompt the user: "Which feature? Available: user-auth, shopping-cart, ..."
+
+**Subcommand-specific rules:**
+
+| Subcommand  | Arg required? | Inference allowed?                         |
+| ----------- | ------------- | ------------------------------------------ |
+| `create`    | Yes           | Can infer from conversation topic          |
+| `validate`  | Yes           | Can infer from branch or recent context    |
+| `discuss`   | Yes           | Can infer from branch or recent context    |
+| `review`    | Yes           | Can infer from branch or recent context    |
+| `approve`   | Yes           | Can infer from branch or recent context    |
+
+---
 
 ### Next Command Suggestion (MANDATORY)
 
@@ -203,16 +224,30 @@ Next (ranked):
 
 ### create <name>
 
-**Purpose:** Initialize new spec (delegates to /afx-init)
+**Purpose:** Initialize new spec directory with all artifacts.
 
 **Lifecycle Gate:** None — `create` is the entry point.
 
 **Implementation:**
 
-1. Delegate to `/afx-init feature <name>` for scaffold (creates template files)
-2. After scaffold, author **`spec.md` content only** (requirements, scope, acceptance criteria)
-3. `design.md` and `tasks.md` remain as template scaffolds — content authoring is **blocked** until upstream documents are approved
-4. `journal.md` gets initial discussion entry (always allowed)
+1. **Validate name**: Must be kebab-case. Error if not.
+2. **Check existence**: If `docs/specs/<name>/` already exists, stop with error.
+3. **Confirm with user**: Show file list and wait for confirmation.
+4. **Read templates** from sibling skill `assets/` directories:
+   - `assets/spec-template.md` (this skill)
+   - `../afx-design/assets/design-template.md`
+   - `../afx-task/assets/tasks-template.md`
+   - `../afx-session/assets/journal-template.md`
+5. **Create files** using the **Write tool** — substitute placeholders:
+   - `{Feature Name}` → Title-cased name (e.g., `user-auth` → `User Auth`)
+   - `{feature}` → the kebab-case name
+   - `{YYYY-MM-DDTHH:MM:SS.mmmZ}` → current ISO 8601 timestamp
+   - `@owner` → `@handle`
+   - `<!-- prefix: XX -->` in journal.md → auto-derived prefix (first letter of each word, uppercase)
+6. **Create `research/`** subdirectory (empty).
+7. After scaffold, author **`spec.md` content only** (requirements, scope, acceptance criteria)
+8. `design.md` and `tasks.md` remain as template scaffolds — content authoring is **blocked** until upstream documents are approved
+9. `journal.md` gets initial discussion entry (always allowed)
 
 **CRITICAL**: Do NOT author full `design.md` or `tasks.md` content during create. The spec must be reviewed, iterated, and approved first. Use `/afx-design author <name>` and `/afx-task plan <name>` after approval.
 
@@ -654,7 +689,7 @@ Status: FAILED (6 issues)
      - docs/specs/user-auth/journal.md
 
    Run this to reinitialize:
-     /afx-init feature user-auth
+     /afx-scaffold feature user-auth
    ```
 
 3. **Approval Blocked**
@@ -699,7 +734,7 @@ Status: FAILED (6 issues)
 
 ### From Other Commands → `/afx-spec`
 
-- `/afx-init feature` → Suggest `/afx-spec discuss <name>` after creation
+- `/afx-scaffold feature` → Suggest `/afx-spec discuss <name>` after creation
 - `/afx-task verify` → Suggest `/afx-spec validate` if spec issues detected
 - `/afx-check links` → Suggest `/afx-spec validate` for full validation
 
@@ -716,6 +751,6 @@ Status: FAILED (6 issues)
 
 - Focuses on operations requiring agent reasoning — display-only operations are handled by the VSCode AFX extension
 - Follows AFX patterns: YAML frontmatter, subcommand structure, agent instructions
-- Delegates scaffolding to `/afx-init` (create)
+- Delegates scaffolding to `/afx-scaffold` (create)
 - Interactive `discuss` and automated `review` ensure spec quality before approval
 - Unified `approve` command handles automated approval, design approval, and human sign-off via flags

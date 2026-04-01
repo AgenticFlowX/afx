@@ -21,8 +21,8 @@ tags: [afx, reference, cheatsheet]
 
 | Goal                    | Command                           | Notes                                 |
 | :---------------------- | :-------------------------------- | :------------------------------------ |
-| **New Feature**         | `/afx-init feature <name>`        | Creates full scaffold (`docs/specs`)  |
-| **New ADR**             | `/afx-init adr <title>`           | Creates global ADR in `docs/adr/`     |
+| **New Feature**         | `/afx-scaffold spec <name>`       | Creates full scaffold (`docs/specs`)  |
+| **New ADR**             | `/afx-adr create <title>`         | Creates global ADR in `docs/adr/`     |
 | **Discover Project**    | `/afx-discover capabilities`      | Understand existing setup             |
 | **Find Infrastructure** | `/afx-discover infra [type]`      | Locate provisioning scripts           |
 | **Find Scripts**        | `/afx-discover scripts [keyword]` | Find automation/deployment scripts    |

@@ -115,7 +115,7 @@ We'll know we're right when [metric changes by X]
 ## AFX Integration
 
 <!-- @afx:provider-commands -->
-- Use `/afx-init feature <name>` to scaffold a new feature spec
+- Use `/afx-scaffold spec <name>` to scaffold a new feature spec
 - Use `/afx-session note` to capture discovery insights
 <!-- @afx:/provider-commands -->
 

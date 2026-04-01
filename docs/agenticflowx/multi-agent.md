@@ -28,7 +28,8 @@ AFX supports multiple AI agents through platform-specific command implementation
 | `/afx-dev`           | `/afx-dev`      | `afx-dev`      | `afx-dev.prompt.md`      |
 | `/afx-check`         | `/afx-check`    | `afx-check`    | `afx-check.prompt.md`    |
 | `/afx-session`       | `/afx-session`  | `afx-session`  | `afx-session.prompt.md`  |
-| `/afx-init`          | `/afx-init`     | `afx-init`     | `afx-init.prompt.md`     |
+| `/afx-scaffold`      | `/afx-scaffold` | `afx-scaffold` | `afx-scaffold.prompt.md` |
+| `/afx-adr`           | `/afx-adr`      | `afx-adr`      | `afx-adr.prompt.md`      |
 | `/afx-context`       | `/afx-context`  | `afx-context`  | `afx-context.prompt.md`  |
 | `/afx-report`        | `/afx-report`   | `afx-report`   | `afx-report.prompt.md`   |
 | `/afx-research`      | `/afx-research` | `afx-research` | `afx-research.prompt.md` |

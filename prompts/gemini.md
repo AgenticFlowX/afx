@@ -39,7 +39,8 @@ Use `/afx-xxx` slash commands (skills installed to project):
 | `/afx-check`    | Quality gates (path, lint, links)                |
 | `/afx-task`     | Task verification and auditing                   |
 | `/afx-session`  | Discussion capture and recall                    |
-| `/afx-init`     | Feature scaffolding + ADR creation               |
+| `/afx-scaffold` | Feature spec scaffolding                         |
+| `/afx-adr`      | ADR management — create, review, list, supersede |
 | `/afx-context`  | Agent session context                            |
 | `/afx-spec`     | Spec querying/viewing                            |
 | `/afx-report`   | Reporting (health, orphans, coverage)            |

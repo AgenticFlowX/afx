@@ -34,7 +34,7 @@ Environment diagnostics and AFX installation verification. Useful for onboarding
 If changes are requested, return:
 
 ```text
-Out of scope for /afx-hello (read-only diagnostics mode). Use /afx-init to scaffold or /afx-spec to manage specs.
+Out of scope for /afx-hello (read-only diagnostics mode). Use /afx-scaffold to scaffold or /afx-spec to manage specs.
 ```
 
 ---
@@ -81,7 +81,7 @@ When invoked, perform these checks and report results:
 | CLAUDE.md          | ✓      | CLAUDE.md                   |
 | Skills (Claude)    | ✓      | .claude/skills/ (14 skills) |
 | Skills (Agents)    | ✓      | .agents/skills/ (14 skills) |
-| Templates          | ✓      | docs/agenticflowx/templates |
+| Templates          | ✓      | Bundled in skill assets/    |
 | Framework Docs     | ✓      | docs/agenticflowx/          |
 
 ### Project Health

@@ -51,7 +51,7 @@ Out of scope for /afx-session (session capture mode). Use /afx-dev code to imple
 
 ## Post-Action Checklist (MANDATORY)
 
-After modifying `journal.md`, you MUST:
+After modifying `journal.md`, you MUST (see `assets/journal-template.md` for canonical structure):
 
 1. **Update `updated_at`**: Set to current ISO 8601 timestamp in `journal.md` frontmatter.
 2. **Append-Only Entries**: Never edit or remove existing journal entries. Only append new ones.

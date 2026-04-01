@@ -366,7 +366,7 @@ export async function signInWithEmail(data: SignInSchema) {
 
 > **Looking for the full templates or a working example?**
 >
-> 1. Check out the master schema files in [`docs/agenticflowx/templates/`](docs/agenticflowx/templates/) to see the exact YAML frontmatter and document structures expected by AFX coding agents.
+> 1. Templates are bundled inside each skill's `assets/` directory (e.g., `skills/agenticflowx/afx-spec/assets/spec-template.md`) for the exact YAML frontmatter and document structures expected by AFX coding agents.
 > 2. Explore the [`examples/minimal-project/`](examples/minimal-project/) directory to see how a complete AFX continuous-development environment is structured in practice.
 
 ## Global Context vs Local Context
@@ -403,7 +403,9 @@ Scans your codebase to understand build systems, test runners, package managers,
 
 **`/afx-dev debug|refactor|review|test|optimize`** - Advanced diagnostics — debug, refactor, review, test, optimize
 
-**`/afx-init feature|adr <name>`** - Scaffold new work
+**`/afx-scaffold spec|research|adr <name>`** - Scaffold new work
+
+**`/afx-adr create|review|list|supersede`** - ADR management
 
 ### Verification
 
@@ -431,7 +433,7 @@ Package current context for transfer to another agent or future session. Include
 ## Example Workflow
 
 ```
-afx-init feature → afx-spec approve → afx-design author → afx-design approve
+afx-scaffold spec → afx-spec approve → afx-design author → afx-design approve
   → afx-task plan → afx-task pick → afx-task code → afx-check path → afx-task complete
                           ↑                                                |
                           └────────── afx-next (resume next session) ──────┘
@@ -456,8 +458,7 @@ Or if you have AFX cloned locally:
 
 The installer prompts you to select which AI agents you use, then installs:
 
-- AFX skills to selected skill targets (`.claude/skills/` and/or `.agents/skills/`)
-- Templates to `docs/agenticflowx/templates/`
+- AFX skills to selected skill targets (`.claude/skills/` and/or `.agents/skills/`), including templates bundled in skill `assets/` directories
 - Configuration file `.afx.yaml`
 - AFX documentation to `docs/agenticflowx/`
 - Context files for selected agents (`CLAUDE.md`, `AGENTS.md`, and optionally `GEMINI.md`)
@@ -471,7 +472,7 @@ A common difficulty for new users is translating a raw idea into structured AFX 
 graph TD
     A[Raw Idea<br/>'Build a SaaS Landing Page'] --> B[Claude Code]
     B -->|Asks Clarifying Questions| C[User Answers]
-    C -->|Auto-executes /afx-init| D[docs/specs/saas-landing/]
+    C -->|Auto-executes /afx-scaffold| D[docs/specs/saas-landing/]
 
     D --> E[spec.md<br/>FRs & NFRs]
     D --> F[design.md<br/>Architecture & UI]
@@ -494,7 +495,7 @@ I want to build a single-page landing page for my SaaS product. Make it plain, s
 
 Please act as my Product Manager and Technical Architect:
 1. Ask me 1-3 clarifying questions about this idea. Wait for my response.
-2. Once answered, use the `/afx-init` command to scaffold the folder structure.
+2. Once answered, use the `/afx-scaffold` command to scaffold the folder structure.
 3. Write the `spec.md`, `design.md`, and `tasks.md` files based on our discussion. Remember to check `CLAUDE.md` for global UI conventions before writing the design document.
 
 When you're done, ask me if I'm ready to run `/afx-task pick` to start coding!
@@ -504,7 +505,7 @@ When you're done, ask me if I'm ready to run `/afx-task pick` to start coding!
 Claude will act as your Product Manager and pause to ask you a few clarifying questions.
 
 **Step 4: Review the Generated Output**
-Once you answer, Claude will automatically run `/afx-init` and build out your specification files tailored to your answers:
+Once you answer, Claude will automatically run `/afx-scaffold` and build out your specification files tailored to your answers:
 
 - `spec.md`: Contains your User Stories, Functional Requirements, and Non-Functional Requirements.
 - `design.md`: Contains your system architecture, color palettes, and component layouts.

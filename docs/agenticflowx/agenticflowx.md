@@ -273,12 +273,12 @@ The AFX command suite. See `afx/skills.json` for full integrations.
 
 ## Setup & Context
 
-| Command                    | Purpose                            |
-| :------------------------- | :--------------------------------- |
-| `/afx-init feature <name>` | Create new feature spec            |
-| `/afx-init adr <title>`    | Create global ADR in `docs/adr/`   |
-| `/afx-context save`        | Generate context bundle            |
-| `/afx-context load`        | Load context from previous session |
+| Command                     | Purpose                            |
+| :-------------------------- | :--------------------------------- |
+| `/afx-scaffold spec <name>` | Create new feature spec            |
+| `/afx-adr create <title>`   | Create global ADR in `docs/adr/`   |
+| `/afx-context save`         | Generate context bundle            |
+| `/afx-context load`         | Load context from previous session |
 
 ## Task Management
 

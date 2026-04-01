@@ -11,7 +11,7 @@ I want to build a single-page landing page for my SaaS product. Make it plain, s
 
 Please act as my Product Manager and Technical Architect:
 1. Ask me 1-3 clarifying questions about this idea. Wait for my response.
-2. Once answered, use the `/afx-init` command to scaffold the folder structure.
+2. Once answered, use the `/afx-scaffold` command to scaffold the folder structure.
 3. Write the `spec.md`, `design.md`, and `tasks.md` files based on our discussion. Remember to check `CLAUDE.md` for global UI conventions before writing the design document.
 
 When you're done, ask me if I'm ready to run `/afx-task pick` to start coding!

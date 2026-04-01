@@ -96,7 +96,7 @@ What becomes easier? What becomes harder?
 
 <!-- @afx:provider-commands -->
 
-- Use `/afx-init adr` to create architecture decision records
+- Use `/afx-adr create` to create architecture decision records
 - Use `/afx-check path` to verify architecture layers are respected
 <!-- @afx:/provider-commands -->
 

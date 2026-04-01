@@ -85,7 +85,8 @@ Code MUST link back to specs via JSDoc `@see` annotations. Links to `spec.md` an
 | `/afx-dev`      | Advanced diagnostics (debug, refactor, test)       |
 | `/afx-check`    | Quality gates (path, trace, links, deps, coverage) |
 | `/afx-session`  | Discussion capture and recall                      |
-| `/afx-init`     | Feature scaffolding + ADR creation                 |
+| `/afx-scaffold` | Scaffold spec directories, research docs, and ADRs |
+| `/afx-adr`      | ADR management — create, review, list, supersede   |
 | `/afx-context`  | Agent session context                              |
 | `/afx-hello`    | Installation verification and health check         |
 

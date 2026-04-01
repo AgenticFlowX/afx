@@ -87,7 +87,7 @@ Everything looks good. Ship it.
 If something is off (no .afx.yaml, no specs, no packs), replace the last line with a helpful suggestion:
 
 - No `.afx.yaml` → "Run the AFX installer to get started."
-- No specs → "Create your first feature with /afx-init feature <name>"
+- No specs → "Create your first feature with /afx-scaffold spec <name>"
 - No packs → "Install a pack with: afx-cli --pack qa ."
 
 ### AFX Integration

@@ -394,18 +394,6 @@ ${end_marker}"
     fi
 }
 
-# Ensure a pattern is in .gitignore
-# @see docs/specs/afx-packs/design.md#310-helper-functions
-ensure_gitignore() {
-    local pattern="$1"
-    local gitignore="$TARGET_DIR/.gitignore"
-    [[ "$DRY_RUN" == "true" ]] && return 0
-    if [[ -f "$gitignore" ]]; then
-        grep -qF "$pattern" "$gitignore" || echo "$pattern" >> "$gitignore"
-    else
-        echo "$pattern" > "$gitignore"
-    fi
-}
 
 # Read agent selection from existing .afx.yaml (if present).
 # Sets NO_CLAUDE_MD/NO_AGENTS_MD/NO_GEMINI_MD only if still empty (not set by flags).
@@ -1029,16 +1017,13 @@ skill_sync() {
             INSTALLED+=("  → $target/$skill_name (would create)")
         else
             mkdir -p "$target_dir"
-            if [[ "$item_type" == "afx" && -f "$canonical_dir/SKILL.md" ]]; then
-                # Strip provider-command markers from SKILL.md
-                sed \
+            cp -r "$canonical_dir"/. "$target_dir/"
+            # Strip provider-command markers from AFX SKILL.md
+            if [[ "$item_type" == "afx" && -f "$target_dir/SKILL.md" ]]; then
+                sed -i '' \
                     -e '/<!-- @afx:provider-commands -->/d' \
                     -e '/<!-- @afx:\/provider-commands -->/d' \
-                    "$canonical_dir/SKILL.md" > "$target_dir/SKILL.md"
-                # Copy references/ if present
-                [[ -d "$canonical_dir/references" ]] && cp -r "$canonical_dir/references" "$target_dir/"
-            else
-                cp -r "$canonical_dir"/. "$target_dir/"
+                    "$target_dir/SKILL.md"
             fi
         fi
         [[ -n "$target_labels" ]] && target_labels+=" + "
@@ -1114,8 +1099,6 @@ pack_install() {
     if [[ "$DRY_RUN" != "true" ]]; then
         mkdir -p "$TARGET_DIR/.afx/.cache"
     fi
-    ensure_gitignore ".afx/"
-
     local category
     category=$(category_from_pack "$pack_name")
 
@@ -1428,26 +1411,11 @@ step_skills() {
     echo -e "${DIM}  Synced $synced skill(s) to .agents/skills/ (+ .claude/skills/ if Claude enabled).${NC}"
 }
 
-step_templates() {
-    echo -e "${BLUE}Installing templates...${NC}"
-    local dir="$TARGET_DIR/docs/agenticflowx/templates"
-
-    if [ -d "$AFX_DIR/templates" ]; then
-        for tpl in "$AFX_DIR"/templates/*.md; do
-            if [ -f "$tpl" ]; then
-                local filename=$(basename "$tpl")
-                install_file "$tpl" "$dir/$filename" "Template: $filename" "$UPDATE_MODE"
-            fi
-        done
-    fi
-}
-
 step_config() {
     echo -e "${BLUE}Managing configuration...${NC}"
 
     # Ensure .afx/ folder exists
     [[ "$DRY_RUN" != "true" ]] && mkdir -p "$TARGET_DIR/.afx/.cache"
-    ensure_gitignore ".afx/"
 
     # Managed defaults — always written/overwritten in .afx/.afx.yaml
     install_file "$AFX_DIR/.afx.yaml.template" "$TARGET_DIR/.afx/.afx.yaml" ".afx/.afx.yaml" "true"
@@ -1528,9 +1496,10 @@ step_docs() {
     local dir="$TARGET_DIR/docs/agenticflowx"
     [[ "$DRY_RUN" != "true" ]] && mkdir -p "$dir"
 
-    for doc in "agenticflowx.md" "agenticflowx-llm.md" "guide.md" "cheatsheet.md" "multi-agent.md" "packs-and-skills.md" "vscode-extension.md"; do
-        if [ -f "$AFX_DIR/docs/agenticflowx/$doc" ]; then
-            install_file "$AFX_DIR/docs/agenticflowx/$doc" "$dir/$doc" "AFX Doc: $doc" "$UPDATE_MODE"
+    for doc_path in "$AFX_DIR"/docs/agenticflowx/*.md; do
+        if [ -f "$doc_path" ]; then
+            local doc=$(basename "$doc_path")
+            install_file "$doc_path" "$dir/$doc" "AFX Doc: $doc" "$UPDATE_MODE"
         fi
     done
 }
@@ -1642,7 +1611,7 @@ step_reset() {
 
     # AFX docs
     [[ -d "$TARGET_DIR/docs/agenticflowx" ]] && \
-        inventory+="  ${RED}DELETE${NC}  docs/agenticflowx/ (docs + templates)\n"
+        inventory+="  ${RED}DELETE${NC}  docs/agenticflowx/ (docs)\n"
 
     # .afx/ managed contents
     [[ -f "$TARGET_DIR/.afx/.afx.yaml" ]] && inventory+="  ${RED}DELETE${NC}  .afx/.afx.yaml (managed config)\n"
@@ -1656,8 +1625,7 @@ step_reset() {
     # Preserved items
     inventory+="\n"
     inventory+="  ${GREEN}KEEP${NC}    .afx/ folder (notes, kanban)\n"
-    inventory+="  ${GREEN}KEEP${NC}    .gitignore\n"
-    inventory+="  ${GREEN}KEEP${NC}    docs/specs/, docs/adr/, docs/research/\n"
+inventory+="  ${GREEN}KEEP${NC}    docs/specs/, docs/adr/, docs/research/\n"
     inventory+="  ${GREEN}KEEP${NC}    Non-AFX skills in .agents/skills/ and .claude/skills/\n"
     inventory+="  ${GREEN}KEEP${NC}    User content outside AFX markers in MD files\n"
 
@@ -1747,7 +1715,7 @@ step_reset() {
     ((++step))
     echo -e "${DIM}[${step}/${total}]${NC} ${BOLD}Remove AFX documentation${NC}"
     if [[ -d "$TARGET_DIR/docs/agenticflowx" ]]; then
-        echo -e "      ${DIM}docs/agenticflowx/ (docs + templates)${NC}"
+        echo -e "      ${DIM}docs/agenticflowx/ (docs)${NC}"
         if confirm "  Remove?"; then
             if [[ "$DRY_RUN" == "true" ]]; then
                 REMOVED+=("docs/agenticflowx/ (would remove)")
@@ -1816,8 +1784,6 @@ step_reset() {
     fi
     echo ""
 
-    # .gitignore is intentionally NOT touched by reset.
-    # The .afx/ folder is preserved (notes, kanban), so .gitignore entry must remain.
 
     # ── Summary ──
     if [[ ${#REMOVED[@]} -gt 0 ]]; then
@@ -2112,7 +2078,7 @@ update_agent_config
 STEP=0
 total_steps() {
     local count=1  # step_skills (always runs)
-    ((count+=2))   # templates + config (always)
+    ((++count))    # config (always)
     [[ "$NO_CLAUDE_MD" != "true" ]] && ((++count))
     [[ "$NO_AGENTS_MD" != "true" ]] && ((++count))
     [[ "$NO_GEMINI_MD" != "true" ]] && ((++count))
@@ -2151,9 +2117,6 @@ if [ "$SKILLS_ONLY" = "true" ]; then
     [ ${#SKIPPED[@]} -gt 0 ] && echo "Skipped: ${#SKIPPED[@]}" && printf '  - %s\n' "${SKIPPED[@]}"
     exit 0
 fi
-
-# Always-available steps
-run_step "Templates" step_templates
 
 # MD integration steps (gated by --no-* flags)
 if [[ "$NO_CLAUDE_MD" != "true" ]]; then
@@ -2226,7 +2189,7 @@ if [ "$UPDATE_MODE" = "true" ]; then
 else
     echo -e "${BLUE}Next steps:${NC}"
     echo "  1. Edit .afx.yaml to configure your project"
-    echo "  2. Run /afx-init feature <name> (Claude) or ask Codex to run afx-init"
+    echo "  2. Run /afx-scaffold spec <name> (Claude) or ask Codex to run afx-scaffold"
     echo "  3. See docs/agenticflowx/ for AFX reference documentation"
     echo "  4. Run /afx-help (Claude) or afx-help (Codex) for command reference"
 fi

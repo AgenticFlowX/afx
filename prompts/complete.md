@@ -215,8 +215,8 @@ When starting or resuming work on a ticket:
 
 **Setup & Context**
 
-- `/afx-init feature <name>` - Create new feature spec
-- `/afx-init adr <title>` - Create global ADR in `docs/adr/`
+- `/afx-scaffold spec <name>` - Create new feature spec
+- `/afx-adr create <title>` - Create global ADR in `docs/adr/`
 - `/afx-context save [feature]` - Generate context bundle
 - `/afx-context load` - Load context from previous context
 - `/afx-help` - Show command reference

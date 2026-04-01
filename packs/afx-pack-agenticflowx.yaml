@@ -23,7 +23,8 @@ includes:
       - afx-context     # Session context transfer between agents
       - afx-next        # Context-aware "what should I do now?" guidance
       # Setup & discovery
-      - afx-init        # Feature scaffolding and ADR creation
+      - afx-scaffold    # Scaffold spec directories, research docs, and ADRs
+      - afx-adr         # ADR management — create, review, list, supersede
       - afx-discover    # Project discovery (infra, scripts, tools)
       - afx-research    # Research workflow and promotion pipeline
       - afx-hello       # Environment diagnostics and installation verification

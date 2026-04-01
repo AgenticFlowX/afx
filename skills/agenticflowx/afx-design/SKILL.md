@@ -18,7 +18,6 @@ Technical design authoring, validation, review, and approval for `design.md` art
 **Read config** using two-tier resolution: `.afx/.afx.yaml` (managed defaults) + `.afx.yaml` (user overrides).
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
-- `paths.templates` - Where spec templates live (default: `docs/agenticflowx/templates`)
 
 If neither file exists, use defaults.
 
@@ -178,7 +177,7 @@ After EVERY `/afx-design` action, suggest the next command:
    - Load `journal.md` — extract any design discussions or decisions already captured
    - Read source code if relevant — understand existing patterns and architecture
 
-2. **Generate Design Content** using the design template (`docs/agenticflowx/templates/design.md`):
+2. **Generate Design Content** using the design template (`assets/design-template.md`):
    - `## [DES-OVR] Overview` — brief technical approach summary
    - `## [DES-ARCH] Architecture` — system context, component diagram
    - `## [DES-UI] User Interface & UX` — component composition (if applicable)

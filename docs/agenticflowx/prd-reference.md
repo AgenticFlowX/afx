@@ -353,7 +353,7 @@ depends_on:
 │ BODY — WBS numbered phases and tasks                        │
 │ ┌─────────────────────────────────────────────────────────┐ │
 │ │ ## Task Numbering (WBS Convention)                      │ │
-│ │   [FR-1], [NFR-2], [DES-API], [1.1] — Node ID refs     │ │
+│ │   [FR-1], [NFR-2], [DES-API], [1.1] — Node ID refs      │ │
 │ │                                                         │ │
 │ │ ## Phase 1: {Name}                                      │ │
 │ │   ### 1.1 {Task Group}                                  │ │
@@ -416,7 +416,8 @@ depends_on:
 | `/afx-check`    | Read-only quality gate (path, trace, links, schema, deps, coverage) |
 | `/afx-report`   | Traceability metrics and orphan detection                           |
 | `/afx-next`     | Context-aware "what should I do now?"                               |
-| `/afx-init`     | Feature scaffolding, ADR creation                                   |
+| `/afx-scaffold` | Feature spec scaffolding                                            |
+| `/afx-adr`      | ADR management — create, review, list, supersede                    |
 | `/afx-research` | Research analysis and ADR authoring                                 |
 | `/afx-context`  | Session context transfer between agents                             |
 | `/afx-discover` | Codebase inventory and discovery                                    |

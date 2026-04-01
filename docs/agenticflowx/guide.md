@@ -298,10 +298,10 @@ docs/
 
 ## Creating a New Feature Spec
 
-1. Copy templates to new folder:
+1. Scaffold the feature spec:
 
-   ```bash
-   cp -r docs/agenticflowx/templates docs/specs/{feature-name}
+   ```text
+   /afx-scaffold spec {feature-name}
    ```
 
 2. Fill out `spec.md` with requirements

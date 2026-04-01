@@ -12,11 +12,10 @@ version: 'main'
 paths:
   specs: 'docs/specs'                    # Root directory for all specs
   adr: 'docs/adr'                        # Global architecture decision records
-  templates: 'docs/agenticflowx/templates'        # Path to AFX templates
   sessions: 'docs/specs'                 # Global discussions (root)
 
 # Active features (used by /afx-report, /afx-next)
-# Add your feature folder names here. Use /afx-init to scaffold a new feature.
+# Add your feature folder names here. Use /afx-scaffold to scaffold a new feature.
 features: []
   # - my-feature                         # Example: uncomment and rename
 
@@ -92,13 +91,6 @@ scan_for_orphans:
   - 'src/**/*.tsx'
   # - 'packages/**/*.ts'                 # Uncomment for monorepo
   # - 'apps/**/*.ts'                     # Uncomment for monorepo
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Spec Templates
-# ─────────────────────────────────────────────────────────────────────────────
-templates:
-  location: 'docs/agenticflowx/templates'         # Path to AFX templates folder
-  default: 'default'                     # Template used by /afx-init feature
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Packs — Managed by afx-cli, do not edit manually
