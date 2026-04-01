@@ -19,7 +19,6 @@ Session discussion capture and recall for multi-agent workflows.
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
 - `paths.adr` - Where global ADRs live (default: `docs/adr`)
-- `paths.sessions` - Global discussion location (default: `docs/specs`)
 - `library.research` - Global research library path (default: `docs/research`)
 - `prefixes` - Feature prefix mappings for discussion IDs
 

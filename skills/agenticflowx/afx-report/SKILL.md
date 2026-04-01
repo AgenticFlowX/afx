@@ -19,7 +19,6 @@ Traceability metrics and project health reporting for AgenticFlowX.
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
 - `features` - List of active features
-- `scan_for_orphans` - File patterns to scan
 
 If neither file exists, use defaults.
 

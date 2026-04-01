@@ -97,6 +97,3 @@ packs:
 #
 #   features:
 #     - user-auth              # Active features
-#
-#   quality_gates:
-#     require_path_check: false

@@ -19,5 +19,5 @@ tmp
 .agents/*
 !.agents/skills/
 !.agents/skills/**
-.afx/
+/.afx/
 .claude/*

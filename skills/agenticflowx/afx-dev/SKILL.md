@@ -18,7 +18,6 @@ Advanced diagnostic toolkit for debugging, refactoring, review, testing, and opt
 **Read config** using two-tier resolution: `.afx/.afx.yaml` (managed defaults) + `.afx.yaml` (user overrides).
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
-- `require_see_links` - File patterns requiring @see annotations
 
 If neither file exists, use defaults.
 
