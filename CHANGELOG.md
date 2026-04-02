@@ -5,6 +5,22 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-04-02
+
+### Added
+
+- **`/afx-release` skill** (new): Release workflow — auto-detects semver bump type from commit log, updates `CHANGELOG.md` and `skills.json`, commits, pushes, creates tag, and publishes GitHub release. Supports explicit `patch|minor|major` override.
+
+### Changed
+
+- **`afx-pack-agenticflowx`**: Added `afx-release` to the pack manifest.
+
+### Fixed
+
+- **`afx-cli` `sed -i ''`**: Fixed cross-platform incompatibility on WSL and Git Bash — replaced macOS-only `sed -i ''` with portable `sed -i.bak` + cleanup.
+- **`afx-cli` cache cleanup**: Simplified `.afx/.cache/tmp.*` cleanup from two `rm` calls to a single `rm -rf`.
+- **Datetime format**: Enforced standard ISO 8601 datetime format across skill outputs.
+
 ## [2.4.0] - 2026-04-01
 
 ### Added

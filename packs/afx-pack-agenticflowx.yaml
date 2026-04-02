@@ -29,3 +29,4 @@ includes:
       - afx-research    # Research workflow and promotion pipeline
       - afx-hello       # Environment diagnostics and installation verification
       - afx-help        # Command reference and workflow guides
+      - afx-release     # Release workflow — version bump, changelog, tag, and GitHub release
