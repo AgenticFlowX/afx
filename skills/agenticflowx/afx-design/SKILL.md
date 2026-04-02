@@ -274,13 +274,14 @@ Status: PASSED
 
 **Implementation:**
 
-1. **Completeness**: Does the design cover ALL functional requirements from spec.md?
-2. **NFR Coverage**: Are performance, security, scalability, and accessibility addressed architecturally?
-3. **Error Boundaries**: Are error scenarios defined for each component?
-4. **Consistency**: Does design terminology match spec terminology?
-5. **Living Document Purity**: No historical narrative (belongs in journal.md)
-6. **Risk Analysis**: High-risk components identified? External dependency SLAs documented?
-7. **Cross-Spec Impact**: If `spec.md` has `depends_on`, check that design addresses integration points
+1. **FR Completeness**: Does the design cover ALL functional requirements (FR-*) from spec.md? Cross-reference every FR-N ID in the spec requirements table against design sections — each must have at least one DES-* section addressing it.
+2. **NFR Completeness**: Does the design cover ALL non-functional requirements (NFR-*) from spec.md? Cross-reference every NFR-N ID in the spec requirements table against design sections — each must have at least one DES-* section or explicit mention. Do NOT rely on named categories alone (performance, security, etc.) — check the actual NFR IDs.
+3. **Acceptance Criteria Coverage**: Does spec.md have acceptance criteria for every FR and NFR? If a requirement has no acceptance criteria section, flag it as a gap.
+4. **Error Boundaries**: Are error scenarios defined for each component?
+5. **Consistency**: Does design terminology match spec terminology?
+6. **Living Document Purity**: No historical narrative (belongs in journal.md)
+7. **Risk Analysis**: High-risk components identified? External dependency SLAs documented?
+8. **Cross-Spec Impact**: If `spec.md` has `depends_on`, check that design addresses integration points
 
 **Output:**
 
