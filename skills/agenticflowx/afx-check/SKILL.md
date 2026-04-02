@@ -52,6 +52,18 @@ If fixes are requested, respond with:
 Out of scope for /afx-check (read-only audit mode). Use /afx-task code to fix issues found.
 ```
 
+### Timestamp Format (MANDATORY)
+
+When writing execution reports or creating journal entries, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
+
+## Post-Action Checklist (MANDATORY)
+
+Since this is a read-only quality gate, no files are modified. However, after executing any check, you MUST:
+
+1. Clearly state the **Pass/Fail** result of the verification.
+2. If failures are found, provide exactly the file names and line numbers of the failure sites.
+3. Suggest the remediation command to fix the issue.
+
 ### Proactive Journal Capture
 
 When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).

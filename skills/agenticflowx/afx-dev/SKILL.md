@@ -49,6 +49,7 @@ If neither file exists, use defaults.
 - Modify `.afx.yaml` or `.afx/` configuration
 - Run deploy/migration commands without explicit user confirmation
 - Delete spec or research files
+- **Destructive File Rewrites**: Never replace the entire contents of an existing source code file using a full-file rewrite. Always use targeted line-level replacements to preserve existing functionality.
 
 If spec changes are requested, respond with:
 
@@ -66,7 +67,7 @@ When this skill detects a high-impact context change, auto-capture to `journal.m
 
 After completing any action that modifies source code, you MUST:
 
-1. **`@see` Annotations**: Ensure modified exported classes, interfaces, and functions have `@see` links using Node ID syntax (e.g., `@see docs/specs/{feature}/design.md [DES-API]`). Line-level annotations ONLY for non-obvious requirements.
+1. **`@see` Annotations (STRICT)**: Ensure modified exported classes, interfaces, and functions have `@see` links via JSDoc. Use Node ID syntax (e.g., `@see docs/specs/{feature}/design.md [DES-API]`). Line-level annotations ONLY for non-obvious requirements. **CRITICAL ANTI-PATTERN**: Do NOT dump blanket `@see` links at the top of the file. Do NOT annotate every line.
 2. **No Orphaned Code**: Every new top-level export MUST have at least one `@see` link to a spec.
 3. **No Mock Code**: Do not leave `setTimeout` or `// mock` without a `FIXME` and spec link.
 4. **Session Log**: Update the Work Sessions table in `tasks.md` with date, task, action, files modified.
@@ -75,6 +76,14 @@ After completing any action that modifies source code, you MUST:
 ---
 
 ## Agent Instructions
+
+### Persistence Checkpoint (MANDATORY)
+
+Do not auto-write massive multi-file refactors or implementations without a checkpoint. Before persisting significant architectural changes:
+
+1. Present the proposed approach to the user
+2. Wait for explicit confirmation before writing
+3. **Atomic Multi-Turn Rule**: Break large implementations into atomic, reviewable chunks. Do not attempt to implement an entire feature in a single turn. Wait for the user to review before proceeding to the next chunk.
 
 ### Next Command Suggestion (MANDATORY)
 
@@ -104,7 +113,7 @@ Next (ranked):
 
 ### Timestamp Format (MANDATORY)
 
-When creating or updating Session Log entries, frontmatter (`updated_at`, `created_at`), and Work Sessions rows, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+When creating or updating Session Log entries, frontmatter (`updated_at`, `created_at`), and Work Sessions rows, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ---
 
@@ -520,11 +529,11 @@ Next: /afx-check path {feature-path} # Verify optimization
 
 ## Related Commands
 
-| Command        | Relationship                             |
-| -------------- | ---------------------------------------- |
+| Command        | Relationship                                                   |
+| -------------- | -------------------------------------------------------------- |
 | `/afx-task`    | Owns task lifecycle and coding; `/afx-dev` handles diagnostics |
-| `/afx-check`   | Quality gates to run after dev work      |
-| `/afx-session` | Capture discussions about implementation |
+| `/afx-check`   | Quality gates to run after dev work                            |
+| `/afx-session` | Capture discussions about implementation                       |
 
 ```
 

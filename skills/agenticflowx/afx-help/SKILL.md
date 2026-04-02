@@ -43,6 +43,30 @@ If implementation is requested, respond with:
 Out of scope for /afx-help (read-only reference mode). Use the suggested command to proceed.
 ```
 
+### Timestamp Format (MANDATORY)
+
+When writing execution reports or creating journal entries, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`).
+
+## Post-Action Checklist (MANDATORY)
+
+Since this is a read-only help skill, no files are modified. However, after executing, you MUST:
+
+1. Ensure you provided the user with actionable next steps rather than just a massive text dump.
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact error or confusion event, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-help`**: User is repeatedly lost or commands are failing consecutively.
+
+---
+
+## Agent Instructions
+
+### Next Command Suggestion (MANDATORY)
+
+**CRITICAL**: After EVERY `/afx-help` action, suggest the most appropriate next command based on context (e.g., `/afx-next` or `/afx-task pick`).
+
 ---
 
 ## Available Commands

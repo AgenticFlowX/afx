@@ -56,10 +56,11 @@ Owns the `tasks.md` artifact AND the implementation engine. Owns coding with tra
 
 When task ID alone is provided (e.g., `7.1`), resolve spec in this order:
 
-1. **Conversation context** - Recently discussed spec (file reads, GitHub issues, prior commands)
-2. **Branch name** - Extract from `feat/{feature-name}` pattern
-3. **Open GitHub issues** - If only one feature has open issues
-4. **Fallback** - Require explicit: `/afx-task verify user-auth#7.1`
+1. **Active VSCode Editor** - Infer `[feature]` from current tab (e.g., if `docs/specs/user-auth/tasks.md` is active)
+2. **Conversation context** - Recently discussed spec (file reads, GitHub issues, prior commands)
+3. **Branch name** - Extract from `feat/{feature-name}` pattern
+4. **Open GitHub issues** - If only one feature has open issues
+5. **Fallback** - Require explicit: `/afx-task verify user-auth#7.1`
 
 ---
 
@@ -82,6 +83,7 @@ When task ID alone is provided (e.g., `7.1`), resolve spec in this order:
 - Delete source code files (refactoring may remove code within files, but deleting entire files requires user confirmation)
 - Run deploy/migration commands without explicit user confirmation
 - Modify `.afx.yaml` or `.afx/` configuration
+- **Destructive File Rewrites**: Never replace the entire contents of an existing `tasks.md`, `journal.md`, or source code file using a full-file rewrite. Always use targeted line-level replacements or append actions to preserve manually written human content.
 
 If out-of-scope work is requested, return:
 
@@ -93,7 +95,7 @@ Out of scope for /afx-task (implementation-lifecycle mode). Use /afx-spec for sp
 
 ### Timestamp Format (MANDATORY)
 
-All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ### Frontmatter (MANDATORY)
 
@@ -254,7 +256,7 @@ After EVERY `/afx-task` action, suggest the next command:
      - WBS numbering (Phase.Task, e.g., `1.1`, `2.3`)
      - Clear description of what to implement
      - File scope — list the specific files this task creates or modifies
-     - `@see` links using Node ID syntax: `@see design.md [DES-API]`, `@see spec.md [FR-1]`
+     - `@see` links using Node ID syntax with **full paths**: `@see docs/specs/{feature}/design.md [DES-API]`, `@see docs/specs/{feature}/spec.md [FR-1]`
      - Acceptance criteria (how to verify the task is done)
    - **Parallelization**: Tasks within a phase should be **independent by default** — no shared mutable state, no file overlap. When two tasks in the same phase DO depend on each other, note the dependency explicitly: `<!-- depends: 1.1 -->`. Cross-phase dependencies are implicit (phase N depends on phase N-1).
    - Order phases by dependency (setup before core, core before integration)
@@ -338,9 +340,11 @@ After EVERY `/afx-task` action, suggest the next command:
 4. **Update tasks.md**:
    - Mark task checkbox `[x]`
    - **Locate `## Work Sessions`** at the bottom. Append a `Coded` row with the files you modified:
+
      ```markdown
      | 2026-03-31 | {id} | Coded | auth.service.ts, auth.action.ts | [x] | - |
      ```
+
    - Update `updated_at`
 
 ---

@@ -113,7 +113,7 @@ Next (ranked):
 
 ### Timestamp Format (MANDATORY)
 
-When creating or updating journal entries, captures, notes, and discussion metadata, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+When creating or updating journal entries, captures, notes, and discussion metadata, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ### Frontmatter (MANDATORY)
 
@@ -237,6 +237,8 @@ The Agent MUST actively monitor the conversation depth. Suggest `/afx-session lo
 ### Proactive Capture Protocol (MANDATORY)
 
 **Cross-cutting rule**: This protocol applies to ALL AFX skills, not just `/afx-session`. When any skill detects a high-impact context change during its operation, it MUST auto-capture to `journal.md` without waiting for the user to invoke `/afx-session`.
+
+**Triggers for `/afx-session`**: User discusses complex architectural trade-offs, scope cuts, or defers decisions without explicitly running `log`.
 
 #### Trigger Conditions
 

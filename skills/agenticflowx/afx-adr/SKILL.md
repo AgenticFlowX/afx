@@ -56,7 +56,7 @@ Out of scope for /afx-adr (decision management mode). Use /afx-dev code after th
 
 ### Timestamp Format (MANDATORY)
 
-All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17` or `2025-12-17 14:30`.
+All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17` or `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ### Proactive Journal Capture
 
@@ -93,6 +93,7 @@ tags: ["adr", "<dynamic-domain>"]
 **Status transitions:** `Proposed` → `Accepted` | `Rejected` | `Deprecated` → `Superseded`
 
 **Tag rules:**
+
 - First tag is always `adr`
 - Remaining tags are **dynamic** — derived from the decision domain (e.g., `["adr", "database", "persistence"]`)
 - Do not use generic placeholders — infer specific tags from context
@@ -218,6 +219,8 @@ Overall: 3/4 checks passed. Address warnings before accepting.
 ---
 
 ## 3. list
+
+> **UI Delegation Rule (MANDATORY):** Prefer instructing the user to view the ADR list in the VSCode extension UI instead of dumping the full list into chat, unless explicitly requested.
 
 List all ADRs grouped by status.
 

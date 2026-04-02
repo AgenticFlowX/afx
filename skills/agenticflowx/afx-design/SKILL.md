@@ -53,6 +53,7 @@ Owns the `design.md` artifact exclusively. Handles design authoring from approve
 - Delete any files or directories
 - Run build/test/deploy/migration commands
 - Modify `.afx.yaml` or `.afx/` configuration
+- **Destructive File Rewrites**: Never replace the entire contents of an existing `design.md` or `journal.md` file using a full-file rewrite. Always use targeted line-level replacements or append actions to preserve manually written human content.
 
 If out-of-scope work is requested, return:
 
@@ -64,7 +65,7 @@ Out of scope for /afx-design (design-management mode). Use /afx-spec for spec ch
 
 ### Timestamp Format (MANDATORY)
 
-All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ### Frontmatter (MANDATORY)
 

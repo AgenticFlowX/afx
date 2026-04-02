@@ -40,7 +40,7 @@ If neither file exists, use defaults.
 /afx-spec approve <name> [--reviewer "@handle"]  # Lifecycle gate + optional human sign-off
 ```
 
-> **Note:** Spec listing, status, phase breakdown, and discussion browsing are available in the VSCode AFX extension (Specs Tree, Pipeline Tab, Tasks Tab, Journal Tab). These subcommands focus on operations that require agent reasoning.
+> **UI Delegation Rule (MANDATORY):** Spec listing, status, phase breakdown, and discussion browsing MUST be delegated to the VSCode AFX extension (Specs Tree, Pipeline Tab, Tasks Tab, Journal Tab). Never output raw tables of spec lists or task states in chat unless explicitly requested. Focus on agent reasoning over raw display.
 
 ## Purpose
 
@@ -65,6 +65,7 @@ Provides a spec-centric interface for managing specifications throughout their l
 - Delete any spec files
 - Run build/test/deploy/migration commands
 - Modify runtime config used by application execution
+- **Destructive File Rewrites**: Never replace the entire contents of an existing `spec.md`, `design.md`, or `journal.md` file using a full-file rewrite. Always use targeted line-level replacements or append actions to preserve manually written human content.
 
 If implementation is requested, return:
 
@@ -76,7 +77,7 @@ Out of scope for /afx-spec (specification-management mode). Use /afx-dev code af
 
 ### Timestamp Format (MANDATORY)
 
-When creating or updating frontmatter (`updated_at`, `approved_at`, `signed_at`, `created_at`), all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+When creating or updating frontmatter (`updated_at`, `approved_at`, `signed_at`, `created_at`), all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ### Frontmatter (MANDATORY)
 
@@ -172,11 +173,12 @@ Do not auto-write spec files. Before persisting any changes to `spec.md`, `desig
 
 When `<name>` is omitted or ambiguous, resolve in this order:
 
-1. **Conversation context** — recently discussed feature, spec file reads, or prior `/afx-spec` commands
-2. **Branch name** — extract from `feat/{feature-name}` pattern
-3. **Open GitHub issues** — if only one feature has open/active issues
-4. **`.afx.yaml` features list** — if only one feature is registered
-5. **Fallback** — prompt the user: "Which feature? Available: user-auth, shopping-cart, ..."
+1. **Active VSCode Editor** — infer `[feature]` from the currently active tab (e.g., if `docs/specs/user-auth/spec.md` is active, feature is `user-auth`)
+2. **Conversation context** — recently discussed feature, spec file reads, or prior `/afx-spec` commands
+3. **Branch name** — extract from `feat/{feature-name}` pattern
+4. **Open GitHub issues** — if only one feature has open/active issues
+5. **`.afx.yaml` features list** — if only one feature is registered
+6. **Fallback** — prompt the user: "Which feature? Available: user-auth, shopping-cart, ..."
 
 **Subcommand-specific rules:**
 

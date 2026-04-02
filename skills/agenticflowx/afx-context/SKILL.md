@@ -57,6 +57,13 @@ When this skill detects a high-impact context change, auto-capture to `journal.m
 
 **Triggers for `/afx-context`**: Cross-feature impact detected.
 
+## Post-Action Checklist (MANDATORY)
+
+After completing any action that modifies `.afx/context.md` or logs to `journal.md`, you MUST:
+
+1. Ensure full compliance with the AFX `Canonical Frontmatter` schema, preserving strictly formatted timestamps.
+2. Confirm the saved context contains actionable, comprehensive narrative details. Never output "empty" or overly abbreviated contexts, as the next agent depends completely on this details.
+
 ---
 
 ## Purpose
@@ -69,7 +76,7 @@ Formalize context transfer between AI agent sessions. When an agent times out, d
 
 ### Timestamp Format (MANDATORY)
 
-When creating or updating context bundles (`saved` frontmatter, journal archive entries), all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+When creating or updating context bundles (`saved` frontmatter, journal archive entries), all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ---
 

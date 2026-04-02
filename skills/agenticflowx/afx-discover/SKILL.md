@@ -49,6 +49,23 @@ If implementation is requested, respond with:
 Out of scope for /afx-discover (read-only discovery mode). Use /afx-dev code to implement or /afx-scaffold to scaffold.
 ```
 
+### Timestamp Format (MANDATORY)
+
+When writing execution reports or creating journal entries, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
+
+## Post-Action Checklist (MANDATORY)
+
+Since this is a read-only discovery skill, no files are modified. However, after executing any discovery action, you MUST:
+
+1. Clearly state what infrastructure or scripts were discovered.
+2. Formulate proper Markdown output based on the discovery type.
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact discovery event, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-discover`**: Significant architectural pattern or missing infrastructure discovered.
+
 ---
 
 ## Agent Instructions

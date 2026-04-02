@@ -51,7 +51,7 @@ References use **Node IDs** for traceability:
 
 ### 1.1 {Task Group Name}
 <!-- files: path/to/file.ts, path/to/other.ts -->
-<!-- @see design.md [DES-SECTION] | spec.md [FR-X] -->
+<!-- @see docs/specs/{feature}/design.md [DES-SECTION] | docs/specs/{feature}/spec.md [FR-X] -->
 
 - [ ] {Task item}
 - [ ] {Task item}
@@ -59,7 +59,7 @@ References use **Node IDs** for traceability:
 
 ### 1.2 {Task Group Name}
 <!-- files: path/to/another.ts -->
-<!-- @see design.md [DES-SECTION] | spec.md [FR-X] -->
+<!-- @see docs/specs/{feature}/design.md [DES-SECTION] | docs/specs/{feature}/spec.md [FR-X] -->
 
 - [ ] {Task item}
 - [ ] {Task item}
