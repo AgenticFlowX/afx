@@ -132,6 +132,8 @@ design: design.md # Relative link (TASKS only)
 
 > **Rule:** YAML frontmatter is the **single source of truth** for status, version, date, owner, and cross-references. Do NOT duplicate these as `**Status:**`, `**Version:**`, `**Date:**`, or `**Author:**` lines in the markdown body.
 
+> **Rule:** All timestamps in AFX-generated documents — frontmatter (`created_at`, `updated_at`), inline metadata, journal entries, session captures — MUST use **ISO 8601 with millisecond precision**: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). To get the current timestamp, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via shell. Never guess or use midnight (`T00:00:00.000Z`).
+
 ## Git Commit Attribution
 
 When committing to this repository, append the appropriate co-author trailer to every commit message:

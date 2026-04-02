@@ -334,7 +334,9 @@ mindmap
 
   ## Discussions
 
-  ### UM-D001 - 2025-10-24 - Schema decision
+  ### UM-D001 - Schema decision
+
+  `created:2025-10-24`
 
   Chose `uuid` over autoincrement integer for `id` to prevent enumeration.
   API route `/api/users` completed. Next agent should wire frontend table.

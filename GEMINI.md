@@ -40,6 +40,10 @@ Since AFX is primarily a framework of documentation and instructions, there is n
   - `journal.md` and `tasks.md` record **events and history**.
 - **Skill Structure:** All skills follow the Agent Skills standard (SKILL.md with `name`, `description`, `license`, `metadata` frontmatter).
 
+## Timestamp Rule (ISO 8601)
+
+All timestamps in AFX-generated documents — frontmatter (`created_at`, `updated_at`), inline metadata, journal entries, session captures — MUST use **ISO 8601 with millisecond precision**: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). To get the current timestamp, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via shell. Never guess or use midnight (`T00:00:00.000Z`).
+
 ## Gemini-Specific Guidance
 
 - **Skill Discovery:** Skills are installed to provider target directories. Gemini is not a current provider target — Gemini users should read skills directly from `skills/`.

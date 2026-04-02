@@ -125,6 +125,8 @@ tags: [afx, command, topic]
 | `RES`     | Research/exploration  | docs/specs/{feature}/research/\*.md                          |
 | `ADR`     | Architecture decision | docs/adr/ (global) or docs/specs/{feature}/research/ (local) |
 
+> **Rule:** All timestamps in AFX-generated documents — frontmatter (`created_at`, `updated_at`), inline metadata, journal entries, session captures — MUST use **ISO 8601 with millisecond precision**: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). To get the current timestamp, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via shell. Never guess or use midnight (`T00:00:00.000Z`).
+
 ## AgenticFlowX - Session Continuity
 
 This project uses **AgenticFlowX (AFX)** for spec-driven development with session continuity. GitHub tickets serve as living execution logs, not just task lists.

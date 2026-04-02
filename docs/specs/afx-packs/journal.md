@@ -24,9 +24,9 @@ tags: [packs, install, skills, ecosystem, journal]
 <!-- Recorded discussions with IDs: PK-D001, PK-D002, etc. -->
 <!-- Chronological order: oldest first, newest last -->
 
-### PK-D001 - 2026-02-28 - Spec Promotion from Research
+### PK-D001 - Spec Promotion from Research
 
-`status:active` `[product, planning, research]`
+`status:active` `2026-02-28T00:00:00.000Z` `[product, planning, research]`
 
 **Context**: The pack system design in `res-skills-ecosystem-index.md` (Section 8) and the pack management research in `res-vscode-pack-management.md` reached sufficient maturity. The AFX-side infrastructure (afx-cli, pack manifests, index, skills directory) was split into its own spec as the counterpart to the vscode-toolbox UI spec.
 
@@ -50,9 +50,9 @@ tags: [packs, install, skills, ecosystem, journal]
 **Related Files**: docs/research/res-skills-ecosystem-index.md, docs/research/res-vscode-pack-management.md, docs/specs/vscode-toolbox/spec.md, afx-cli
 **Participants**: @rix, claude
 
-### PK-D002 - 2026-02-28 - Phase 1 & 2 Implementation + Antigravity Core Skills
+### PK-D002 - Phase 1 & 2 Implementation + Antigravity Core Skills
 
-`status:completed` `[implementation, antigravity]`
+`status:completed` `2026-02-28T00:00:00.000Z` `[implementation, antigravity]`
 
 **Context**: Implementing Phase 1 (Manifests & Index) and Phase 2 (AFX-Built Skills) from the approved spec. During implementation, discovered that `.agent/skills/` (Google Antigravity core skills) was missing from the AFX repo — we had `.claude/commands/`, `.codex/skills/`, `.gemini/commands/`, `.github/prompts/` but no Antigravity equivalent.
 
@@ -68,9 +68,9 @@ tags: [packs, install, skills, ecosystem, journal]
 
 **Participants**: @rix, claude
 
-### PK-D003 - 2026-02-28 - Phase 3 & 4 Implementation (afx-cli Pack Management)
+### PK-D003 - Phase 3 & 4 Implementation (afx-cli Pack Management)
 
-`status:completed` `[implementation, afx-cli, pack-management]`
+`status:completed` `2026-02-28T00:00:00.000Z` `[implementation, afx-cli, pack-management]`
 
 **Context**: Implementing Phase 3 (Download & Detection) and Phase 4 (State Management) — the full pack management system in afx-cli. This is the core CLI infrastructure that the VSCode Toolbox UI will consume.
 
@@ -92,9 +92,9 @@ tags: [packs, install, skills, ecosystem, journal]
 
 **Participants**: @rix, claude
 
-### PK-D004 - 2026-02-28 - Canonical SKILL.md Refactor (4× dedup)
+### PK-D004 - Canonical SKILL.md Refactor (4× dedup)
 
-`status:completed` `[refactor, skills, afx-cli]`
+`status:completed` `2026-02-28T00:00:00.000Z` `[refactor, skills, afx-cli]`
 
 **Context**: User observed that Claude, Codex, Antigravity, and Copilot skill variants were 95% identical — only provider-specific command syntax differed. The 4× file duplication made maintenance harder.
 
@@ -110,9 +110,9 @@ tags: [packs, install, skills, ecosystem, journal]
 
 **Participants**: @rix, claude
 
-### PK-D005 - 2026-02-28 - Full Test Suite + Bug Fixes
+### PK-D005 - Full Test Suite + Bug Fixes
 
-`status:completed` `[testing, bugs, afx-cli]`
+`status:completed` `2026-02-28T00:00:00.000Z` `[testing, bugs, afx-cli]`
 
 **Context**: Comprehensive testing of afx-cli in `tmp/` covering all scenarios: fresh install, update, commands-only, transform functions, pack management, dry-run, help, and argument parsing.
 

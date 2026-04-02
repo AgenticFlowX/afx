@@ -20,9 +20,9 @@ tags: [global-adr, journal]
 
 ## Discussions
 
-### GA-D001 - 2026-02-24 - Global ADR Implementation & afx-init Integration
+### GA-D001 - Global ADR Implementation & afx-init Integration
 
-`[adr, framework, afx-init, dogfooding, architecture]`
+`status:active` `2026-02-24T00:00:00.000Z` `[adr, framework, afx-init, dogfooding, architecture]`
 
 **Context**: Session began with setting up AFX to dogfood on itself. User proposed adding a global folder for ADRs and cross-cutting content not tied to individual specs. Evolved into full implementation of `docs/adr/` support including the `/afx-init adr` subcommand.
 
