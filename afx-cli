@@ -1020,10 +1020,11 @@ skill_sync() {
             cp -r "$canonical_dir"/. "$target_dir/"
             # Strip provider-command markers from AFX SKILL.md
             if [[ "$item_type" == "afx" && -f "$target_dir/SKILL.md" ]]; then
-                sed -i '' \
+                sed -i.bak \
                     -e '/<!-- @afx:provider-commands -->/d' \
                     -e '/<!-- @afx:\/provider-commands -->/d' \
                     "$target_dir/SKILL.md"
+                rm -f "$target_dir/SKILL.md.bak"
             fi
         fi
         [[ -n "$target_labels" ]] && target_labels+=" + "
@@ -2140,8 +2141,7 @@ run_step "Directory structure" step_directories
 # Clean up stale temp files from .afx/.cache/
 if [[ -d "$TARGET_DIR/.afx/.cache" ]]; then
     vlog "cleaning up .afx/.cache/tmp.* files"
-    rm -f "$TARGET_DIR/.afx/.cache"/tmp.* 2>/dev/null
-    rm -rf "$TARGET_DIR/.afx/.cache"/tmp.*/ 2>/dev/null
+    rm -rf "$TARGET_DIR/.afx/.cache"/tmp.* 2>/dev/null
 fi
 
 # ============================================================================
