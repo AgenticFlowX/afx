@@ -101,10 +101,10 @@ When this skill detects a high-impact context change, auto-capture to `journal.m
 
 **CRITICAL**: Design authoring is gated behind spec approval.
 
-| Action   | Precondition                   | Check                    |
-| -------- | ------------------------------ | ------------------------ |
-| `author` | `spec.md` status == `Approved` | Read spec.md frontmatter |
-| `approve`| `design.md` has content        | Check design is authored |
+| Action    | Precondition                   | Check                    |
+| --------- | ------------------------------ | ------------------------ |
+| `author`  | `spec.md` status == `Approved` | Read spec.md frontmatter |
+| `approve` | `design.md` has content        | Check design is authored |
 
 Before authoring or approving, the agent **MUST**:
 
@@ -140,6 +140,15 @@ After completing any action that modifies `design.md`, you MUST:
 
 ## Agent Instructions
 
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature from the active file path (e.g., `docs/specs/user-auth/design.md` → `user-auth`). If code is selected, use it as reference context for the design authoring.
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** Require explicit `<name>` — design authoring needs a target feature.
+3. **Trailing parameters (`[...context]`):** Treat extra words as design constraints (e.g., `/afx-design author auth redis cache` → generate the design using Redis for caching). Do not discard trailing text; incorporate it into the authoring or review logic.
+
 ### Persistence Checkpoint (MANDATORY)
 
 Do not auto-write design files. Before persisting any changes to `design.md`:
@@ -152,14 +161,14 @@ Do not auto-write design files. Before persisting any changes to `design.md`:
 
 After EVERY `/afx-design` action, suggest the next command:
 
-| Context                              | Suggested Next Command                            |
-| ------------------------------------ | ------------------------------------------------- |
-| After `author`                       | `/afx-design review <name>` to validate quality   |
-| After `validate` (passed)            | `/afx-design review <name>` for quality check     |
-| After `validate` (failed)            | Fix listed structural issues                      |
-| After `review` (critical issues)     | Fix issues, then `/afx-design validate <name>`    |
-| After `review` (no critical issues)  | `/afx-design approve <name>` to approve design    |
-| After `approve`                      | `/afx-task plan <name>` to generate tasks         |
+| Context                             | Suggested Next Command                          |
+| ----------------------------------- | ----------------------------------------------- |
+| After `author`                      | `/afx-design review <name>` to validate quality |
+| After `validate` (passed)           | `/afx-design review <name>` for quality check   |
+| After `validate` (failed)           | Fix listed structural issues                    |
+| After `review` (critical issues)    | Fix issues, then `/afx-design validate <name>`  |
+| After `review` (no critical issues) | `/afx-design approve <name>` to approve design  |
+| After `approve`                     | `/afx-task plan <name>` to generate tasks       |
 
 ---
 
@@ -208,6 +217,7 @@ After EVERY `/afx-design` action, suggest the next command:
 
 ```markdown
 ## [DES-API] API Contracts
+
 <!-- @see spec.md [FR-1] [FR-2] -->
 
 {Design content referencing these requirements}

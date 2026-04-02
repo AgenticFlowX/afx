@@ -100,6 +100,7 @@ tags: [research, <dynamic-topic>, <dynamic-context>]
 ```
 
 **Tag rules:**
+
 - First tag is always `research`
 - Remaining tags are **dynamic** — derived from the research topic, target feature, and relevant domain (e.g., `[research, auth, token-storage]` or `[research, afx, skill-format]`)
 - Do not use generic placeholders like `topic` — infer specific tags from context
@@ -109,6 +110,15 @@ When `finalize --to adr` or `finalize --to spec`, use `type: ADR` or `type: SPEC
 ---
 
 ## Agent Instructions
+
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature from the active file path (e.g., `docs/specs/user-auth/research/res-token-storage.md` → `user-auth`). If code is selected, use it as seed context for research exploration.
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** Research can be feature-scoped or global — prompt only if ambiguous.
+3. **Trailing parameters (`[...context]`):** Treat extra words as research focus constraints (e.g., `/afx-research explore auth caching strategy` → explore auth and caching strategy together).
 
 ### Prompt-First Input Resolution (MANDATORY)
 
@@ -150,33 +160,35 @@ Save this result now or keep refining?
 Only write to disk after explicit user confirmation.
 
 For save operations:
+
 - Resolve in this order:
-  1) `library.research`
-  2) `paths.research` (legacy fallback)
-  3) `docs/research` (default)
+  1. `library.research`
+  2. `paths.research` (legacy fallback)
+  3. `docs/research` (default)
 - Enforce filename format: `res-<kebab-slug>.md`
 
 ### Next Command Suggestion (MANDATORY)
 
-| Context                          | Suggested Next Command                         |
-| -------------------------------- | ---------------------------------------------- |
-| After `explore`                  | `/afx-research compare <topic>`                |
-| After `compare`                  | `/afx-research summarize <topic>`              |
-| After `summarize`                | `/afx-research finalize <topic> --to adr`       |
-| After `finalize --to adr`        | `/afx-adr review <id>`                         |
-| After `finalize --to spec`       | `/afx-spec review <feature>`                   |
-| If decisions ready for build     | `/afx-task plan <feature-or-instruction>`       |
+| Context                      | Suggested Next Command                    |
+| ---------------------------- | ----------------------------------------- |
+| After `explore`              | `/afx-research compare <topic>`           |
+| After `compare`              | `/afx-research summarize <topic>`         |
+| After `summarize`            | `/afx-research finalize <topic> --to adr` |
+| After `finalize --to adr`    | `/afx-adr review <id>`                    |
+| After `finalize --to spec`   | `/afx-spec review <feature>`              |
+| If decisions ready for build | `/afx-task plan <feature-or-instruction>` |
 
 **Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```text
 Next (ranked):
-  1. /afx-research compare <topic>               # Context-driven: Deepen analysis
-  2. /afx-research summarize <topic>              # Context-driven: Synthesize findings
-  3. /afx-research finalize <topic> --to adr      # Context-driven: Promote to decision
-  ──
-  4. /afx-session note "research follow-up"       # Capture findings before switching
-  5. /afx-next                                     # Re-orient after research
+
+1. /afx-research compare <topic> # Context-driven: Deepen analysis
+2. /afx-research summarize <topic> # Context-driven: Synthesize findings
+3. /afx-research finalize <topic> --to adr # Context-driven: Promote to decision
+   ──
+4. /afx-session note "research follow-up" # Capture findings before switching
+5. /afx-next # Re-orient after research
 ```
 
 ---
@@ -207,15 +219,19 @@ Build research context from existing docs.
 ## Research Discovery: {topic}
 
 ### Signals Found
+
 - {finding}
 
 ### Existing Decisions
+
 - {ADR reference}
 
 ### Open Questions
+
 - {question}
 
 ### Assumptions
+
 - {assumption}
 ```
 
@@ -243,15 +259,19 @@ Produce a recommendation brief from findings.
 ## Research Summary: {topic}
 
 ### Recommendation
+
 {recommended direction}
 
 ### Why
+
 - {reason}
 
 ### Risks
+
 - {risk}
 
 ### Decision Readiness
+
 - Ready for ADR: Yes/No
 ```
 
@@ -315,9 +335,9 @@ Consider running /afx-research explore first, or proceed with finalize from conv
 
 ## Related Commands
 
-| Command        | Relationship                                  |
-| -------------- | --------------------------------------------- |
-| `/afx-adr`     | Finalize architecture decisions from research |
-| `/afx-spec`    | Move validated decisions into formal specs    |
-| `/afx-task`    | Plan implementation after decision approval   |
-| `/afx-dev`     | Implementation (outside research-only mode)   |
+| Command     | Relationship                                  |
+| ----------- | --------------------------------------------- |
+| `/afx-adr`  | Finalize architecture decisions from research |
+| `/afx-spec` | Move validated decisions into formal specs    |
+| `/afx-task` | Plan implementation after decision approval   |
+| `/afx-dev`  | Implementation (outside research-only mode)   |

@@ -57,6 +57,10 @@ When this skill detects a high-impact diagnostic failure event, auto-capture to 
 
 ## Agent Instructions
 
+### Trailing Parameters
+
+When trailing arguments are passed (e.g., `/afx-hello tools only`, `/afx-hello skip auth`), treat them as keyword filters to scope the diagnostic output. This command is context-agnostic — it does not infer feature context from IDE state or cwd.
+
 ### Next Command Suggestion (MANDATORY)
 
 **CRITICAL**: After EVERY `/afx-hello` action, suggest the most appropriate next command based on context (e.g., `/afx-next` or `/afx-scaffold`).
@@ -95,28 +99,28 @@ When invoked, perform these checks and report results:
 
 ### Installation
 
-| Component          | Status | Path                        |
-| ------------------ | ------ | --------------------------- |
-| .afx.yaml          | ✓      | .afx.yaml                   |
-| CLAUDE.md          | ✓      | CLAUDE.md                   |
-| Skills (Claude)    | ✓      | .claude/skills/ (14 skills) |
-| Skills (Agents)    | ✓      | .agents/skills/ (14 skills) |
-| Templates          | ✓      | Bundled in skill assets/    |
-| Framework Docs     | ✓      | docs/agenticflowx/          |
+| Component       | Status | Path                        |
+| --------------- | ------ | --------------------------- |
+| .afx.yaml       | ✓      | .afx.yaml                   |
+| CLAUDE.md       | ✓      | CLAUDE.md                   |
+| Skills (Claude) | ✓      | .claude/skills/ (14 skills) |
+| Skills (Agents) | ✓      | .agents/skills/ (14 skills) |
+| Templates       | ✓      | Bundled in skill assets/    |
+| Framework Docs  | ✓      | docs/agenticflowx/          |
 
 ### Project Health
 
-| Metric        | Value |
-| ------------- | ----- |
-| Total Specs   | 12    |
-| Draft         | 3     |
-| Approved      | 7     |
-| Living        | 2     |
+| Metric      | Value |
+| ----------- | ----- |
+| Total Specs | 12    |
+| Draft       | 3     |
+| Approved    | 7     |
+| Living      | 2     |
 
 ### Quick Start
 
 Ready to go! Try:
-  /afx-next                    # What should I do now?
-  /afx-spec create <name>     # Start a new feature
-  /afx-discover capabilities  # Explore the project
+/afx-next # What should I do now?
+/afx-spec create <name> # Start a new feature
+/afx-discover capabilities # Explore the project
 ```

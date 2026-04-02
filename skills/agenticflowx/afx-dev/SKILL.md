@@ -77,6 +77,15 @@ After completing any action that modifies source code, you MUST:
 
 ## Agent Instructions
 
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature and scope from the active file path (e.g., `src/features/user-auth/auth.service.ts` → `user-auth`). If code is selected (`ide_selection`), use it as the target scope for debug/refactor/review.
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** Prompt user for scope if ambiguous.
+3. **Trailing parameters (`[...context]`):** Treat extra words as constraints (e.g., `/afx-dev refactor auth using newest library` → constraint: `using newest library`). Do not treat trailing words as invalid scopes.
+
 ### Persistence Checkpoint (MANDATORY)
 
 Do not auto-write massive multi-file refactors or implementations without a checkpoint. Before persisting significant architectural changes:
@@ -103,12 +112,13 @@ Do not auto-write massive multi-file refactors or implementations without a chec
 
 ```
 Next (ranked):
-  1. /afx-check path <path>                     # Context-driven: Verify implementation works
-  2. /afx-task verify <task-id>                  # Context-driven: Confirm task matches spec
-  3. /afx-dev test <scope>                       # Context-driven: Run tests to validate
-  ──
-  4. /afx-next                            # Re-orient after implementation
-  5. /afx-session note "<note>"                   # Capture learnings before switching
+
+1. /afx-check path <path> # Context-driven: Verify implementation works
+2. /afx-task verify <task-id> # Context-driven: Confirm task matches spec
+3. /afx-dev test <scope> # Context-driven: Run tests to validate
+   ──
+4. /afx-next # Re-orient after implementation
+5. /afx-session note "<note>" # Capture learnings before switching
 ```
 
 ### Timestamp Format (MANDATORY)

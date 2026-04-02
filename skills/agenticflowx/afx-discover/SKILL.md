@@ -70,6 +70,15 @@ When this skill detects a high-impact discovery event, auto-capture to `journal.
 
 ## Agent Instructions
 
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer scan scope from the active file path (e.g., `scripts/deploy.sh` → focus discovery on deployment tooling).
+   - **CLI:** Infer from explicit arguments first, then cwd, then conversation history.
+   - **Fallback:** Discover across the entire project if no scope is specified.
+3. **Trailing parameters (`[...context]`):** Treat extra words as discovery constraints (e.g., `/afx-discover scripts deploy kubernetes` → filter scripts related to Kubernetes deployment).
+
 ### Next Command Suggestion (MANDATORY)
 
 **CRITICAL**: After EVERY `/afx-discover` action, suggest the most appropriate next command based on context:
@@ -86,12 +95,13 @@ When this skill detects a high-impact discovery event, auto-capture to `journal.
 
 ```
 Next (ranked):
-  1. Run discovered script: {command}                # Context-driven: If script found
-  2. /afx-scaffold spec {name}                        # Context-driven: If nothing found
-  3. /afx-session note "Missing: {capability}"        # Context-driven: Document gap
-  ──
-  4. /afx-next                                       # Re-orient after discovery
-  5. /afx-help                                       # See all options
+
+1. Run discovered script: {command} # Context-driven: If script found
+2. /afx-scaffold spec {name} # Context-driven: If nothing found
+3. /afx-session note "Missing: {capability}" # Context-driven: Document gap
+   ──
+4. /afx-next # Re-orient after discovery
+5. /afx-help # See all options
 ```
 
 ---
@@ -247,12 +257,13 @@ Searched locations:
 3. **Document in AFX**: Add to `docs/infrastructure/{type}-setup.md`
 
 Next (ranked):
-  1. /afx-dev code provision-{type}              # Context-driven: Create new script
-  2. /afx-discover scripts deploy                 # Context-driven: Check related scripts
-  3. /afx-session note "Infrastructure gap: {type}" # Context-driven: Document gap
-  ──
-  4. /afx-next                                    # Re-orient after discovery
-  5. /afx-help                                   # See all options
+
+1. /afx-dev code provision-{type} # Context-driven: Create new script
+2. /afx-discover scripts deploy # Context-driven: Check related scripts
+3. /afx-session note "Infrastructure gap: {type}" # Context-driven: Document gap
+   ──
+4. /afx-next # Re-orient after discovery
+5. /afx-help # See all options
 ```
 
 ### Natural Language Parsing
@@ -536,12 +547,12 @@ Or run without type to see all:
 
 ## Related Commands
 
-| Command        | Relationship                                      |
-| -------------- | ------------------------------------------------- |
-| `/afx-scaffold` | Scaffold new spec directories and ADRs           |
-| `/afx-session` | Document infrastructure gaps                      |
-| `/afx-dev`     | Implement discovered tooling improvements         |
-| `/afx-task`    | Continue with tasks after infrastructure is ready |
+| Command         | Relationship                                      |
+| --------------- | ------------------------------------------------- |
+| `/afx-scaffold` | Scaffold new spec directories and ADRs            |
+| `/afx-session`  | Document infrastructure gaps                      |
+| `/afx-dev`      | Implement discovered tooling improvements         |
+| `/afx-task`     | Continue with tasks after infrastructure is ready |
 
 ---
 

@@ -111,16 +111,25 @@ When arguments are omitted or ambiguous, resolve in this order:
 
 **Subcommand-specific inference:**
 
-| Subcommand  | What to infer                  | From                                    |
-| ----------- | ------------------------------ | --------------------------------------- |
-| `create`    | Title / decision topic         | Conversation context, recent discussion |
-| `review`    | ADR ID                         | Most recent Proposed ADR, or branch     |
-| `list`      | (no args needed)               | —                                       |
-| `supersede` | Old + new ID                   | Always require explicit                 |
+| Subcommand  | What to infer          | From                                    |
+| ----------- | ---------------------- | --------------------------------------- |
+| `create`    | Title / decision topic | Conversation context, recent discussion |
+| `review`    | ADR ID                 | Most recent Proposed ADR, or branch     |
+| `list`      | (no args needed)       | —                                       |
+| `supersede` | Old + new ID           | Always require explicit                 |
 
 ---
 
 ## Agent Instructions
+
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature from the active file path (e.g., `docs/specs/user-auth/spec.md` → `user-auth`). Useful for scoping ADR creation to a feature context.
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** ADRs are often global — proceed without feature scope if none can be inferred.
+3. **Trailing parameters (`[...context]`):** Treat extra words as constraints for ADR content (e.g., `/afx-adr create "api versioning" graphql only` → scope the ADR to GraphQL API versioning).
 
 ### Next Command Suggestion (MANDATORY)
 
@@ -128,7 +137,7 @@ After EVERY `/afx-adr` action, suggest the most appropriate next command:
 
 | Context                       | Suggested Next Command                          |
 | ----------------------------- | ----------------------------------------------- |
-| After `create`                | Edit `docs/adr/ADR-NNNN-*.md` to fill content  |
+| After `create`                | Edit `docs/adr/ADR-NNNN-*.md` to fill content   |
 | After `review` (issues found) | Fix issues, then `/afx-adr review <id>` again   |
 | After `review` (clean)        | `/afx-adr accept <id>` or share for team review |
 | After `list`                  | `/afx-adr review <id>` on any Proposed ADRs     |
@@ -318,9 +327,9 @@ Usage: /afx-adr supersede <old-id> <new-id>
 
 ## Related Commands
 
-| Command               | Relationship                                    |
-| --------------------- | ----------------------------------------------- |
-| `/afx-research`       | Research workflow that promotes findings to ADRs |
-| `/afx-scaffold adr`   | Quick ADR creation (delegates to this skill)     |
-| `/afx-spec`           | Move ADR decisions into formal specs            |
-| `/afx-session note`   | Capture discussion context before ADR creation  |
+| Command             | Relationship                                     |
+| ------------------- | ------------------------------------------------ |
+| `/afx-research`     | Research workflow that promotes findings to ADRs |
+| `/afx-scaffold adr` | Quick ADR creation (delegates to this skill)     |
+| `/afx-spec`         | Move ADR decisions into formal specs             |
+| `/afx-session note` | Capture discussion context before ADR creation   |

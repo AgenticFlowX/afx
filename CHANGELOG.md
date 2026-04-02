@@ -5,6 +5,18 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1] - 2026-04-02
+
+### Changed
+
+- **Context Resolution (all 15 skills)**: Replaced copy-paste IDE-only inference block with environment-aware context resolution — detects CLI vs IDE, names concrete signals (`ide_opened_file`, `ide_selection`), adds CLI fallback path (explicit args → cwd/branch → conversation), and uses skill-specific examples and fallbacks
+- **Tier A skills** (`afx-task`, `afx-spec`): Merged new context detection into existing resolution chains instead of duplicating; extracted trailing parameters into standalone sections
+- **Tier C skills** (`afx-hello`, `afx-help`): Removed Active File Inference entirely — these are context-agnostic diagnostic/reference commands; kept trailing parameters as keyword filters
+- **Suggestion list formatting** (6 skills): De-indented code-block suggestion lists to standard markdown ordered lists
+- **Markdown table alignment**: Consistent column widths across all skill files
+- **`afx-next` numbering fix**: Corrected duplicate step 3 → sequential steps 4-7
+- **`afx-next` glob escape**: Escaped `*` in ADR glob pattern to prevent markdown emphasis
+
 ## [2.5.0] - 2026-04-02
 
 ### Added

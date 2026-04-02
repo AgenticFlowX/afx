@@ -70,15 +70,24 @@ When this skill detects a high-impact health decline, auto-capture to `journal.m
 
 ## Agent Instructions
 
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature or scan path from the active file (e.g., `src/features/user-auth/auth.service.ts` → scan `src/features/user-auth/`).
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** Report across all features if no scope can be inferred.
+3. **Trailing parameters (`[...context]`):** Treat extra words as filters for the report output (e.g., `/afx-report orphans src/components high priority` → filter orphans to `src/components`, prioritize high-severity).
+
 ### Next Command Suggestion (MANDATORY)
 
 **CRITICAL**: After EVERY `/afx-report` action, suggest the most appropriate next command:
 
-| Context                         | Suggested Next Command               |
-| ------------------------------- | ------------------------------------ |
-| After `orphans` (orphans found) | `/afx-check trace <file>:<line>`      |
-| After `coverage` (gaps found)   | `/afx-dev code` to implement         |
-| After `stale` (stale specs)     | `/afx-check links <spec>`            |
+| Context                         | Suggested Next Command           |
+| ------------------------------- | -------------------------------- |
+| After `orphans` (orphans found) | `/afx-check trace <file>:<line>` |
+| After `coverage` (gaps found)   | `/afx-dev code` to implement     |
+| After `stale` (stale specs)     | `/afx-check links <spec>`        |
 
 ---
 
@@ -139,12 +148,13 @@ For each orphan, add @see reference:
 ```
 
 Next (ranked):
-  1. /afx-check trace notification.service.ts:1  # Context-driven: Fix first orphan
-  2. /afx-dev code                               # Context-driven: Add @see links
-  3. /afx-report health                          # Context-driven: Re-check after fixes
-  ──
-  4. /afx-next                                    # Re-orient after report
-  5. /afx-session note "<note>"                   # Capture findings
+
+1. /afx-check trace notification.service.ts:1 # Context-driven: Fix first orphan
+2. /afx-dev code # Context-driven: Add @see links
+3. /afx-report health # Context-driven: Re-check after fixes
+   ──
+4. /afx-next # Re-orient after report
+5. /afx-session note "<note>" # Capture findings
 ````
 
 ---
@@ -219,12 +229,13 @@ done
    - Task: Phase 2 (deferred)
 
 Next (ranked):
-  1. /afx-task pick docs/specs/user-auth          # Context-driven: Implement uncovered
-  2. /afx-task list 7                             # Context-driven: See Phase 7 tasks
-  3. /afx-dev code                               # Context-driven: Start implementation
-  ──
-  4. /afx-next                                    # Re-orient after report
-  5. /afx-session note "<note>"                   # Capture findings
+
+1. /afx-task pick docs/specs/user-auth # Context-driven: Implement uncovered
+2. /afx-task list 7 # Context-driven: See Phase 7 tasks
+3. /afx-dev code # Context-driven: Start implementation
+   ──
+4. /afx-next # Re-orient after report
+5. /afx-session note "<note>" # Capture findings
 ```
 
 ---
@@ -278,12 +289,13 @@ find docs/specs -name "*.md" -mtime +$DAYS -print0 | xargs -0 ls -lt | awk '{pri
 | agenticflow | 2025-12-16  | 0    |
 
 Next (ranked):
-  1. /afx-check links users-permissions          # Context-driven: Verify stale spec
-  2. /afx-session recap users-permissions         # Context-driven: Review discussions
-  3. /afx-spec review users-permissions           # Context-driven: Check spec quality
-  ──
-  4. /afx-next                                    # Re-orient after report
-  5. /afx-session note "<note>"                   # Capture findings
+
+1. /afx-check links users-permissions # Context-driven: Verify stale spec
+2. /afx-session recap users-permissions # Context-driven: Review discussions
+3. /afx-spec review users-permissions # Context-driven: Check spec quality
+   ──
+4. /afx-next # Re-orient after report
+5. /afx-session note "<note>" # Capture findings
 ```
 
 ---
@@ -303,6 +315,6 @@ Next (ranked):
 
 | Command            | Relationship             |
 | ------------------ | ------------------------ |
-| `/afx-check trace`  | Fix orphaned annotations |
+| `/afx-check trace` | Fix orphaned annotations |
 | `/afx-check links` | Fix broken links         |
 | `/afx-next`        | See active work state    |

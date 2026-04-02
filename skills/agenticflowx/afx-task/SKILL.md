@@ -56,11 +56,13 @@ Owns the `tasks.md` artifact AND the implementation engine. Owns coding with tra
 
 When task ID alone is provided (e.g., `7.1`), resolve spec in this order:
 
-1. **Active VSCode Editor** - Infer `[feature]` from current tab (e.g., if `docs/specs/user-auth/tasks.md` is active)
-2. **Conversation context** - Recently discussed spec (file reads, GitHub issues, prior commands)
-3. **Branch name** - Extract from `feat/{feature-name}` pattern
-4. **Open GitHub issues** - If only one feature has open issues
-5. **Fallback** - Require explicit: `/afx-task verify user-auth#7.1`
+1. **Environment detection** — Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **IDE: Active file** — Infer `[feature]` from the active file path (e.g., `docs/specs/user-auth/tasks.md` → `user-auth`). If code is selected, use it as additional implementation context.
+3. **CLI: Explicit args** — If a feature name is passed alongside the task ID (e.g., `/afx-task code user-auth#7.1`), use it directly.
+4. **Conversation context** — Recently discussed spec (file reads, GitHub issues, prior commands).
+5. **Branch name** — Extract from `feat/{feature-name}` pattern.
+6. **Open GitHub issues** — If only one feature has open issues.
+7. **Fallback** — Require explicit: `/afx-task verify user-auth#7.1`
 
 ---
 
@@ -190,6 +192,14 @@ After completing any action that modifies `tasks.md` or source code, you MUST:
 ---
 
 ## Agent Instructions
+
+### Trailing Parameters (`[...context]`)
+
+When trailing arguments are passed (either via CLI or IDE context):
+
+- Treat them as explicit user constraints or focus areas (e.g., `/afx-task code 1.2 oauth` → implement task 1.2 with a focus on OAuth).
+- **Multiple Tasks:** If multiple Task IDs are detected (e.g., `1.3 and 1.5`), perform the action and update the `Work Sessions` table for **all** matching tasks simultaneously.
+- If an explicit feature name is detected alongside a Task ID, use it to override the Context Resolution chain above.
 
 ### Persistence Checkpoint (MANDATORY)
 

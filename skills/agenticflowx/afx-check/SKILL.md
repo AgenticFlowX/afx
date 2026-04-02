@@ -74,6 +74,15 @@ When this skill detects a high-impact context change, auto-capture to `journal.m
 
 ## Agent Instructions
 
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature and check path from the active file (e.g., `src/features/user-auth/auth.service.ts` → check `user-auth` path). If code is selected, use it to narrow the verification scope.
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** Require explicit path — checks need a concrete target.
+3. **Trailing parameters (`[...context]`):** Treat extra words as focus constraints (e.g., `/afx-check path user-auth api only` → trace just the API boundaries). Extract the base path/target, then apply context as a constraint on the analysis.
+
 ### Next Command Suggestion (MANDATORY)
 
 **CRITICAL**: After EVERY `/afx-check` action, suggest the most appropriate next command based on context:
@@ -81,24 +90,25 @@ When this skill detects a high-impact context change, auto-capture to `journal.m
 | Context                        | Suggested Next Command                           |
 | ------------------------------ | ------------------------------------------------ |
 | After `path` (ALL VERIFIED)    | `/afx-task pick <spec>` for next task            |
-| After `path` (FAILED)          | `/afx-task code` to fix the gaps                  |
+| After `path` (FAILED)          | `/afx-task code` to fix the gaps                 |
 | After `trace` (no orphans)     | `/afx-check path` or `/afx-task pick`            |
 | After `trace` (orphans found)  | `/afx-check trace <file>:<line>` to fix each     |
-| After `links` (all valid)      | `/afx-task pick <spec>` or `/afx-task code`       |
+| After `links` (all valid)      | `/afx-task pick <spec>` or `/afx-task code`      |
 | After `links` (broken found)   | Fix broken links, then re-run `/afx-check links` |
 | After `all` (READY FOR REVIEW) | `/afx-task pick <spec>` or create PR             |
-| After `all` (issues found)     | `/afx-task code` to address issues                |
+| After `all` (issues found)     | `/afx-task code` to address issues               |
 
 **Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-task code                               # Context-driven: Fix gaps if verification failed
-  2. /afx-task pick docs/specs/{feature}          # Context-driven: Move to next task (if verified)
-  3. /afx-task verify <task-id>                   # Context-driven: Confirm task matches spec
-  ──
-  4. /afx-session note "<note>"                   # Note issues before switching
-  5. /afx-next                                     # Re-orient after check
+
+1. /afx-task code # Context-driven: Fix gaps if verification failed
+2. /afx-task pick docs/specs/{feature} # Context-driven: Move to next task (if verified)
+3. /afx-task verify <task-id> # Context-driven: Confirm task matches spec
+   ──
+4. /afx-session note "<note>" # Note issues before switching
+5. /afx-next # Re-orient after check
 ```
 
 ---
@@ -818,19 +828,19 @@ Example: `/afx-check coverage docs/specs/user-auth`
 
 ### Spec → Code (Requirements Coverage)
 
-| Requirement | @see in Code | Status  |
-| ----------- | ------------ | ------- |
-| [FR-1]      | auth.service.ts:15, auth.action.ts:8 | ✓ Covered |
-| [FR-2]      | auth.service.ts:42 | ✓ Covered |
-| [FR-3]      | — | ✗ Uncovered |
-| [NFR-1]     | auth.middleware.ts:5 | ✓ Covered |
+| Requirement | @see in Code                         | Status      |
+| ----------- | ------------------------------------ | ----------- |
+| [FR-1]      | auth.service.ts:15, auth.action.ts:8 | ✓ Covered   |
+| [FR-2]      | auth.service.ts:42                   | ✓ Covered   |
+| [FR-3]      | —                                    | ✗ Uncovered |
+| [NFR-1]     | auth.middleware.ts:5                 | ✓ Covered   |
 
 Coverage: 3/4 (75%)
 
 ### Code → Spec (Orphan Check)
 
-| @see Link | Target | Status |
-| --------- | ------ | ------ |
+| @see Link                          | Target           | Status  |
+| ---------------------------------- | ---------------- | ------- |
 | auth.helper.ts:10 → spec.md [FR-5] | [FR-5] not found | ✗ Stale |
 
 Stale references: 1
@@ -904,8 +914,8 @@ Next: /afx-task code {id}   # Address the issues first
 
 ## Related Commands
 
-| Command        | Relationship                                          |
-| -------------- | ----------------------------------------------------- |
+| Command        | Relationship                                           |
+| -------------- | ------------------------------------------------------ |
 | `/afx-task`    | Task lifecycle; check verifies code and spec alignment |
 | `/afx-design`  | Design authoring; check validates design structure     |
 | `/afx-spec`    | Spec management; check validates spec structure        |

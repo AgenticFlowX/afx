@@ -82,6 +82,15 @@ When creating or updating context bundles (`saved` frontmatter, journal archive 
 
 ## Agent Instructions
 
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature from the active file path (e.g., `docs/specs/user-auth/tasks.md` → `user-auth`).
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** Prompt user: "Which feature context to save/load?"
+3. **Trailing parameters (`[...context]`):** Treat extra words as constraints for context aggregation (e.g., `/afx-context save user-auth exclude dependencies` → exclude dependency analysis from the bundle).
+
 ### Next Command Suggestion (MANDATORY)
 
 | Context                       | Suggested Next Command                      |
@@ -305,12 +314,13 @@ The full context bundle content, followed by:
 ✅ **Context loaded from** `.afx/context.md`
 
 Next (ranked):
-  1. /afx-dev code                               # Context-driven: Continue implementation
-  2. /afx-task pick                                # Context-driven: Pick up from task queue
-  3. /afx-session recap {feature}                  # Context-driven: Review more context
-  ──
-  4. /afx-next                                     # Re-orient after context load
-  5. /afx-help                                    # See all options
+
+1. /afx-dev code # Context-driven: Continue implementation
+2. /afx-task pick # Context-driven: Pick up from task queue
+3. /afx-session recap {feature} # Context-driven: Review more context
+   ──
+4. /afx-next # Re-orient after context load
+5. /afx-help # See all options
 ```
 
 ---

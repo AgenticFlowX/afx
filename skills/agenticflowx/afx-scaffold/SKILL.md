@@ -29,14 +29,14 @@ If neither file exists, use defaults.
 
 Templates are co-located with the skill that owns each artifact type. Read via relative paths from this skill's directory:
 
-| Artifact    | Template path                                     |
-| ----------- | ------------------------------------------------- |
-| `spec.md`   | `../afx-spec/assets/spec-template.md`             |
-| `design.md` | `../afx-design/assets/design-template.md`         |
-| `tasks.md`  | `../afx-task/assets/tasks-template.md`             |
-| `journal.md`| `../afx-session/assets/journal-template.md`       |
-| ADR         | `../afx-adr/assets/adr-template.md`               |
-| Research    | `../afx-research/assets/research-template.md`     |
+| Artifact     | Template path                                 |
+| ------------ | --------------------------------------------- |
+| `spec.md`    | `../afx-spec/assets/spec-template.md`         |
+| `design.md`  | `../afx-design/assets/design-template.md`     |
+| `tasks.md`   | `../afx-task/assets/tasks-template.md`        |
+| `journal.md` | `../afx-session/assets/journal-template.md`   |
+| ADR          | `../afx-adr/assets/adr-template.md`           |
+| Research     | `../afx-research/assets/research-template.md` |
 
 ## Usage
 
@@ -96,15 +96,24 @@ After scaffolding any new feature or artifact, you MUST:
 
 ## Agent Instructions
 
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature from the active file path (e.g., `docs/specs/user-auth/spec.md` → `user-auth`). Useful for `/afx-scaffold research` when inside an existing feature directory.
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** Require explicit `<name>` — scaffolding always needs a target name.
+3. **Trailing parameters (`[...context]`):** Treat extra words as constraints for scaffolding output. If delegating to another command (e.g., `/afx-spec create`), pass the `[...context]` string along unchanged.
+
 ### Next Command Suggestion (MANDATORY)
 
 After EVERY `/afx-scaffold` action, suggest the most appropriate next command:
 
-| Context              | Suggested Next Command                          |
-| -------------------- | ----------------------------------------------- |
-| After `spec`         | `/afx-spec validate <name>` to review scaffold  |
-| After `research`     | Edit the research doc to begin exploration       |
-| After `adr`          | Edit `docs/adr/ADR-NNNN-*.md` to fill content   |
+| Context          | Suggested Next Command                         |
+| ---------------- | ---------------------------------------------- |
+| After `spec`     | `/afx-spec validate <name>` to review scaffold |
+| After `research` | Edit the research doc to begin exploration     |
+| After `adr`      | Edit `docs/adr/ADR-NNNN-*.md` to fill content  |
 
 ---
 
@@ -214,10 +223,10 @@ Use a different name or work with the existing research doc.
 
 ## Related Commands
 
-| Command              | Relationship                                |
-| -------------------- | ------------------------------------------- |
-| `/afx-adr`           | ADR management (create delegates to this)   |
+| Command              | Relationship                                 |
+| -------------------- | -------------------------------------------- |
+| `/afx-adr`           | ADR management (create delegates to this)    |
 | `/afx-spec validate` | Check scaffold structure after spec creation |
 | `/afx-research`      | Research workflow after research scaffolding |
-| `/afx-session note`  | Capture initial ideas in journal            |
-| `/afx-check links`   | Verify spec cross-references                |
+| `/afx-session note`  | Capture initial ideas in journal             |
+| `/afx-check links`   | Verify spec cross-references                 |
