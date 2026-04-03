@@ -97,6 +97,16 @@ If out-of-scope work is requested, return:
 Out of scope for /afx-task (implementation-lifecycle mode). Use /afx-spec for spec changes, /afx-design for design changes.
 ```
 
+### Architectural Core "Hard Anchor" Rule
+
+The following are **Hard Anchors** and MUST NOT be modified during `/afx-task code` without a prior approved Design update:
+- Authentication flow & Security protocols
+- Database schema & Data migration patterns
+- Global state management architecture
+- External API integration contracts
+
+If a task requires modifying a Hard Anchor, STOP and escalate: `/afx-design review {name}`.
+
 ---
 
 ### Timestamp Format (MANDATORY)
@@ -166,12 +176,17 @@ Approve the design first:
 
 After completing any action that modifies `tasks.md` or source code, you MUST:
 
-1. **Update `updated_at`**: Set to current ISO 8601 timestamp in `tasks.md` frontmatter.
-2. **Verify backlinks**: Ensure `spec: spec.md` and `design: design.md` are present in `tasks.md` frontmatter.
-3. **Contextual Tagging**: If changes introduce new domains or concepts, append to `tags` array.
-4. **Version & State Management**: If modifying a `tasks.md` that is currently `status: Living` and the change alters task scope (adding/removing phases), bump `version`.
-5. **Format Preservation**: Frontmatter fields must remain in canonical order. Use double quotes.
-6. **Work Sessions Table** (CRITICAL — agents frequently get this wrong):
+1. **Verify Implementation vs. Spec**: Perform a "Mental Reset"—read the entire `spec.md` and `design.md` for the feature and confirm the new code doesn't violate any previously implemented requirements.
+2. **Update `updated_at`**: Set to current ISO 8601 timestamp in `tasks.md` frontmatter.
+3. **Verify backlinks**: Ensure `spec: spec.md` and `design: design.md` are present in `tasks.md` frontmatter.
+4. **Contextual Tagging**: If changes introduce new domains or concepts, append to `tags` array.
+5. **Version & State Management**: If modifying a `tasks.md` that is currently `status: Living` and the change alters task scope (adding/removing phases), bump `version`.
+6. **Format Preservation**: Frontmatter fields must remain in canonical order. Use double quotes.
+7. **Proactive Prevention Check**:
+   - Error Handling: Does it match the project's error handling pattern?
+   - Logging: Does it use the project's logging utility?
+   - Consistency: Compare with 3 existing files in the project to ensure stylistic alignment.
+8. **Work Sessions Table** (CRITICAL — agents frequently get this wrong):
    - The `## Work Sessions` section MUST be the **last section** in `tasks.md`, after all Phase sections and after the Cross-Reference Index. If it has drifted above other sections, move it back to the bottom before appending.
    - After `pick`, `code`, and `complete`, **append a new row** to the table. Do NOT replace existing rows.
    - Use this exact column structure — no variations:
@@ -324,6 +339,15 @@ After EVERY `/afx-task` action, suggest the next command:
    - Follow existing code patterns and architecture in the project
    - Run build/test/lint as needed
 
+### Code Drift Guardrail (MANDATORY)
+
+During implementation, if you discover that the requested logic fundamentally conflicts with the codebase, introduces severe edge cases unaccounted for in `design.md`, or requires >5 lines of unmapped complex logic:
+
+1. **STOP CODING.** Do not hack around the design or unilaterally invent new architecture.
+2. **Proactive Capture:** Log the drift in `journal.md` detailing the discrepancy, the impact, and your recommended architectural course correction.
+3. **Escalate:** Stop execution and prompt the user: *"I've hit a logic conflict with the design. See `journal.md` for my analysis. We need to update the design via `/afx-design` or `/afx-spec` before I can continue coding this task."*
+4. **Resume:** Once the user updates the source of truth, resume the `/afx-task code {id}` command.
+
 3. **Add `@see` Annotations** (class and function level):
 
    ```typescript
@@ -393,6 +417,8 @@ Unlike `/afx-check path` which verifies runtime execution paths, this verifies i
 | @see backlinks        | [OK]   | 2 files reference this task            |
 | Session log entry     | [OK]   | 2025-12-13: Created supplier constants |
 | No incomplete markers | [OK]   | No TODO/FIXME for 7.1                  |
+| Pattern Consistency   | [OK]   | Error handling/logging matches project |
+| Structural Integrity  | [OK]   | No unauthorized Hard Anchor changes    |
 
 ### Verdict
 
@@ -530,6 +556,22 @@ Recommendations:
    Task 2.1 is already marked complete.
 
    To re-open: uncheck the task in tasks.md and run /afx-task pick 2.1
+   ```
+
+5. **Drift Detected**
+
+   ```text
+   BLOCKED: Logic drift detected in Task 2.1.
+   
+   The required implementation deviates from design.md [DES-API] regarding token rotation.
+   
+   Action Taken:
+     - Analysis logged to docs/specs/auth/journal.md
+     - Coding paused to prevent technical debt
+   
+   Next Step:
+     - Review analysis in journal.md
+     - Update design: /afx-design modify auth
    ```
 
 ---
