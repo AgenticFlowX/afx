@@ -5,6 +5,21 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.2] - 2026-04-05
+
+### Changed
+
+- **Repository moved**: Primary development repo is now `AgenticFlowX/afx` (forked from `rixrix/afx`). All URLs updated.
+- **`afx-cli`**: `AFX_REPO` updated to `AgenticFlowX/afx` — curl install now pulls from the new org.
+- **README**: Removed VSCode extension alpha banner, screenshots section, and vsix download instructions. Extension is now on the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=AgenticFlowX.agenticflowx).
+- **README**: Added companion extension announcement with Marketplace and website links.
+- **CLAUDE.md**: Updated curl install URLs to new org.
+
+### Removed
+
+- **`assets/vscode/`**: Deleted 9 screenshot images (extension screenshots now live with the extension repo).
+- **`docs/agenticflowx/vscode-extension.md`**: Removed — extension documentation lives in the extension repo.
+
 ## [2.5.1] - 2026-04-02
 
 ### Changed
