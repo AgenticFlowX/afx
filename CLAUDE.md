@@ -153,7 +153,7 @@ Use only the line matching the agent that assisted with the commit.
 **One-line install** (from target project directory):
 
 ```bash
-curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- .
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .
 ```
 
 **Local install** (if AFX is cloned):
@@ -165,7 +165,7 @@ curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- 
 **Update existing installation**:
 
 ```bash
-curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- --update .
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- --update .
 ```
 
 **Options**:
