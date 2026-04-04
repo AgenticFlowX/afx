@@ -24,7 +24,7 @@ set -e
 # Section 1: Constants & Colors
 # ============================================================================
 
-AFX_REPO="rixrix/afx"
+AFX_REPO="AgenticFlowX/afx"
 
 # Boundary markers
 AFX_START_MARKER="<!-- AFX:START - Managed by AFX. Do not edit manually. -->"
@@ -154,7 +154,7 @@ Examples:
   ./afx-cli --update .
 
   # Remote install
-  curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- .
+  curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .
 
   # Install QA pack (short or full name)
   ./afx-cli --pack qa .
