@@ -194,16 +194,16 @@ After completing any action that modifies `tasks.md` or source code, you MUST:
      ```markdown
      | Date       | Task | Action    | Files Modified       | Agent | Human |
      | ---------- | ---- | --------- | -------------------- | ----- | ----- |
-     | 2026-03-31 | 1.1  | Picked    | -                    | [x]   | -     |
-     | 2026-03-31 | 1.1  | Coded     | auth.service.ts, ... | [x]   | -     |
-     | 2026-03-31 | 1.1  | Completed | auth.service.ts, ... | [x]   | -     |
+     | 2026-03-31 | 1.1  | Picked    | -                    | [x]   | []    |
+     | 2026-03-31 | 1.1  | Coded     | auth.service.ts, ... | [x]   | []    |
+     | 2026-03-31 | 1.1  | Completed | auth.service.ts, ... | [x]   | []    |
      ```
 
    - **Date**: `YYYY-MM-DD` (date only, not full ISO timestamp)
    - **Task**: WBS ID (e.g., `1.1`, `2.3`)
    - **Action**: One of `Picked`, `Coded`, `Completed`, `Verified`, `Reviewed`
    - **Files Modified**: Comma-separated list, or `-` if no files changed
-   - **Agent/Human**: `[x]` for who performed, `-` for not applicable
+   - **Agent/Human**: `[x]` for who performed, `[]` for pending human review
 
 7. **`@see` Annotations (code subcommand only)**: Add `@see` links at the **class and function level** via JSDoc on exported classes, interfaces, and functions. Line-level annotations ONLY when a specific line implements a non-obvious requirement. **CRITICAL ANTI-PATTERN**: Do NOT dump blanket `@see` links at the top of the file. Do NOT annotate every line.
 8. **Task Checkbox**: After `code` and `complete`, mark the relevant task checkbox `[x]`.
@@ -312,7 +312,7 @@ After EVERY `/afx-task` action, suggest the next command:
 5. Append a row to the Work Sessions table:
 
    ```markdown
-   | 2026-04-01 | {id} | Picked | - | [x] | - |
+   | 2026-04-01 | {id} | Picked | - | [x] | [] |
    ```
 
 6. Update `updated_at` in `tasks.md` frontmatter
@@ -380,7 +380,7 @@ During implementation, if you discover that the requested logic fundamentally co
    - **Locate `## Work Sessions`** at the bottom. Append a `Coded` row with the files you modified:
 
      ```markdown
-     | 2026-03-31 | {id} | Coded | auth.service.ts, auth.action.ts | [x] | - |
+     | 2026-03-31 | {id} | Coded | auth.service.ts, auth.action.ts | [x] | [] |
      ```
 
    - Update `updated_at`
@@ -447,7 +447,7 @@ Unlike `/afx-check path` which verifies runtime execution paths, this verifies i
 4. **Locate `## Work Sessions`** at the bottom of `tasks.md`. Append a row:
 
    ```markdown
-   | 2026-03-31 | {id} | Completed | auth.service.ts, auth.action.ts | [x] | - |
+   | 2026-03-31 | {id} | Completed | auth.service.ts, auth.action.ts | [x] | [] |
    ```
 
 5. Update `updated_at` in `tasks.md` frontmatter
