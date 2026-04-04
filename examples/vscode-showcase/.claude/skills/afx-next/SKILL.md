@@ -6,6 +6,9 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,context,guidance,golden-thread"
+  modeSlugs:
+    - focus-next
+    - architect
 ---
 
 # /afx-next
@@ -45,9 +48,34 @@ If implementation is requested, respond with:
 Out of scope for /afx-next (read-only advisor mode). Use the suggested command to proceed.
 ```
 
+### Timestamp Format (MANDATORY)
+
+When writing execution reports or creating journal entries, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
+
+## Post-Action Checklist (MANDATORY)
+
+Since this is a read-only advisor skill, no files are modified. However, after executing, you MUST:
+
+1. Strictly follow the Analysis Logic to provide context-aware command suggestions.
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact context switch or critical gap, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-next`**: Major context loss detected, multiple incomplete tasks found.
+
 ---
 
 ## Agent Instructions
+
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature from the active file path (e.g., `docs/specs/user-auth/tasks.md` → `user-auth`). If code is selected, use it as additional input context for the analysis.
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** Analyse all features if no context can be inferred — `/afx-next` is valid without a feature scope.
+3. **Trailing parameters (`[...context]`):** Treat extra words as focus constraints (e.g., `/afx-next user-auth` scopes the analysis to that feature only).
 
 ### Analysis Logic
 
@@ -62,7 +90,7 @@ You must perform a deep context scan to determine the user's state. Follow this 
 2.  **Check Global ADRs** (`ls docs/adr/*.md`):
     - Are there ADRs with `status: Proposed`?
       - **Situation**: Architectural decisions are pending review.
-      - **Suggestion**: "Review Proposed ADR: docs/adr/ADR-NNNN-*.md"
+      - **Suggestion**: "Review Proposed ADR: docs/adr/ADR-NNNN-\*.md"
 
 3.  **Check Git State** (`git status --short`):
     - Are there uncommitted changes?
@@ -72,22 +100,22 @@ You must perform a deep context scan to determine the user's state. Follow this 
         2.  If ready to commit: `/afx-task code` (Completing the subtask)
         3.  If just exploring: `/afx-session note "findings"` (Capture thought)
 
-3.  **Check Active Task** (`/afx-next` logic):
+4.  **Check Active Task** (`/afx-next` logic):
     - Is there an active task in `journal.md` or GitHub?
       - **Situation**: Task is assigned but git is clean.
       - **Suggestion**: `/afx-task code` (Start/Resume implementation)
 
-4.  **Check recent completion**:
+5.  **Check recent completion**:
     - Did the last session end with "Completed"?
       - **Situation**: Task done, need verification.
       - **Suggestion**: `/afx-task verify <task-id>` (Verify against spec)
 
-5.  **Check Idle State**:
+6.  **Check Idle State**:
     - No active task, clean git state.
       - **Situation**: Ready for new work.
       - **Suggestion**: `/afx-task pick <spec>` (Pick up next task)
 
-6.  **Fallbacks**:
+7.  **Fallbacks**:
     - Confused?
       - **Suggestion**: `/afx-help guides` (Browse workflows) or `/afx-next` (Re-orient)
 
@@ -99,12 +127,13 @@ You must perform a deep context scan to determine the user's state. Follow this 
 **Detected**: {Uncommitted changes | Active Task X.Y | Idle | Review Pending}
 
 Next (ranked):
-  1. /afx-command <args>                         # Context-driven: {why this is best}
-  2. /afx-alt1                                   # Context-driven: {reason}
-  3. /afx-alt2                                   # Context-driven: {reason}
-  ──
-  4. /afx-next                            # Re-orient
-  5. /afx-session note "<note>"                   # Capture context
+
+1. /afx-command <args> # Context-driven: {why this is best}
+2. /afx-alt1 # Context-driven: {reason}
+3. /afx-alt2 # Context-driven: {reason}
+   ──
+4. /afx-next # Re-orient
+5. /afx-session note "<note>" # Capture context
 ```
 
 ## Examples
@@ -118,12 +147,13 @@ Next (ranked):
 **Detected**: 3 uncommitted files (modified), Task 7.4 Active
 
 Next (ranked):
-  1. /afx-check path apps/webapp/claims           # Context-driven: Verify uncommitted changes
-  2. /afx-task code "continue"                     # Context-driven: Continue writing code
-  3. /afx-dev test claims                         # Context-driven: Run tests before commit
-  ──
-  4. /afx-next                             # Re-orient
-  5. /afx-session note "context"                   # Capture before switching
+
+1. /afx-check path apps/webapp/claims # Context-driven: Verify uncommitted changes
+2. /afx-task code "continue" # Context-driven: Continue writing code
+3. /afx-dev test claims # Context-driven: Run tests before commit
+   ──
+4. /afx-next # Re-orient
+5. /afx-session note "context" # Capture before switching
 ```
 
 **Scenario 2: Task Done**
@@ -135,12 +165,13 @@ Next (ranked):
 **Detected**: Git Clean, Task 7.4 marked "Done" in last session log.
 
 Next (ranked):
-  1. /afx-task verify 7.4                        # Context-driven: Validate against spec
-  2. /afx-task complete 7.4 "done"                # Context-driven: Mark task complete
-  3. /afx-task pick docs/specs/{feature}          # Context-driven: Move to next task
-  ──
-  4. /afx-next                             # Re-orient
-  5. /afx-session note "<note>"                    # Capture learnings
+
+1. /afx-task verify 7.4 # Context-driven: Validate against spec
+2. /afx-task complete 7.4 "done" # Context-driven: Mark task complete
+3. /afx-task pick docs/specs/{feature} # Context-driven: Move to next task
+   ──
+4. /afx-next # Re-orient
+5. /afx-session note "<note>" # Capture learnings
 ```
 
 **Scenario 3: Proposed ADRs**
@@ -152,12 +183,13 @@ Next (ranked):
 **Detected**: 1 Proposed ADR (docs/adr/ADR-0001-database-choice.md)
 
 Next (ranked):
-  1. Review docs/adr/ADR-0001-database-choice.md # Context-driven: ADR needs review
-  2. /afx-research explore "database choice"      # Context-driven: Research before deciding
-  3. /afx-session note "ADR review"                # Context-driven: Capture review notes
-  ──
-  4. /afx-next                             # Re-orient
-  5. /afx-help                                    # See all options
+
+1. Review docs/adr/ADR-0001-database-choice.md # Context-driven: ADR needs review
+2. /afx-research explore "database choice" # Context-driven: Research before deciding
+3. /afx-session note "ADR review" # Context-driven: Capture review notes
+   ──
+4. /afx-next # Re-orient
+5. /afx-help # See all options
 ```
 
 **Scenario 4: Idle**
@@ -169,10 +201,11 @@ Next (ranked):
 **Detected**: No active tasks found.
 
 Next (ranked):
-  1. /afx-task pick <feature>                    # Context-driven: Pick next pending task
-  2. /afx-scaffold spec <name>                    # Context-driven: Start something new
-  3. /afx-discover capabilities                   # Context-driven: Explore project state
-  ──
-  4. /afx-next                             # Check full project state
-  5. /afx-session recap all                       # Refresh memory from past sessions
+
+1. /afx-task pick <feature> # Context-driven: Pick next pending task
+2. /afx-scaffold spec <name> # Context-driven: Start something new
+3. /afx-discover capabilities # Context-driven: Explore project state
+   ──
+4. /afx-next # Check full project state
+5. /afx-session recap all # Refresh memory from past sessions
 ```

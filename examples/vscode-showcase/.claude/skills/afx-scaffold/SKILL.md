@@ -29,14 +29,14 @@ If neither file exists, use defaults.
 
 Templates are co-located with the skill that owns each artifact type. Read via relative paths from this skill's directory:
 
-| Artifact    | Template path                                     |
-| ----------- | ------------------------------------------------- |
-| `spec.md`   | `../afx-spec/assets/spec-template.md`             |
-| `design.md` | `../afx-design/assets/design-template.md`         |
-| `tasks.md`  | `../afx-task/assets/tasks-template.md`             |
-| `journal.md`| `../afx-session/assets/journal-template.md`       |
-| ADR         | `../afx-adr/assets/adr-template.md`               |
-| Research    | `../afx-research/assets/research-template.md`     |
+| Artifact     | Template path                                 |
+| ------------ | --------------------------------------------- |
+| `spec.md`    | `../afx-spec/assets/spec-template.md`         |
+| `design.md`  | `../afx-design/assets/design-template.md`     |
+| `tasks.md`   | `../afx-task/assets/tasks-template.md`        |
+| `journal.md` | `../afx-session/assets/journal-template.md`   |
+| ADR          | `../afx-adr/assets/adr-template.md`           |
+| Research     | `../afx-research/assets/research-template.md` |
 
 ## Usage
 
@@ -74,7 +74,7 @@ Out of scope for /afx-scaffold (scaffolding mode). Use /afx-dev code after spec 
 
 ### Timestamp Format (MANDATORY)
 
-All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ### Proactive Journal Capture
 
@@ -89,22 +89,31 @@ After scaffolding any new feature or artifact, you MUST:
 1. **Canonical Frontmatter**: All generated files use the canonical schema — `afx → type → status → owner → version → created_at → updated_at → tags → [backlinks]`. Double quotes for all string values. `version` quoted as `"1.0"`.
 2. **Full Spec Body**: `spec.md` must contain ALL template sections (Problem Statement, User Stories, FR/NFR tables, Acceptance Criteria, Non-Goals, Open Questions, Dependencies). Do NOT generate a stripped-down skeleton.
 3. **Node IDs in Design**: `design.md` scaffold must include `[DES-ID]` prefixes on all `##` headings.
-4. **Timestamps**: Use current ISO 8601 with millisecond precision for `created_at` and `updated_at`. Never use midnight timestamps.
+4. **Timestamps**: Run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` to get the current timestamp for `created_at` and `updated_at`. Never use midnight timestamps.
 5. **Feature Registration**: If `.afx.yaml` has a `features` list, register the new feature.
 
 ---
 
 ## Agent Instructions
 
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature from the active file path (e.g., `docs/specs/user-auth/spec.md` → `user-auth`). Useful for `/afx-scaffold research` when inside an existing feature directory.
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** Require explicit `<name>` — scaffolding always needs a target name.
+3. **Trailing parameters (`[...context]`):** Treat extra words as constraints for scaffolding output. If delegating to another command (e.g., `/afx-spec create`), pass the `[...context]` string along unchanged.
+
 ### Next Command Suggestion (MANDATORY)
 
 After EVERY `/afx-scaffold` action, suggest the most appropriate next command:
 
-| Context              | Suggested Next Command                          |
-| -------------------- | ----------------------------------------------- |
-| After `spec`         | `/afx-spec validate <name>` to review scaffold  |
-| After `research`     | Edit the research doc to begin exploration       |
-| After `adr`          | Edit `docs/adr/ADR-NNNN-*.md` to fill content   |
+| Context          | Suggested Next Command                         |
+| ---------------- | ---------------------------------------------- |
+| After `spec`     | `/afx-spec validate <name>` to review scaffold |
+| After `research` | Edit the research doc to begin exploration     |
+| After `adr`      | Edit `docs/adr/ADR-NNNN-*.md` to fill content  |
 
 ---
 
@@ -214,10 +223,10 @@ Use a different name or work with the existing research doc.
 
 ## Related Commands
 
-| Command              | Relationship                                |
-| -------------------- | ------------------------------------------- |
-| `/afx-adr`           | ADR management (create delegates to this)   |
+| Command              | Relationship                                 |
+| -------------------- | -------------------------------------------- |
+| `/afx-adr`           | ADR management (create delegates to this)    |
 | `/afx-spec validate` | Check scaffold structure after spec creation |
 | `/afx-research`      | Research workflow after research scaffolding |
-| `/afx-session note`  | Capture initial ideas in journal            |
-| `/afx-check links`   | Verify spec cross-references                |
+| `/afx-session note`  | Capture initial ideas in journal             |
+| `/afx-check links`   | Verify spec cross-references                 |

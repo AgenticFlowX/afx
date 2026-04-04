@@ -19,7 +19,6 @@ Session discussion capture and recall for multi-agent workflows.
 
 - `paths.specs` - Where spec files live (default: `docs/specs`)
 - `paths.adr` - Where global ADRs live (default: `docs/adr`)
-- `paths.sessions` - Global discussion location (default: `docs/specs`)
 - `library.research` - Global research library path (default: `docs/research`)
 - `prefixes` - Feature prefix mappings for discussion IDs
 
@@ -85,36 +84,46 @@ When no feature is specified, discussions go to `docs/specs/journal.md`. This is
 
 ## Agent Instructions
 
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature from the active file path (e.g., `docs/specs/user-auth/journal.md` → `user-auth`). If code is selected, use it as additional context for note capture.
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** Target the global journal (`docs/specs/journal.md`) if no feature can be inferred.
+3. **Trailing parameters (`[...context]`):** Treat extra words as focus constraints for capture/summarization (e.g., `/afx-session log auth error handling` → focus the session log on auth error handling discussion).
+
 ### Next Command Suggestion (MANDATORY)
 
 **CRITICAL**: After EVERY `/afx-session` action, suggest the most appropriate next command based on context:
 
-| Context                         | Suggested Next Command                     |
-| ------------------------------- | ------------------------------------------ |
-| After `note` (more to discuss)  | Continue discussion or `/afx-session log`  |
-| After `note` (ready to work)    | `/afx-task pick <id>` or `/afx-task code`  |
-| After `note` (quick note added) | Continue working or `/afx-session recap`   |
-| After `log`                     | `/afx-task pick <id>` or `/afx-task code`  |
-| After `recap` (resuming work)   | `/afx-next` then `/afx-task code`          |
-| After `promote` (ADR created)   | `/afx-dev code` to implement the decision  |
+| Context                         | Suggested Next Command                    |
+| ------------------------------- | ----------------------------------------- |
+| After `note` (more to discuss)  | Continue discussion or `/afx-session log` |
+| After `note` (ready to work)    | `/afx-task pick <id>` or `/afx-task code` |
+| After `note` (quick note added) | Continue working or `/afx-session recap`  |
+| After `log`                     | `/afx-task pick <id>` or `/afx-task code` |
+| After `recap` (resuming work)   | `/afx-next` then `/afx-task code`         |
+| After `promote` (ADR created)   | `/afx-dev code` to implement the decision |
 
 **Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-dev code                               # Context-driven: Implement what was discussed
-  2. /afx-session log {feature}                   # Context-driven: Summarize before moving on
-  3. /afx-session promote UA-D001                 # Context-driven: Elevate to ADR if significant
-  ──
-  4. /afx-next                                     # Re-orient after capture
-  5. /afx-help                                    # See all options
+
+1. /afx-dev code # Context-driven: Implement what was discussed
+2. /afx-session log {feature} # Context-driven: Summarize before moving on
+3. /afx-session promote UA-D001 # Context-driven: Elevate to ADR if significant
+   ──
+4. /afx-next # Re-orient after capture
+5. /afx-help # See all options
 ```
 
 ---
 
 ### Timestamp Format (MANDATORY)
 
-When creating or updating journal entries, captures, notes, and discussion metadata, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+When creating or updating journal entries, captures, notes, and discussion metadata, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ### Frontmatter (MANDATORY)
 
@@ -238,6 +247,8 @@ The Agent MUST actively monitor the conversation depth. Suggest `/afx-session lo
 ### Proactive Capture Protocol (MANDATORY)
 
 **Cross-cutting rule**: This protocol applies to ALL AFX skills, not just `/afx-session`. When any skill detects a high-impact context change during its operation, it MUST auto-capture to `journal.md` without waiting for the user to invoke `/afx-session`.
+
+**Triggers for `/afx-session`**: User discusses complex architectural trade-offs, scope cuts, or defers decisions without explicitly running `log`.
 
 #### Trigger Conditions
 

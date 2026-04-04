@@ -37,9 +37,33 @@ If changes are requested, return:
 Out of scope for /afx-hello (read-only diagnostics mode). Use /afx-scaffold to scaffold or /afx-spec to manage specs.
 ```
 
+### Timestamp Format (MANDATORY)
+
+When writing execution reports or creating journal entries, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
+
+## Post-Action Checklist (MANDATORY)
+
+Since this is a read-only diagnostics skill, no files are modified. However, after executing, you MUST:
+
+1. Verify all checks are completed as listed in the Output Format.
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact diagnostic failure event, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-hello`**: Critical environment configuration gap discovered.
+
 ---
 
 ## Agent Instructions
+
+### Trailing Parameters
+
+When trailing arguments are passed (e.g., `/afx-hello tools only`, `/afx-hello skip auth`), treat them as keyword filters to scope the diagnostic output. This command is context-agnostic — it does not infer feature context from IDE state or cwd.
+
+### Next Command Suggestion (MANDATORY)
+
+**CRITICAL**: After EVERY `/afx-hello` action, suggest the most appropriate next command based on context (e.g., `/afx-next` or `/afx-scaffold`).
 
 ### Diagnostics Process
 
@@ -75,28 +99,28 @@ When invoked, perform these checks and report results:
 
 ### Installation
 
-| Component          | Status | Path                        |
-| ------------------ | ------ | --------------------------- |
-| .afx.yaml          | ✓      | .afx.yaml                   |
-| CLAUDE.md          | ✓      | CLAUDE.md                   |
-| Skills (Claude)    | ✓      | .claude/skills/ (14 skills) |
-| Skills (Agents)    | ✓      | .agents/skills/ (14 skills) |
-| Templates          | ✓      | Bundled in skill assets/    |
-| Framework Docs     | ✓      | docs/agenticflowx/          |
+| Component       | Status | Path                        |
+| --------------- | ------ | --------------------------- |
+| .afx.yaml       | ✓      | .afx.yaml                   |
+| CLAUDE.md       | ✓      | CLAUDE.md                   |
+| Skills (Claude) | ✓      | .claude/skills/ (14 skills) |
+| Skills (Agents) | ✓      | .agents/skills/ (14 skills) |
+| Templates       | ✓      | Bundled in skill assets/    |
+| Framework Docs  | ✓      | docs/agenticflowx/          |
 
 ### Project Health
 
-| Metric        | Value |
-| ------------- | ----- |
-| Total Specs   | 12    |
-| Draft         | 3     |
-| Approved      | 7     |
-| Living        | 2     |
+| Metric      | Value |
+| ----------- | ----- |
+| Total Specs | 12    |
+| Draft       | 3     |
+| Approved    | 7     |
+| Living      | 2     |
 
 ### Quick Start
 
 Ready to go! Try:
-  /afx-next                    # What should I do now?
-  /afx-spec create <name>     # Start a new feature
-  /afx-discover capabilities  # Explore the project
+/afx-next # What should I do now?
+/afx-spec create <name> # Start a new feature
+/afx-discover capabilities # Explore the project
 ```

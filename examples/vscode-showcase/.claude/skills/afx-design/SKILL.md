@@ -7,6 +7,9 @@ metadata:
   afx-status: Living
   afx-tags: "workflow,design,architecture,validation,lifecycle"
   afx-argument-hint: "author | validate | review | approve"
+  modeSlugs:
+    - focus-review-design
+    - architect
 ---
 
 # /afx-design
@@ -53,6 +56,7 @@ Owns the `design.md` artifact exclusively. Handles design authoring from approve
 - Delete any files or directories
 - Run build/test/deploy/migration commands
 - Modify `.afx.yaml` or `.afx/` configuration
+- **Destructive File Rewrites**: Never replace the entire contents of an existing `design.md` or `journal.md` file using a full-file rewrite. Always use targeted line-level replacements or append actions to preserve manually written human content.
 
 If out-of-scope work is requested, return:
 
@@ -64,7 +68,7 @@ Out of scope for /afx-design (design-management mode). Use /afx-spec for spec ch
 
 ### Timestamp Format (MANDATORY)
 
-All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ### Frontmatter (MANDATORY)
 
@@ -100,10 +104,10 @@ When this skill detects a high-impact context change, auto-capture to `journal.m
 
 **CRITICAL**: Design authoring is gated behind spec approval.
 
-| Action   | Precondition                   | Check                    |
-| -------- | ------------------------------ | ------------------------ |
-| `author` | `spec.md` status == `Approved` | Read spec.md frontmatter |
-| `approve`| `design.md` has content        | Check design is authored |
+| Action    | Precondition                   | Check                    |
+| --------- | ------------------------------ | ------------------------ |
+| `author`  | `spec.md` status == `Approved` | Read spec.md frontmatter |
+| `approve` | `design.md` has content        | Check design is authored |
 
 Before authoring or approving, the agent **MUST**:
 
@@ -139,6 +143,15 @@ After completing any action that modifies `design.md`, you MUST:
 
 ## Agent Instructions
 
+### Context Resolution (CLI & IDE)
+
+1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **Feature inference:**
+   - **IDE:** Infer feature from the active file path (e.g., `docs/specs/user-auth/design.md` → `user-auth`). If code is selected, use it as reference context for the design authoring.
+   - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
+   - **Fallback:** Require explicit `<name>` — design authoring needs a target feature.
+3. **Trailing parameters (`[...context]`):** Treat extra words as design constraints (e.g., `/afx-design author auth redis cache` → generate the design using Redis for caching). Do not discard trailing text; incorporate it into the authoring or review logic.
+
 ### Persistence Checkpoint (MANDATORY)
 
 Do not auto-write design files. Before persisting any changes to `design.md`:
@@ -151,14 +164,14 @@ Do not auto-write design files. Before persisting any changes to `design.md`:
 
 After EVERY `/afx-design` action, suggest the next command:
 
-| Context                              | Suggested Next Command                            |
-| ------------------------------------ | ------------------------------------------------- |
-| After `author`                       | `/afx-design review <name>` to validate quality   |
-| After `validate` (passed)            | `/afx-design review <name>` for quality check     |
-| After `validate` (failed)            | Fix listed structural issues                      |
-| After `review` (critical issues)     | Fix issues, then `/afx-design validate <name>`    |
-| After `review` (no critical issues)  | `/afx-design approve <name>` to approve design    |
-| After `approve`                      | `/afx-task plan <name>` to generate tasks         |
+| Context                             | Suggested Next Command                          |
+| ----------------------------------- | ----------------------------------------------- |
+| After `author`                      | `/afx-design review <name>` to validate quality |
+| After `validate` (passed)           | `/afx-design review <name>` for quality check   |
+| After `validate` (failed)           | Fix listed structural issues                    |
+| After `review` (critical issues)    | Fix issues, then `/afx-design validate <name>`  |
+| After `review` (no critical issues) | `/afx-design approve <name>` to approve design  |
+| After `approve`                     | `/afx-task plan <name>` to generate tasks       |
 
 ---
 
@@ -207,6 +220,7 @@ After EVERY `/afx-design` action, suggest the next command:
 
 ```markdown
 ## [DES-API] API Contracts
+
 <!-- @see spec.md [FR-1] [FR-2] -->
 
 {Design content referencing these requirements}
@@ -263,13 +277,14 @@ Status: PASSED
 
 **Implementation:**
 
-1. **Completeness**: Does the design cover ALL functional requirements from spec.md?
-2. **NFR Coverage**: Are performance, security, scalability, and accessibility addressed architecturally?
-3. **Error Boundaries**: Are error scenarios defined for each component?
-4. **Consistency**: Does design terminology match spec terminology?
-5. **Living Document Purity**: No historical narrative (belongs in journal.md)
-6. **Risk Analysis**: High-risk components identified? External dependency SLAs documented?
-7. **Cross-Spec Impact**: If `spec.md` has `depends_on`, check that design addresses integration points
+1. **FR Completeness**: Does the design cover ALL functional requirements (FR-*) from spec.md? Cross-reference every FR-N ID in the spec requirements table against design sections — each must have at least one DES-* section addressing it.
+2. **NFR Completeness**: Does the design cover ALL non-functional requirements (NFR-*) from spec.md? Cross-reference every NFR-N ID in the spec requirements table against design sections — each must have at least one DES-* section or explicit mention. Do NOT rely on named categories alone (performance, security, etc.) — check the actual NFR IDs.
+3. **Acceptance Criteria Coverage**: Does spec.md have acceptance criteria for every FR and NFR? If a requirement has no acceptance criteria section, flag it as a gap.
+4. **Error Boundaries**: Are error scenarios defined for each component?
+5. **Consistency**: Does design terminology match spec terminology?
+6. **Living Document Purity**: No historical narrative (belongs in journal.md)
+7. **Risk Analysis**: High-risk components identified? External dependency SLAs documented?
+8. **Cross-Spec Impact**: If `spec.md` has `depends_on`, check that design addresses integration points
 
 **Output:**
 

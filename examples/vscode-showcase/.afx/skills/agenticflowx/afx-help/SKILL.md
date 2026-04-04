@@ -43,6 +43,34 @@ If implementation is requested, respond with:
 Out of scope for /afx-help (read-only reference mode). Use the suggested command to proceed.
 ```
 
+### Timestamp Format (MANDATORY)
+
+When writing execution reports or creating journal entries, all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`).
+
+## Post-Action Checklist (MANDATORY)
+
+Since this is a read-only help skill, no files are modified. However, after executing, you MUST:
+
+1. Ensure you provided the user with actionable next steps rather than just a massive text dump.
+
+### Proactive Journal Capture
+
+When this skill detects a high-impact error or confusion event, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
+
+**Triggers for `/afx-help`**: User is repeatedly lost or commands are failing consecutively.
+
+---
+
+## Agent Instructions
+
+### Trailing Parameters
+
+When trailing arguments are passed (e.g., `/afx-help task`, `/afx-help guides session`), treat them as keyword filters to scope the reference output. This command is context-agnostic — it does not infer feature context from IDE state or cwd.
+
+### Next Command Suggestion (MANDATORY)
+
+**CRITICAL**: After EVERY `/afx-help` action, suggest the most appropriate next command based on context (e.g., `/afx-next` or `/afx-task pick`).
+
 ---
 
 ## Available Commands
@@ -150,10 +178,10 @@ Out of scope for /afx-help (read-only reference mode). Use the suggested command
 | ------------------- | -------------------------- |
 | `/afx-next`         | "What do I do now?"        |
 | `/afx-task pick`    | "What's next task?"        |
-| `/afx-task verify`   | "Is task done correctly?"  |
+| `/afx-task verify`  | "Is task done correctly?"  |
 | `/afx-check path`   | "Does code actually work?" |
 | `/afx-session note` | "Remember this idea"       |
-| `/afx-session log` | "Save this discussion"     |
+| `/afx-session log`  | "Save this discussion"     |
 | `/afx-hello`        | "Is AFX set up correctly?" |
 
 ---
@@ -171,15 +199,15 @@ Out of scope for /afx-help (read-only reference mode). Use the suggested command
 
 ## Quick Start / Cheatsheet
 
-| I want to...              | Run...                            |
-| :------------------------ | :-------------------------------- |
-| **Start/Resume Work**     | `/afx-next` (Find context)        |
-| **Pick Next Task**        | `/afx-task pick <id>`             |
-| **Code Feature**          | `/afx-task code <id>`             |
-| **Check It Runs**         | `/afx-check path <path>`          |
-| **Check It Matches Spec** | `/afx-task verify <task-id>`       |
-| **Log Discussion**        | `/afx-session note "content"`     |
-| **Review Usage**          | `/afx-help`                       |
+| I want to...              | Run...                        |
+| :------------------------ | :---------------------------- |
+| **Start/Resume Work**     | `/afx-next` (Find context)    |
+| **Pick Next Task**        | `/afx-task pick <id>`         |
+| **Code Feature**          | `/afx-task code <id>`         |
+| **Check It Runs**         | `/afx-check path <path>`      |
+| **Check It Matches Spec** | `/afx-task verify <task-id>`  |
+| **Log Discussion**        | `/afx-session note "content"` |
+| **Review Usage**          | `/afx-help`                   |
 
 ---
 
@@ -284,17 +312,17 @@ gh issue create --label "bug" --title "Fix login timeout"
 
 ## Command Categories
 
-| Category    | Commands | Purpose                         |
-| ----------- | -------- | ------------------------------- |
-| **Spec**    | spec     | Spec authoring and review       |
-| **Design**  | design   | Design authoring and review     |
-| **Task**    | task     | Implementation lifecycle        |
-| **Dev**     | dev      | Development actions             |
-| **Check**   | check    | Quality gates and compliance    |
-| **Session** | session  | Session discussion capture      |
-| **Report**  | report   | Traceability metrics            |
-| **Hello**   | hello    | Environment and install check   |
-| **Help**    | help     | This reference                  |
+| Category    | Commands | Purpose                       |
+| ----------- | -------- | ----------------------------- |
+| **Spec**    | spec     | Spec authoring and review     |
+| **Design**  | design   | Design authoring and review   |
+| **Task**    | task     | Implementation lifecycle      |
+| **Dev**     | dev      | Development actions           |
+| **Check**   | check    | Quality gates and compliance  |
+| **Session** | session  | Session discussion capture    |
+| **Report**  | report   | Traceability metrics          |
+| **Hello**   | hello    | Environment and install check |
+| **Help**    | help     | This reference                |
 
 ---
 

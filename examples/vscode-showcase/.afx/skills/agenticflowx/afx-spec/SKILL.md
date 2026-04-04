@@ -7,6 +7,10 @@ metadata:
   afx-status: Living
   afx-tags: "workflow,spec,requirements,validation,lifecycle"
   afx-argument-hint: "validate | discuss | review | approve | create"
+  modeSlugs:
+    - focus-review-spec
+    - focus-review-design
+    - architect
 ---
 
 # /afx-spec
@@ -40,7 +44,7 @@ If neither file exists, use defaults.
 /afx-spec approve <name> [--reviewer "@handle"]  # Lifecycle gate + optional human sign-off
 ```
 
-> **Note:** Spec listing, status, phase breakdown, and discussion browsing are available in the VSCode AFX extension (Specs Tree, Pipeline Tab, Tasks Tab, Journal Tab). These subcommands focus on operations that require agent reasoning.
+> **UI Delegation Rule (MANDATORY):** Spec listing, status, phase breakdown, and discussion browsing MUST be delegated to the VSCode AFX extension (Specs Tree, Pipeline Tab, Tasks Tab, Journal Tab). Never output raw tables of spec lists or task states in chat unless explicitly requested. Focus on agent reasoning over raw display.
 
 ## Purpose
 
@@ -65,6 +69,7 @@ Provides a spec-centric interface for managing specifications throughout their l
 - Delete any spec files
 - Run build/test/deploy/migration commands
 - Modify runtime config used by application execution
+- **Destructive File Rewrites**: Never replace the entire contents of an existing `spec.md`, `design.md`, or `journal.md` file using a full-file rewrite. Always use targeted line-level replacements or append actions to preserve manually written human content.
 
 If implementation is requested, return:
 
@@ -76,7 +81,7 @@ Out of scope for /afx-spec (specification-management mode). Use /afx-dev code af
 
 ### Timestamp Format (MANDATORY)
 
-When creating or updating frontmatter (`updated_at`, `approved_at`, `signed_at`, `created_at`), all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+When creating or updating frontmatter (`updated_at`, `approved_at`, `signed_at`, `created_at`), all timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ### Frontmatter (MANDATORY)
 
@@ -96,6 +101,7 @@ tags: ["{feature}"]
 ```
 
 **During approval**, add these fields (do NOT remove existing fields):
+
 - `approved_at: YYYY-MM-DDTHH:MM:SS.mmmZ`
 - `signed_at: YYYY-MM-DDTHH:MM:SS.mmmZ`
 - `reviewer: "@handle"`
@@ -127,10 +133,10 @@ After completing any action that modifies `spec.md`, you MUST:
 
 ### Document Authoring Gates
 
-| Target Document       | Precondition                          | Check                          |
-| --------------------- | ------------------------------------- | ------------------------------ |
-| `spec.md`             | None                                  | Always allowed (entry point)   |
-| `journal.md`          | None                                  | Always allowed (session log)   |
+| Target Document | Precondition | Check                        |
+| --------------- | ------------ | ---------------------------- |
+| `spec.md`       | None         | Always allowed (entry point) |
+| `journal.md`    | None         | Always allowed (session log) |
 
 ### Scaffold vs Content
 
@@ -160,6 +166,10 @@ spec.md (Draft → Approved)
 
 ## Agent Instructions
 
+### Trailing Parameters (`[...context]`)
+
+When trailing arguments are passed, treat them as constraints for the command's behaviour (e.g., `/afx-spec discuss user-auth api pagination` → focus the discussion on API pagination). Do not treat trailing words as invalid scopes; incorporate them into the intent routing and analysis phase.
+
 ### Persistence Checkpoint (MANDATORY)
 
 Do not auto-write spec files. Before persisting any changes to `spec.md`, `design.md`, or `tasks.md`:
@@ -172,21 +182,24 @@ Do not auto-write spec files. Before persisting any changes to `spec.md`, `desig
 
 When `<name>` is omitted or ambiguous, resolve in this order:
 
-1. **Conversation context** — recently discussed feature, spec file reads, or prior `/afx-spec` commands
-2. **Branch name** — extract from `feat/{feature-name}` pattern
-3. **Open GitHub issues** — if only one feature has open/active issues
-4. **`.afx.yaml` features list** — if only one feature is registered
-5. **Fallback** — prompt the user: "Which feature? Available: user-auth, shopping-cart, ..."
+1. **Environment detection** — Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **IDE: Active file** — Infer `[feature]` from the active file path (e.g., `docs/specs/user-auth/spec.md` → `user-auth`). If code is selected, use it as additional context for the spec discussion or review.
+3. **CLI: Explicit args** — If a feature name is passed explicitly, use it directly.
+4. **Conversation context** — Recently discussed feature, spec file reads, or prior `/afx-spec` commands.
+5. **Branch name** — Extract from `feat/{feature-name}` pattern.
+6. **Open GitHub issues** — If only one feature has open/active issues.
+7. **`.afx.yaml` features list** — If only one feature is registered.
+8. **Fallback** — Prompt the user: "Which feature? Available: user-auth, shopping-cart, ..."
 
 **Subcommand-specific rules:**
 
-| Subcommand  | Arg required? | Inference allowed?                         |
-| ----------- | ------------- | ------------------------------------------ |
-| `create`    | Yes           | Can infer from conversation topic          |
-| `validate`  | Yes           | Can infer from branch or recent context    |
-| `discuss`   | Yes           | Can infer from branch or recent context    |
-| `review`    | Yes           | Can infer from branch or recent context    |
-| `approve`   | Yes           | Can infer from branch or recent context    |
+| Subcommand | Arg required? | Inference allowed?                      |
+| ---------- | ------------- | --------------------------------------- |
+| `create`   | Yes           | Can infer from conversation topic       |
+| `validate` | Yes           | Can infer from branch or recent context |
+| `discuss`  | Yes           | Can infer from branch or recent context |
+| `review`   | Yes           | Can infer from branch or recent context |
+| `approve`  | Yes           | Can infer from branch or recent context |
 
 ---
 
@@ -194,28 +207,29 @@ When `<name>` is omitted or ambiguous, resolve in this order:
 
 **CRITICAL**: After EVERY `/afx-spec` action, suggest the most appropriate next command based on context:
 
-| Context                             | Suggested Next Command                                       |
-| ----------------------------------- | ------------------------------------------------------------ |
-| After `create`                      | `/afx-spec discuss <name>` to iterate on spec requirements   |
-| After `validate` (passed)           | `/afx-spec review <name>` for quality check                  |
-| After `validate` (failed)           | Fix missing files or broken links                            |
-| After `discuss`                     | `/afx-spec review <name>` to validate changes                |
-| After `review` (critical issues)    | `/afx-spec discuss <name>` to fix issues                     |
-| After `review` (no critical issues) | `/afx-spec approve <name>` to approve spec                   |
-| After `approve` (spec.md)           | `/afx-design author <name>` to author design.md              |
-| After `approve` (design.md)         | `/afx-task plan <name>` to author tasks.md                   |
-| After `approve --reviewer`          | `/afx-task plan <name>` to generate implementation tasks     |
+| Context                             | Suggested Next Command                                     |
+| ----------------------------------- | ---------------------------------------------------------- |
+| After `create`                      | `/afx-spec discuss <name>` to iterate on spec requirements |
+| After `validate` (passed)           | `/afx-spec review <name>` for quality check                |
+| After `validate` (failed)           | Fix missing files or broken links                          |
+| After `discuss`                     | `/afx-spec review <name>` to validate changes              |
+| After `review` (critical issues)    | `/afx-spec discuss <name>` to fix issues                   |
+| After `review` (no critical issues) | `/afx-spec approve <name>` to approve spec                 |
+| After `approve` (spec.md)           | `/afx-design author <name>` to author design.md            |
+| After `approve` (design.md)         | `/afx-task plan <name>` to author tasks.md                 |
+| After `approve --reviewer`          | `/afx-task plan <name>` to generate implementation tasks   |
 
 **Suggestion Format** (top 3 context-driven, bottom 2 static):
 
 ```
 Next (ranked):
-  1. /afx-spec discuss docs/specs/{feature}      # Context-driven: Iterate on spec
-  2. /afx-spec review {feature}                  # Context-driven: Review quality
-  3. /afx-spec approve {feature}                 # Context-driven: Approve if ready
-  ──
-  4. /afx-task pick {feature}                     # Start implementation
-  5. /afx-session note "<note>"                   # Capture findings
+
+1. /afx-spec discuss docs/specs/{feature} # Context-driven: Iterate on spec
+2. /afx-spec review {feature} # Context-driven: Review quality
+3. /afx-spec approve {feature} # Context-driven: Approve if ready
+   ──
+4. /afx-task pick {feature} # Start implementation
+5. /afx-session note "<note>" # Capture findings
 ```
 
 ---

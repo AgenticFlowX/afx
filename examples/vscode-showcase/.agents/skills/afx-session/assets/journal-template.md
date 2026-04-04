@@ -26,9 +26,9 @@ tags: ["{feature}", "journal"]
 <!-- Recorded discussions with IDs: XX-D001, XX-D002, etc. -->
 <!-- Chronological order: oldest first, newest last -->
 
-### XX-D001 - YYYY-MM-DD - Topic Title
+### XX-D001 - Topic Title
 
-`status:active` `[tag1, tag2]`
+`status:active` `YYYY-MM-DDTHH:MM:SS.mmmZ` `[tag1, tag2]`
 
 **Context**: What prompted this discussion
 

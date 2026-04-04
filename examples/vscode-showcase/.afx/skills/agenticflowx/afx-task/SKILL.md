@@ -7,6 +7,10 @@ metadata:
   afx-status: Living
   afx-tags: "workflow,task,implementation,coding,verification,lifecycle"
   afx-argument-hint: "plan | pick | code | verify | complete | sync | brief | review"
+  modeSlugs:
+    - focus-review-tasks
+    - focus-code
+    - code
 ---
 
 # /afx-task
@@ -56,10 +60,13 @@ Owns the `tasks.md` artifact AND the implementation engine. Owns coding with tra
 
 When task ID alone is provided (e.g., `7.1`), resolve spec in this order:
 
-1. **Conversation context** - Recently discussed spec (file reads, GitHub issues, prior commands)
-2. **Branch name** - Extract from `feat/{feature-name}` pattern
-3. **Open GitHub issues** - If only one feature has open issues
-4. **Fallback** - Require explicit: `/afx-task verify user-auth#7.1`
+1. **Environment detection** — Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
+2. **IDE: Active file** — Infer `[feature]` from the active file path (e.g., `docs/specs/user-auth/tasks.md` → `user-auth`). If code is selected, use it as additional implementation context.
+3. **CLI: Explicit args** — If a feature name is passed alongside the task ID (e.g., `/afx-task code user-auth#7.1`), use it directly.
+4. **Conversation context** — Recently discussed spec (file reads, GitHub issues, prior commands).
+5. **Branch name** — Extract from `feat/{feature-name}` pattern.
+6. **Open GitHub issues** — If only one feature has open issues.
+7. **Fallback** — Require explicit: `/afx-task verify user-auth#7.1`
 
 ---
 
@@ -82,6 +89,7 @@ When task ID alone is provided (e.g., `7.1`), resolve spec in this order:
 - Delete source code files (refactoring may remove code within files, but deleting entire files requires user confirmation)
 - Run deploy/migration commands without explicit user confirmation
 - Modify `.afx.yaml` or `.afx/` configuration
+- **Destructive File Rewrites**: Never replace the entire contents of an existing `tasks.md`, `journal.md`, or source code file using a full-file rewrite. Always use targeted line-level replacements or append actions to preserve manually written human content.
 
 If out-of-scope work is requested, return:
 
@@ -89,11 +97,21 @@ If out-of-scope work is requested, return:
 Out of scope for /afx-task (implementation-lifecycle mode). Use /afx-spec for spec changes, /afx-design for design changes.
 ```
 
+### Architectural Core "Hard Anchor" Rule
+
+The following are **Hard Anchors** and MUST NOT be modified during `/afx-task code` without a prior approved Design update:
+- Authentication flow & Security protocols
+- Database schema & Data migration patterns
+- Global state management architecture
+- External API integration contracts
+
+If a task requires modifying a Hard Anchor, STOP and escalate: `/afx-design review {name}`.
+
 ---
 
 ### Timestamp Format (MANDATORY)
 
-All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`.
+All timestamps MUST use ISO 8601 with millisecond precision: `YYYY-MM-DDTHH:MM:SS.mmmZ` (e.g., `2025-12-17T14:30:00.000Z`). Never write short formats like `2025-12-17 14:30`. **To get the current timestamp**, run `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` via the Bash tool — do NOT guess or use midnight (`T00:00:00.000Z`).
 
 ### Frontmatter (MANDATORY)
 
@@ -158,12 +176,17 @@ Approve the design first:
 
 After completing any action that modifies `tasks.md` or source code, you MUST:
 
-1. **Update `updated_at`**: Set to current ISO 8601 timestamp in `tasks.md` frontmatter.
-2. **Verify backlinks**: Ensure `spec: spec.md` and `design: design.md` are present in `tasks.md` frontmatter.
-3. **Contextual Tagging**: If changes introduce new domains or concepts, append to `tags` array.
-4. **Version & State Management**: If modifying a `tasks.md` that is currently `status: Living` and the change alters task scope (adding/removing phases), bump `version`.
-5. **Format Preservation**: Frontmatter fields must remain in canonical order. Use double quotes.
-6. **Work Sessions Table** (CRITICAL — agents frequently get this wrong):
+1. **Verify Implementation vs. Spec**: Perform a "Mental Reset"—read the entire `spec.md` and `design.md` for the feature and confirm the new code doesn't violate any previously implemented requirements.
+2. **Update `updated_at`**: Set to current ISO 8601 timestamp in `tasks.md` frontmatter.
+3. **Verify backlinks**: Ensure `spec: spec.md` and `design: design.md` are present in `tasks.md` frontmatter.
+4. **Contextual Tagging**: If changes introduce new domains or concepts, append to `tags` array.
+5. **Version & State Management**: If modifying a `tasks.md` that is currently `status: Living` and the change alters task scope (adding/removing phases), bump `version`.
+6. **Format Preservation**: Frontmatter fields must remain in canonical order. Use double quotes.
+7. **Proactive Prevention Check**:
+   - Error Handling: Does it match the project's error handling pattern?
+   - Logging: Does it use the project's logging utility?
+   - Consistency: Compare with 3 existing files in the project to ensure stylistic alignment.
+8. **Work Sessions Table** (CRITICAL — agents frequently get this wrong):
    - The `## Work Sessions` section MUST be the **last section** in `tasks.md`, after all Phase sections and after the Cross-Reference Index. If it has drifted above other sections, move it back to the bottom before appending.
    - After `pick`, `code`, and `complete`, **append a new row** to the table. Do NOT replace existing rows.
    - Use this exact column structure — no variations:
@@ -188,6 +211,14 @@ After completing any action that modifies `tasks.md` or source code, you MUST:
 ---
 
 ## Agent Instructions
+
+### Trailing Parameters (`[...context]`)
+
+When trailing arguments are passed (either via CLI or IDE context):
+
+- Treat them as explicit user constraints or focus areas (e.g., `/afx-task code 1.2 oauth` → implement task 1.2 with a focus on OAuth).
+- **Multiple Tasks:** If multiple Task IDs are detected (e.g., `1.3 and 1.5`), perform the action and update the `Work Sessions` table for **all** matching tasks simultaneously.
+- If an explicit feature name is detected alongside a Task ID, use it to override the Context Resolution chain above.
 
 ### Persistence Checkpoint (MANDATORY)
 
@@ -254,7 +285,7 @@ After EVERY `/afx-task` action, suggest the next command:
      - WBS numbering (Phase.Task, e.g., `1.1`, `2.3`)
      - Clear description of what to implement
      - File scope — list the specific files this task creates or modifies
-     - `@see` links using Node ID syntax: `@see design.md [DES-API]`, `@see spec.md [FR-1]`
+     - `@see` links using Node ID syntax with **full paths**: `@see docs/specs/{feature}/design.md [DES-API]`, `@see docs/specs/{feature}/spec.md [FR-1]`
      - Acceptance criteria (how to verify the task is done)
    - **Parallelization**: Tasks within a phase should be **independent by default** — no shared mutable state, no file overlap. When two tasks in the same phase DO depend on each other, note the dependency explicitly: `<!-- depends: 1.1 -->`. Cross-phase dependencies are implicit (phase N depends on phase N-1).
    - Order phases by dependency (setup before core, core before integration)
@@ -308,6 +339,15 @@ After EVERY `/afx-task` action, suggest the next command:
    - Follow existing code patterns and architecture in the project
    - Run build/test/lint as needed
 
+### Code Drift Guardrail (MANDATORY)
+
+During implementation, if you discover that the requested logic fundamentally conflicts with the codebase, introduces severe edge cases unaccounted for in `design.md`, or requires >5 lines of unmapped complex logic:
+
+1. **STOP CODING.** Do not hack around the design or unilaterally invent new architecture.
+2. **Proactive Capture:** Log the drift in `journal.md` detailing the discrepancy, the impact, and your recommended architectural course correction.
+3. **Escalate:** Stop execution and prompt the user: *"I've hit a logic conflict with the design. See `journal.md` for my analysis. We need to update the design via `/afx-design` or `/afx-spec` before I can continue coding this task."*
+4. **Resume:** Once the user updates the source of truth, resume the `/afx-task code {id}` command.
+
 3. **Add `@see` Annotations** (class and function level):
 
    ```typescript
@@ -338,9 +378,11 @@ After EVERY `/afx-task` action, suggest the next command:
 4. **Update tasks.md**:
    - Mark task checkbox `[x]`
    - **Locate `## Work Sessions`** at the bottom. Append a `Coded` row with the files you modified:
+
      ```markdown
      | 2026-03-31 | {id} | Coded | auth.service.ts, auth.action.ts | [x] | - |
      ```
+
    - Update `updated_at`
 
 ---
@@ -375,6 +417,8 @@ Unlike `/afx-check path` which verifies runtime execution paths, this verifies i
 | @see backlinks        | [OK]   | 2 files reference this task            |
 | Session log entry     | [OK]   | 2025-12-13: Created supplier constants |
 | No incomplete markers | [OK]   | No TODO/FIXME for 7.1                  |
+| Pattern Consistency   | [OK]   | Error handling/logging matches project |
+| Structural Integrity  | [OK]   | No unauthorized Hard Anchor changes    |
 
 ### Verdict
 
@@ -512,6 +556,22 @@ Recommendations:
    Task 2.1 is already marked complete.
 
    To re-open: uncheck the task in tasks.md and run /afx-task pick 2.1
+   ```
+
+5. **Drift Detected**
+
+   ```text
+   BLOCKED: Logic drift detected in Task 2.1.
+   
+   The required implementation deviates from design.md [DES-API] regarding token rotation.
+   
+   Action Taken:
+     - Analysis logged to docs/specs/auth/journal.md
+     - Coding paused to prevent technical debt
+   
+   Next Step:
+     - Review analysis in journal.md
+     - Update design: /afx-design modify auth
    ```
 
 ---
