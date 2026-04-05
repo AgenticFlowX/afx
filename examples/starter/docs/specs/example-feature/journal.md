@@ -1,0 +1,37 @@
+---
+afx: true
+type: JOURNAL
+status: Living
+owner: "@your-handle"
+created_at: "2025-02-01T10:00:00.000Z"
+updated_at: "2025-02-01T10:00:00.000Z"
+tags: [example]
+---
+
+# Example Feature - Session Journal
+
+<!-- prefix: EX -->
+
+## Captures
+
+<!-- Quick notes during active sessions. Clear after recording. -->
+
+## Discussions
+
+<!-- Permanent discussion records with IDs -->
+
+### EX-D001 - Initial Setup
+
+`status:active` `2025-02-01T10:00:00.000Z` `[setup, planning]`
+
+**Context**: Starting new feature implementation
+**Summary**: Created initial spec structure for example feature.
+**Progress**:
+
+- [x] Created spec.md
+- [x] Created design.md
+- [x] Created tasks.md
+- [ ] Begin implementation
+**Decisions**: Using factory pattern for services
+**Related Files**: spec.md, design.md, tasks.md
+**Participants**: @your-handle

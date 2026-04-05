@@ -113,6 +113,7 @@ while [[ $# -gt 0 ]]; do
 AFX Installer
 
 Usage: ./afx-cli [OPTIONS] [target-project-path]
+       ./afx-cli example <name> [target-dir]
 
 Options:
   --update          Update existing AFX installation
@@ -185,8 +186,20 @@ Examples:
 
   # Reset AFX (recreate .afx/ folder and config)
   ./afx-cli --reset .
+
+  # Copy an example project
+  ./afx-cli example list
+  ./afx-cli example basic .
+  ./afx-cli example full ./demo
 HELPEOF
             exit 0
+            ;;
+        example)
+            shift
+            EXAMPLE_SUBCMD="${1:-list}"
+            shift 2>/dev/null || true
+            EXAMPLE_TARGET="${1:-.}"
+            shift 2>/dev/null || true
             ;;
         *)
             TARGET_DIR="$1"
@@ -194,6 +207,94 @@ HELPEOF
             ;;
     esac
 done
+
+# ============================================================================
+# Section 3b: Example Command Handler
+# ============================================================================
+
+if [ -n "$EXAMPLE_SUBCMD" ]; then
+    # Resolve AFX source directory
+    if [ -n "$SOURCE_DIR" ]; then
+        EXAMPLES_DIR="$SOURCE_DIR/examples"
+    else
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        EXAMPLES_DIR="$SCRIPT_DIR/examples"
+    fi
+
+    case "$EXAMPLE_SUBCMD" in
+        list)
+            echo ""
+            echo -e "${BOLD}Available examples:${NC}"
+            echo ""
+            echo -e "  ${GREEN}starter${NC}   Filled-in sample spec — pure spec-driven setup"
+            echo -e "  ${GREEN}basic${NC}     Starter + project README + src/index.html"
+            echo -e "  ${GREEN}full${NC}      FuelSnap — complete SDD lifecycle with specs, code, and traceability"
+            echo ""
+            echo -e "Usage: ${CYAN}afx-cli example <name> [target-dir]${NC}"
+            echo ""
+            exit 0
+            ;;
+        starter|basic|full)
+            EXAMPLE_NAME="$EXAMPLE_SUBCMD"
+            EXAMPLE_SRC="$EXAMPLES_DIR/$EXAMPLE_NAME"
+
+            if [ ! -d "$EXAMPLE_SRC" ]; then
+                echo -e "${RED}Error: Example '$EXAMPLE_NAME' not found at $EXAMPLE_SRC${NC}" >&2
+                exit 1
+            fi
+
+            TARGET="$EXAMPLE_TARGET"
+
+            # Create target if it doesn't exist
+            if [ ! -d "$TARGET" ]; then
+                mkdir -p "$TARGET"
+            fi
+
+            echo ""
+            echo -e "${BOLD}Copying $EXAMPLE_NAME example into $TARGET...${NC}"
+            echo ""
+
+            COPIED=0
+            SKIPPED_COUNT=0
+
+            # Copy files, skip existing unless --force
+            while IFS= read -r -d '' file; do
+                rel="${file#$EXAMPLE_SRC/}"
+                dest="$TARGET/$rel"
+                dest_dir="$(dirname "$dest")"
+
+                if [ ! -d "$dest_dir" ]; then
+                    mkdir -p "$dest_dir"
+                fi
+
+                if [ -e "$dest" ] && [ "$FORCE" != "true" ]; then
+                    echo -e "  ${DIM}⊘ $rel${NC} ${DIM}(skipped — already exists)${NC}"
+                    SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
+                else
+                    cp "$file" "$dest"
+                    echo -e "  ${GREEN}✓${NC} $rel"
+                    COPIED=$((COPIED + 1))
+                fi
+            done < <(find "$EXAMPLE_SRC" -type f -print0)
+
+            echo ""
+            echo -e "Copied ${GREEN}$COPIED${NC} files."
+            if [ $SKIPPED_COUNT -gt 0 ]; then
+                echo -e "Skipped ${YELLOW}$SKIPPED_COUNT${NC} existing files. Use ${CYAN}--force${NC} to overwrite."
+            fi
+            echo -e "Run ${CYAN}/afx-hello${NC} to verify your setup."
+            echo ""
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Error: Unknown example '$EXAMPLE_SUBCMD'${NC}" >&2
+            echo ""
+            echo "Available examples: starter, basic, full"
+            echo "Usage: afx-cli example <name> [target-dir]"
+            exit 1
+            ;;
+    esac
+fi
 
 # ============================================================================
 # Section 4: Core Helper Functions
@@ -2192,6 +2293,11 @@ else
     echo "  2. Run /afx-scaffold spec <name> (Claude) or ask Codex to run afx-scaffold"
     echo "  3. See docs/agenticflowx/ for AFX reference documentation"
     echo "  4. Run /afx-help (Claude) or afx-help (Codex) for command reference"
+    echo ""
+    echo -e "${GREEN}Get started with an example:${NC}"
+    echo "  afx-cli example basic ."
+    echo ""
+    echo -e "See all examples: ${CYAN}afx-cli example list${NC}"
 fi
 echo ""
 update_ref=$(resolve_ref)

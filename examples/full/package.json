@@ -1,0 +1,7 @@
+{
+  "name": "fuelsnap-example",
+  "version": "1.0.0",
+  "description": "FuelSnap — personal fuel price tracker (AFX full SDD example)",
+  "private": true,
+  "license": "MIT"
+}
