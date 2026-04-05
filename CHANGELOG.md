@@ -5,6 +5,22 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.3] - 2026-04-06
+
+### Added
+
+- **Examples**: Three-tier example projects (`starter`, `basic`, `full`) with FuelSnap demo app — approved specs, authored designs, completed tasks, source code with `@see` traceability, ADRs, and journal entries
+
+### Fixed
+
+- **`afx-cli example`**: Now works via remote `curl | bash` — auto-downloads examples from GitHub when `BASH_SOURCE` can't resolve locally (piped stdin mode)
+
+### Changed
+
+- **Example frontmatter**: Normalized all example files to canonical AFX schema — quoted versions, `created_at`/`updated_at` fields, `spec:`/`design:` backlinks, `[DES-*]` Node IDs, canonical Work Sessions table format
+- **`examples/README.md`**: Expanded with install modes (remote, local, `--source`), behavior table, and `--branch`/`--version` usage
+- **`afx-cli --help`**: Added remote example usage, `--branch`/`--force` example commands
+
 ## [2.5.2] - 2026-04-05
 
 ### Changed
