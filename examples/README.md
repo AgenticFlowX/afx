@@ -2,15 +2,13 @@
 
 Example projects that showcase AgenticFlowX spec-driven development.
 
-> **Prerequisite:** Run `curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .` first to install skills, then layer an example on top.
-
 ## Examples
 
-| Example | Level        | Description                                                      |
-| ------- | ------------ | ---------------------------------------------------------------- |
-| starter | Beginner     | Filled-in sample spec — pure spec-driven setup                   |
-| basic   | Beginner     | Starter + project README + src/index.html                        |
-| full    | Intermediate | FuelSnap — complete SDD lifecycle with specs, code, traceability |
+| Example   | Level        | Description                                                      |
+| --------- | ------------ | ---------------------------------------------------------------- |
+| `starter` | Beginner     | Filled-in sample spec — pure spec-driven setup                   |
+| `basic`   | Beginner     | Starter + project README + src/index.html                        |
+| `full`    | Intermediate | FuelSnap — complete SDD lifecycle with specs, code, traceability |
 
 ## Quick Start
 
@@ -22,6 +20,58 @@ curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash 
 # Step 2: Layer on example content
 curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- example basic .
 ```
+
+Both steps work from a remote `curl | bash` invocation — no local AFX checkout required. The CLI automatically downloads examples from GitHub when needed.
+
+## Install Modes
+
+### Remote (recommended)
+
+Works anywhere — the CLI downloads examples from GitHub automatically:
+
+```bash
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- example basic .
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- example full ./demo
+```
+
+### Local (from a cloned AFX repo)
+
+If you've cloned the AFX repo, run the CLI directly:
+
+```bash
+./afx-cli example basic .
+./afx-cli example full ./demo
+```
+
+Or use `--source` to point at a local checkout from anywhere:
+
+```bash
+afx-cli --source /path/to/afx example basic .
+```
+
+### Specific branch or version
+
+```bash
+# Branch
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- --branch develop example full .
+
+# Version tag
+./afx-cli --version 2.5.2 example basic .
+```
+
+## Behavior
+
+| Scenario                  | What happens                                                                                       |
+| ------------------------- | -------------------------------------------------------------------------------------------------- |
+| Fresh install             | All example files are copied into the target directory                                             |
+| Re-install (no `--force`) | Existing files are skipped, new files are added                                                    |
+| Re-install with `--force` | All files are overwritten with the example content                                                 |
+| Layer examples            | Install one example, then another — non-overlapping files are added, overlapping files are skipped |
+| Layer with `--force`      | Overlapping files are overwritten by the newer example                                             |
+| After `afx-cli install`   | Example files coexist with skills — no conflicts                                                   |
+| After `afx-cli --update`  | Example files (user content) are preserved untouched                                               |
+
+> **Note:** `--force` overwrites files but never deletes files. If you layer `basic` then `full`, the basic-only files (`src/index.html`) remain even after a `--force` full install.
 
 ## What's in each example?
 
