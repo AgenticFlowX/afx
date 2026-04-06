@@ -1,5 +1,0 @@
----
-afx: true
-type: NOTES
----
-

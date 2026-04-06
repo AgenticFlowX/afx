@@ -1,77 +1,43 @@
-# FuelSnap — Full SDD Example
+# RoomLedger — Full Example
 
-A personal fuel price tracker built with AgenticFlowX spec-driven development. This example demonstrates the complete AFX workflow: specs, designs, tasks, journals, ADRs, traceability, and session continuity.
+A room rental condition evidence and approval workflow app demonstrating the complete AFX spec-driven development lifecycle.
 
-## Domain
+## Features
 
-FuelSnap helps users track fuel prices and personal fuel spending. It has three features:
+4 spec-driven features covering the full rental inspection lifecycle:
 
-1. **Price Dashboard** — Display current fuel prices by type (91, 95, Diesel) with trend indicators.
-2. **Fill Log** — Log fill-ups with date, station, litres, price paid, and total cost.
-3. **Spend Tracker** — Monthly spend summary, cost-per-km, and price-vs-average comparison.
-
-## Architecture
-
-The data layer uses an **adapter pattern** so users can choose their fuel price source:
-
-| Source          | Type | Region       | URL / Notes                                        |
-| --------------- | ---- | ------------ | -------------------------------------------------- |
-| NSW FuelCheck   | API  | Australia    | `api.nsw.gov.au/v1/fuel` — Free, requires API key |
-| EIA             | API  | USA          | `api.eia.gov` — US Energy Information Admin        |
-| TankerKoenig    | API  | Germany      | `creativecommons.tankerkoenig.de` — Real-time      |
-| FuelWatch WA    | API  | Australia    | `fuelwatch.wa.gov.au` — Western Australia only     |
-| MBIE NZ         | CSV  | New Zealand  | Monthly CSV from `mbie.govt.nz`                    |
-
-See `docs/adr/ADR-001-data-source.md` for the decision record.
-
-## Project Structure
-
-```
-docs/
-  specs/
-    price-dashboard/   # Spec, design, tasks, journal
-    fill-log/          # Spec, design, tasks, journal
-    spend-tracker/     # Spec, design, tasks, journal
-  adr/
-    ADR-001-data-source.md
-src/
-  adapters/
-    fuel-data.adapter.ts   # Base interface
-    api.adapter.ts         # REST API adapter
-    csv.adapter.ts         # CSV file adapter
-  models/
-    fuel-price.model.ts    # FuelPrice, PriceTrend
-    fill-up.model.ts       # FillUp, FillUpInput
-  services/
-    price.service.ts       # Price fetching + trend
-    fill-log.service.ts    # Fill-up CRUD
-    spend.service.ts       # Spend aggregation
-data/
-  sample-prices.csv        # Sample NZ fuel price data
-.afx/
-  kanban/backlog.md        # Work progression
-  notes/session-notes.md   # Development notes
-```
-
-## Traceability
-
-All source files include `@see` annotations linking back to their spec and design documents:
-
-```typescript
-/**
- * PriceService — orchestrates fuel price fetching and trend calculation.
- *
- * @see docs/specs/price-dashboard/spec.md [FR-1] [FR-2]
- * @see docs/specs/price-dashboard/design.md [DES-ARCH] [DES-CACHE]
- */
-```
+| # | Feature | Spec |
+| --- | --- | --- |
+| 01 | Room Dashboard | `docs/specs/01-room-dashboard/` |
+| 02 | Check-In Inspection | `docs/specs/02-check-in/` |
+| 03 | Room History | `docs/specs/03-room-history/` |
+| 04 | Check-Out Comparison | `docs/specs/04-check-out/` |
 
 ## Getting Started
 
-This is a reference example — it demonstrates AFX structure and conventions rather than a runnable application. To explore:
+```bash
+# 1. Install AFX
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .
 
-1. Start with the specs in `docs/specs/*/spec.md` to understand requirements.
-2. Read the designs in `docs/specs/*/design.md` for architecture decisions.
-3. Check the source in `src/` to see traceability annotations in action.
-4. Review `docs/adr/ADR-001-data-source.md` for the adapter pattern rationale.
-5. Look at `.afx/kanban/backlog.md` for work progression history.
+# 2. Install this example
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- example full .
+
+# 3. Review the specs
+/afx-spec review docs/specs/01-room-dashboard
+
+# 4. Start building
+/afx-task pick docs/specs/01-room-dashboard
+```
+
+## Architecture Decision
+
+See `docs/adr/ADR-001-state-management.md` for the decision to use in-memory state.
+
+## Tech Stack
+
+- Plain HTML, CSS, JavaScript — no frameworks, no build tools
+- `src/index.html` — HTML structure for all 4 views
+- `src/styles.css` — Design tokens, layout, components, themes
+- `src/app.js` — State management, navigation, interactions
+
+<!-- @see docs/specs/01-room-dashboard/spec.md -->
