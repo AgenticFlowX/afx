@@ -19,7 +19,7 @@ description: QA Engineer role pack
 category: role
 
 includes:
-  - repo: rixrix/afx
+  - repo: AgenticFlowX/afx
     path: skills/qa/
     items:
       - afx-qa-methodology
@@ -59,7 +59,7 @@ includes:
 
 ```bash
 # Remote install
-curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- .
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .
 
 # Local install
 ./afx-cli .
@@ -83,7 +83,7 @@ curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- 
 
 ```bash
 # Install one skill from any public GitHub repo
-./afx-cli --add-skill rixrix/afx:skills/dev/afx-clean-code .
+./afx-cli --add-skill AgenticFlowX/afx:skills/dev/afx-clean-code .
 ```
 
 ### 4. Update all installed packs
@@ -260,7 +260,7 @@ AFX installs at project level — each project can have its own skill set.
 
 AFX packs can pull skills from anywhere. `afx-pack-qa` for example bundles from four sources at once:
 
-- **AFX-built skills** (`rixrix/afx`) — QA methodology with `@see` tracing
+- **AFX-built skills** (`AgenticFlowX/afx`) — QA methodology with `@see` tracing
 - **Anthropic official skills** (`anthropics/skills`) — `webapp-testing` via Playwright
 - **Claude Code plugins** (`anthropics/claude-code`) — `code-review`, `pr-review-toolkit`
 - **OpenAI Codex skills** (`openai/skills`) — `playwright`

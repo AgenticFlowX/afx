@@ -74,7 +74,7 @@ includes:
       - pr-review-toolkit
 
   # AFX-built skills (guardrails baked in, hosted in AFX repo)
-  - repo: rixrix/afx
+  - repo: AgenticFlowX/afx
     path: skills/
     items:
       - afx-qa-methodology # QA workflow with @see tracing + two-stage verify
@@ -119,7 +119,7 @@ includes:
       - security-scanner
 
   # AFX-built skills (guardrails baked in)
-  - repo: rixrix/afx
+  - repo: AgenticFlowX/afx
     path: skills/
     items:
       - afx-owasp-top-10 # OWASP top 10 checklist with @see tracing
@@ -184,10 +184,10 @@ custom_skills:
 
 ### 2.1 AFX Repo — New Directories
 
-Two new top-level directories in `rixrix/afx`:
+Two new top-level directories in `AgenticFlowX/afx`:
 
 ```
-afx/                                    # AFX repo (rixrix/afx)
+afx/                                    # AFX repo (AgenticFlowX/afx)
 ├── packs/                              # NEW — pack manifests + index
 │   ├── index.json                      # Aggregated metadata for discovery
 │   ├── afx-pack-qa.yaml               # QA pack manifest
@@ -664,15 +664,15 @@ resolve_ref() {
 
 #### URL Patterns
 
-| Purpose          | URL                                                               | Notes                                       |
-| :--------------- | :---------------------------------------------------------------- | :------------------------------------------ |
-| AFX repo tarball | `https://codeload.github.com/rixrix/afx/tar.gz/{ref}`             | `{ref}` resolved by `resolve_ref()`         |
-| Upstream tarball | `https://codeload.github.com/{owner}/{repo}/tar.gz/main`          | Always `main` — branch/version flag ignored |
-| Raw file fetch   | `https://raw.githubusercontent.com/rixrix/afx/{ref}/path/to/file` | For single files (index.json, manifests)    |
+| Purpose          | URL                                                                     | Notes                                       |
+| :--------------- | :---------------------------------------------------------------------- | :------------------------------------------ |
+| AFX repo tarball | `https://codeload.github.com/AgenticFlowX/afx/tar.gz/{ref}`             | `{ref}` resolved by `resolve_ref()`         |
+| Upstream tarball | `https://codeload.github.com/{owner}/{repo}/tar.gz/main`                | Always `main` — branch/version flag ignored |
+| Raw file fetch   | `https://raw.githubusercontent.com/AgenticFlowX/afx/{ref}/path/to/file` | For single files (index.json, manifests)    |
 
 This applies to:
 
-1. **AFX repo fetches** — pack manifests, index, AFX-built skills all come from `https://codeload.github.com/rixrix/afx/tar.gz/{ref}`
+1. **AFX repo fetches** — pack manifests, index, AFX-built skills all come from `https://codeload.github.com/AgenticFlowX/afx/tar.gz/{ref}`
 2. **Upstream repo fetches** — external skills are always fetched from `main` (`--branch` and `--version` only control the AFX repo ref, not upstream repos)
 
 **Download function:**
@@ -720,7 +720,7 @@ download_items() {
 fetch_manifest() {
     local pack_name="$1"
     local ref="$2"
-    curl -sL "https://raw.githubusercontent.com/rixrix/afx/${ref}/packs/${pack_name}.yaml"
+    curl -sL "https://raw.githubusercontent.com/AgenticFlowX/afx/${ref}/packs/${pack_name}.yaml"
 }
 ```
 
@@ -811,7 +811,7 @@ After download, `afx-cli` inspects each item to determine where it belongs.
 | `SKILL.md` at root, no `.claude-plugin/` | Simple Skill  | `.claude/skills/`, `.agents/skills/`, `.agent/skills/` | None         |
 | `.claude-plugin/plugin.json` exists      | Claude Plugin | `.claude/plugins/`                                     | None         |
 | `SKILL.md` + `agents/openai.yaml`        | OpenAI Skill  | `.agents/skills/` only                                 | None         |
-| From `rixrix/afx` repo                   | AFX Skill     | All (transformed per provider from canonical SKILL.md) | N/A          |
+| From `AgenticFlowX/afx` repo             | AFX Skill     | All (transformed per provider from canonical SKILL.md) | N/A          |
 
 **Detection function:**
 
@@ -822,7 +822,7 @@ detect_type() {
     local item_dir="$1"
     local source_repo="$2"
 
-    if [[ "$source_repo" == "rixrix/afx" ]]; then
+    if [[ "$source_repo" == "AgenticFlowX/afx" ]]; then
         echo "afx"         # All providers — canonical SKILL.md, transformed per provider
     elif [[ -d "$item_dir/.claude-plugin" ]]; then
         echo "plugin"      # Claude only
@@ -895,7 +895,7 @@ platform_enabled() {
 
 ### 3.7 AFX-Built Skills
 
-AFX-built skills are hosted in the `rixrix/afx` repo under `skills/`. Each skill ships as a **single canonical SKILL.md** using Claude command syntax. At install time, `afx-cli` transforms this file per provider — eliminating 4× file duplication in the source repo.
+AFX-built skills are hosted in the `AgenticFlowX/afx` repo under `skills/`. Each skill ships as a **single canonical SKILL.md** using Claude command syntax. At install time, `afx-cli` transforms this file per provider — eliminating 4× file duplication in the source repo.
 
 ```
 skills/afx-qa-methodology/
@@ -1004,7 +1004,7 @@ pack_install() {
     # 3. For each includes entry, download items
     for_each_include "$manifest" | while read repo path items; do
         local item_ref="main"
-        if [[ "$repo" == "rixrix/afx" ]]; then
+        if [[ "$repo" == "AgenticFlowX/afx" ]]; then
             item_ref="$ref"    # Use --branch for AFX repo only
         fi
 
@@ -1062,7 +1062,7 @@ pack_update_all() {
     local ref=$(resolve_ref)
 
     # Fetch latest index
-    curl -sL "https://raw.githubusercontent.com/rixrix/afx/${ref}/packs/index.json" \
+    curl -sL "https://raw.githubusercontent.com/AgenticFlowX/afx/${ref}/packs/index.json" \
         > "$TARGET_DIR/.afx/.cache/lastIndex.json"
 
     # For each enabled pack in .afx.yaml
@@ -1374,19 +1374,19 @@ The existing remote install pattern must work for pack operations too:
 
 ```bash
 # Core install (existing — unchanged)
-curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- .
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .
 
 # Pack install (new)
-curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- --pack qa .
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- --pack qa .
 
 # Pack install from branch (new)
-curl -sL https://raw.githubusercontent.com/rixrix/afx/dev/afx-cli | bash -s -- --branch dev --pack qa .
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/dev/afx-cli | bash -s -- --branch dev --pack qa .
 
 # Pack install from version (new)
-curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- --version 1.5.3 --pack qa .
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- --version 1.5.3 --pack qa .
 
 # Update packs (new)
-curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- --update --packs .
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- --update --packs .
 ```
 
 **Key change**: The current remote mode uses `git clone --depth 1` to get AFX source (line 173). Pack mode replaces this with `curl` + `tar` from codeload, removing the git dependency entirely. The current `git clone` path remains as a fallback for core-only installs but the preferred path becomes tarball-based.
@@ -1786,8 +1786,8 @@ When no pack flags are provided, `afx-cli` behaves exactly as before:
 ./afx-cli --no-claude-md --no-docs .
 ./afx-cli --force .
 ./afx-cli --dry-run .
-curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- .
-curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- --update .
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .
+curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- --update .
 ```
 
 ### 5.2 Existing Flags Preserved

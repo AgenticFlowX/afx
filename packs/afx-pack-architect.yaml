@@ -9,12 +9,12 @@ category: role
 
 includes:
   # AFX-built skills (curated from community, improved with AFX integration)
-  - repo: rixrix/afx
+  - repo: AgenticFlowX/afx
     path: skills/architect/
     items:
       - afx-deep-research          # Deep codebase investigation
 
-  - repo: rixrix/afx
+  - repo: AgenticFlowX/afx
     path: skills/dev/
     items:
       - afx-architecture-patterns  # Clean/hexagonal/DDD patterns + ADRs

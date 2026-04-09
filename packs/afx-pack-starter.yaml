@@ -9,7 +9,7 @@ category: utility
 
 includes:
   # AFX-built skills (all-provider test skill)
-  - repo: rixrix/afx
+  - repo: AgenticFlowX/afx
     path: skills/starter/
     items:
       - afx-hello # Multi-provider vibe check

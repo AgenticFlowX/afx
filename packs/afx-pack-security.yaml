@@ -9,7 +9,7 @@ category: role
 
 includes:
   # AFX-built skills (guardrails baked in, hosted in AFX repo)
-  - repo: rixrix/afx
+  - repo: AgenticFlowX/afx
     path: skills/security/
     items:
       - afx-owasp-top-10 # OWASP top 10 checklist with @see tracing

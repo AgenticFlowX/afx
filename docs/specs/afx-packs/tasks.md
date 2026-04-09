@@ -175,7 +175,7 @@ References:
 - [x] Detect Simple Skill: `SKILL.md` at root, no `.claude-plugin/` → Claude + Codex + Antigravity `[FR-34]`
 - [x] Detect Claude Plugin: `.claude-plugin/plugin.json` exists → Claude only `[FR-25]`
 - [x] Detect OpenAI Skill: `SKILL.md` + `agents/openai.yaml` → Codex only `[FR-26]`
-- [x] Detect AFX-built: from `rixrix/afx` repo → pre-organized by provider `[FR-42]`
+- [x] Detect AFX-built: from `AgenticFlowX/afx` repo → pre-organized by provider `[FR-42]`
 - [x] Ensure external skills are never modified during detection `[FR-27]`
 
 ### 3.5 Item Routing

@@ -7,7 +7,7 @@ category: workflow
 
 includes:
   # AFX workflow skills (spec-driven development commands)
-  - repo: rixrix/afx
+  - repo: AgenticFlowX/afx
     path: skills/agenticflowx/
     items:
       # Artifact lifecycle (spec → design → task → code)

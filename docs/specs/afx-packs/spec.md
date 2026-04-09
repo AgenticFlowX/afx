@@ -141,20 +141,20 @@ Developers using AFX who want to extend their AI coding assistants with curated 
 | ----- | -------------------------------------------------------------------------------------------------------------- | --------- |
 | FR-35 | Create `skills/` directory in AFX repo for AFX-authored skills with guardrails baked in                        | Must Have |
 | FR-36 | AFX-built skills use provider-native formats: `SKILL.md` for Claude/Codex/Antigravity, `.agent.md` for Copilot | Must Have |
-| FR-37 | Pack manifests reference AFX-built skills via `repo: rixrix/afx`, `path: skills/`                              | Must Have |
+| FR-37 | Pack manifests reference AFX-built skills via `repo: AgenticFlowX/afx`, `path: skills/`                        | Must Have |
 | FR-38 | Create guardrails skills for the first pack (`afx-qa-methodology`, `afx-spec-test-planning`)                   | Must Have |
 
 #### Provider Copy Management
 
-| ID    | Requirement                                                                                                                                                   | Priority  |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| FR-39 | Simple Skills (SKILL.md) copied to `.claude/skills/`, `.agents/skills/`, and `.agent/skills/`                                                                 | Must Have |
-| FR-40 | Claude Plugins copied to `.claude/plugins/` only                                                                                                              | Must Have |
-| FR-41 | OpenAI Skills (with `openai.yaml`) copied to `.agents/skills/` only                                                                                           | Must Have |
-| FR-42 | AFX-built skills are pre-organized by provider directory (claude/, codex/, antigravity/, copilot/) in `rixrix/afx` repo (no routing logic needed — just copy) | Must Have |
-| FR-43 | Copilot receives only AFX-built skills (no conversion of external SKILL.md to `.agent.md`)                                                                    | Must Have |
-| FR-44 | Detect name collisions in provider directories; fail install/enable if a different pack owns the destination                                                  | Must Have |
-| FR-45 | Manifest `platforms:` field gates routing — skills are only copied to providers marked `true` or `partial`                                                    | Must Have |
+| ID    | Requirement                                                                                                                                                         | Priority  |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| FR-39 | Simple Skills (SKILL.md) copied to `.claude/skills/`, `.agents/skills/`, and `.agent/skills/`                                                                       | Must Have |
+| FR-40 | Claude Plugins copied to `.claude/plugins/` only                                                                                                                    | Must Have |
+| FR-41 | OpenAI Skills (with `openai.yaml`) copied to `.agents/skills/` only                                                                                                 | Must Have |
+| FR-42 | AFX-built skills are pre-organized by provider directory (claude/, codex/, antigravity/, copilot/) in `AgenticFlowX/afx` repo (no routing logic needed — just copy) | Must Have |
+| FR-43 | Copilot receives only AFX-built skills (no conversion of external SKILL.md to `.agent.md`)                                                                          | Must Have |
+| FR-44 | Detect name collisions in provider directories; fail install/enable if a different pack owns the destination                                                        | Must Have |
+| FR-45 | Manifest `platforms:` field gates routing — skills are only copied to providers marked `true` or `partial`                                                          | Must Have |
 
 ### Non-Functional Requirements
 
@@ -342,7 +342,7 @@ includes:
       - pr-review-toolkit
 
   # AFX-built skills (guardrails baked in)
-  - repo: rixrix/afx
+  - repo: AgenticFlowX/afx
     path: skills/
     items:
       - afx-qa-methodology
@@ -499,7 +499,7 @@ custom_skills:
 | `SKILL.md` at root, no `.claude-plugin/` | Simple Skill  | Claude + Codex + Antigravity        | None         |
 | `.claude-plugin/plugin.json` exists      | Claude Plugin | Claude only                         | None         |
 | `SKILL.md` + `agents/openai.yaml`        | OpenAI Skill  | Codex only                          | None         |
-| From `rixrix/afx` repo                   | AFX-built     | All (pre-organized by provider dir) | N/A          |
+| From `AgenticFlowX/afx` repo             | AFX-built     | All (pre-organized by provider dir) | N/A          |
 
 ### Glossary
 

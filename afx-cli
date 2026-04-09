@@ -4,7 +4,7 @@
 #   Install:  ./afx-cli /path/to/project
 #   Update:   ./afx-cli --update /path/to/project
 #   Local:    ./afx-cli --source /path/to/afx --target /path/to/project
-#   Remote:   curl -sL https://raw.githubusercontent.com/rixrix/afx/main/afx-cli | bash -s -- .
+#   Remote:   curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .
 #
 # Options:
 #   --update          Update existing AFX installation (preserves user content)

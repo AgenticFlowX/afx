@@ -295,7 +295,7 @@ Released vX.Y.Z
 
   Commit : abc1234 chore(release): vX.Y.Z
   Tag    : vX.Y.Z (pushed)
-  Release: https://github.com/rixrix/afx/releases/tag/vX.Y.Z
+  Release: https://github.com/AgenticFlowX/afx/releases/tag/vX.Y.Z
 
 Changelog entry added for vX.Y.Z.
 ```
