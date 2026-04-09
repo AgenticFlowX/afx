@@ -123,7 +123,8 @@ After completing any action that modifies `spec.md`, you MUST:
 2. **Contextual Tagging**: If changes introduce new domains or concepts, append to `tags` array.
 3. **Dependency Tracking**: If changes introduce a reliance on another feature, add that feature's folder name to the `depends_on` array in frontmatter.
 4. **Version & State Management**: If modifying a `spec.md` that is currently `status: Approved`, evaluate the change. If it alters scope or requirements, bump `version` (e.g., "1.0" → "1.1") and revert `status: Draft` to force re-approval.
-5. **Format Preservation**: Frontmatter fields must remain in canonical order: `afx → type → status → owner → version → created_at → updated_at → tags → depends_on`. Use double quotes for all string values.
+5. **Format Preservation**: Frontmatter fields must remain in canonical order (see **Frontmatter (MANDATORY)** section). Use double quotes for all string values.
+6. **Template Section Check**: Verify all 8 required sections from the canonical template are present as `##` headings. Requirement tables use sequential `FR-N` / `NFR-N` IDs with no gaps. Custom sections allowed but required ones must not be omitted. See **Template Format Rules (CRITICAL)** section.
 
 ---
 
@@ -234,6 +235,68 @@ Next (ranked):
 
 ---
 
+## Template Format Rules (CRITICAL)
+
+The VSCode extension parses `spec.md` to extract sections, requirements, and status. If the generated file deviates from these rules, the extension **silently fails** to display sections. These rules define the canonical format — custom sections are allowed but required ones must not be omitted.
+
+**Template reference:** `assets/spec-template.md`
+
+### Section Headings
+
+Heading levels determine what the extension can see:
+
+- `#` (h1): Document title only — `# {Feature Name}`
+- `##` (h2): Major sections — **captured by the extension**
+- `###` (h3): Sub-sections — **captured by the extension**
+- `####` and deeper: **NOT captured** — do not use for requirements or sections that need to be visible in the extension
+
+### Required Sections
+
+All `spec.md` files MUST contain these `##` sections (in order):
+
+1. `## References`
+2. `## Problem Statement`
+3. `## User Stories` (with `### Primary Users` and `### Stories`)
+4. `## Requirements` (with `### Functional Requirements` and `### Non-Functional Requirements`)
+5. `## Acceptance Criteria`
+6. `## Non-Goals (Out of Scope)`
+7. `## Open Questions`
+8. `## Dependencies`
+
+Optional: `## Appendix` (with sub-sections for wireframes, data examples, glossary)
+
+### Requirement ID Format
+
+Requirements use table format with sequential IDs — no gaps allowed:
+
+**Functional Requirements table:**
+
+```markdown
+| ID   | Requirement      | Priority  |
+| ---- | ---------------- | --------- |
+| FR-1 | Description here | Must Have |
+| FR-2 | Description here | Should    |
+```
+
+**Non-Functional Requirements table:**
+
+```markdown
+| ID    | Requirement      | Target  |
+| ----- | ---------------- | ------- |
+| NFR-1 | Description here | < 200ms |
+| NFR-2 | Description here | 99.9%   |
+```
+
+- IDs MUST be sequential: `FR-1, FR-2, FR-3` — not `FR-1, FR-3`
+- IDs MUST be unique within the file
+- These IDs are referenced by `@see` annotations in code and tasks.md
+
+### Frontmatter
+
+See **Frontmatter (MANDATORY)** section above for canonical field order and full schema. `type` MUST be `SPEC`.
+
+---
+
 ## Subcommands
 
 ### create <name>
@@ -297,15 +360,7 @@ Next (ranked):
    - Every row in the Non-Functional Requirements table has a `NFR-N` ID
    - All IDs are unique within the file (no duplicate `FR-1`)
    - IDs are sequential (no gaps — `FR-1, FR-2, FR-3`, not `FR-1, FR-3`)
-5. **Template Section Compliance** (spec.md): Check required sections exist:
-   - Problem Statement
-   - User Stories
-   - Functional Requirements (with FR table)
-   - Non-Functional Requirements (with NFR table)
-   - Acceptance Criteria
-   - Non-Goals (Out of Scope)
-   - Open Questions
-   - Dependencies
+5. **Template Section Compliance** (spec.md): Check all 8 required sections exist (see **Template Format Rules** → Required Sections for the canonical list)
 6. **Cross-Reference Check**: Delegate to `/afx-check links` for internal link validation
 
 **Output:**

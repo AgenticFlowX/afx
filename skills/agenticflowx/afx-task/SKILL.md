@@ -6,7 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,task,implementation,coding,verification,lifecycle"
-  afx-argument-hint: "plan | pick | code | verify | complete | sync | brief | review"
+  afx-argument-hint: "plan | pick | code | verify | complete | sync | brief | review | validate | status"
   modeSlugs:
     - focus-review-tasks
     - focus-code
@@ -45,6 +45,8 @@ If neither file exists, use defaults.
 
 # Quality
 /afx-task review <name>                    # Check for planning gaps
+/afx-task validate <name>                  # Validate tasks.md against template + spec coverage
+/afx-task status <name>                    # Phase completion overview
 
 # GitHub Sync
 /afx-task sync [spec] [issue]              # Bidirectional GitHub sync
@@ -100,6 +102,7 @@ Out of scope for /afx-task (implementation-lifecycle mode). Use /afx-spec for sp
 ### Architectural Core "Hard Anchor" Rule
 
 The following are **Hard Anchors** and MUST NOT be modified during `/afx-task code` without a prior approved Design update:
+
 - Authentication flow & Security protocols
 - Database schema & Data migration patterns
 - Global state management architecture
@@ -140,7 +143,45 @@ design: design.md
 
 When this skill detects a high-impact context change, auto-capture to `journal.md` per the [Proactive Capture Protocol](../afx-session/SKILL.md#proactive-capture-protocol-mandatory).
 
-**Triggers for `/afx-task`**: Spec-implementation mismatch that requires decision, task blocked by external dependency, scope change discovered during coding.
+**Triggers for `/afx-task`**:
+
+- Spec-implementation mismatch that requires decision
+- Task blocked by external dependency
+- Scope change discovered during coding
+- Discussion about task sequencing, implementation approach, or design direction
+- Verify/review request without explicit coding (discussion context)
+
+**Discussion Context Triggers (automated journal capture):**
+
+```
+User: "should task 3.2 be done before 3.1?"
+→ Journal: Task dependency question: 3.2 vs 3.1 sequencing
+
+User: "let's discuss the EC3 API approach"
+→ Journal: EC3 API approach discussed — see [DES-API]
+
+User: "verify bottom up"
+→ Journal: Bottom-up verify requested — task→spec trace
+
+User: "what about FR-4?"
+→ Journal: Question about FR-4 coverage — referenced in 9.1
+```
+
+**Output format:**
+
+```
+## Session: Discussion (2026-04-09T14:30:00.000Z)
+
+### Context
+Triggered by: verify bottom up question
+Spec: 39-package-ec3
+
+### Discussion Points
+- Task 3.2 vs 3.1 dependency discussed
+- Next: verify all tasks before coding
+
+---
+```
 
 ---
 
@@ -182,11 +223,12 @@ After completing any action that modifies `tasks.md` or source code, you MUST:
 4. **Contextual Tagging**: If changes introduce new domains or concepts, append to `tags` array.
 5. **Version & State Management**: If modifying a `tasks.md` that is currently `status: Living` and the change alters task scope (adding/removing phases), bump `version`.
 6. **Format Preservation**: Frontmatter fields must remain in canonical order. Use double quotes.
-7. **Proactive Prevention Check**:
+7. **Parser-Compatible Format Check**: Verify the generated/modified `tasks.md` follows the **Template Format Rules (CRITICAL)** section — phase headers match `## Phase N:`, checkboxes at column 0 with no indentation, Cross-Reference Index after all phases, Work Sessions last. Run `/afx-task validate <name>` if uncertain.
+8. **Proactive Prevention Check**:
    - Error Handling: Does it match the project's error handling pattern?
    - Logging: Does it use the project's logging utility?
    - Consistency: Compare with 3 existing files in the project to ensure stylistic alignment.
-8. **Work Sessions Table** (CRITICAL — agents frequently get this wrong):
+9. **Work Sessions Table** (CRITICAL — agents frequently get this wrong):
    - The `## Work Sessions` section MUST be the **last section** in `tasks.md`, after all Phase sections and after the Cross-Reference Index. If it has drifted above other sections, move it back to the bottom before appending.
    - After `pick`, `code`, and `complete`, **append a new row** to the table. Do NOT replace existing rows.
    - Use this exact column structure — no variations:
@@ -205,8 +247,8 @@ After completing any action that modifies `tasks.md` or source code, you MUST:
    - **Files Modified**: Comma-separated list, or `-` if no files changed
    - **Agent/Human**: `[x]` for who performed, `[]` for pending human review
 
-7. **`@see` Annotations (code subcommand only)**: Add `@see` links at the **class and function level** via JSDoc on exported classes, interfaces, and functions. Line-level annotations ONLY when a specific line implements a non-obvious requirement. **CRITICAL ANTI-PATTERN**: Do NOT dump blanket `@see` links at the top of the file. Do NOT annotate every line.
-8. **Task Checkbox**: After `code` and `complete`, mark the relevant task checkbox `[x]`.
+10. **`@see` Annotations (code subcommand only)**: Add `@see` links at the **class and function level** via JSDoc on exported classes, interfaces, and functions. Line-level annotations ONLY when a specific line implements a non-obvious requirement. **CRITICAL ANTI-PATTERN**: Do NOT dump blanket `@see` links at the top of the file. Do NOT annotate every line.
+11. **Task Checkbox**: After `code` and `complete`, mark the relevant task checkbox `[x]`.
 
 ---
 
@@ -244,7 +286,59 @@ After EVERY `/afx-task` action, suggest the next command:
 | After `complete {id}`       | `/afx-task pick <next-id>` for next task        |
 | After `brief`               | `/afx-task code {id}` or `/afx-task pick`       |
 | After `review` (gaps found) | Address gaps in tasks.md                        |
+| After `validate` (passed)   | Proceed with implementation or `/afx-task plan` |
+| After `validate` (failed)   | Fix format issues in tasks.md                   |
+| After `status`              | `/afx-task pick <next-id>` based on overview    |
 | After `sync`                | `/afx-task pick` to resume work                 |
+
+---
+
+## Template Format Rules (CRITICAL)
+
+The VSCode extension parses `tasks.md` using strict regex patterns. If the generated file deviates from these rules, the extension **silently fails** — showing 0 phases and 0 tasks. These rules are **non-negotiable**.
+
+### Phase Headers
+
+**Required format**: `## Phase N: {Phase Name}`
+
+- MUST start with `## ` (h2 markdown heading)
+- MUST contain the word `Phase` followed by a space and a digit
+- Colon after the digit is conventional but optional for the parser
+- Example: `## Phase 1: Core Types`, `## Phase 3: Integration Testing`
+- **NOT**: `## 1. Core Types`, `## Step 1:`, `### Phase 1:`, `# Phase 1:`
+- Parser regex: `/^##\s+Phase\s+(\d+):?\s+(.*)$/`
+
+### Task Checkboxes
+
+**Required format**: `- [ ] {Task text}` or `- [x] {Task text}` at column 0
+
+- MUST start at the beginning of the line (column 0) — NO indentation
+- MUST use `- [ ] ` (incomplete) or `- [x] ` / `- [X] ` (complete)
+- **Each checkbox = one task** in the extension UI. Do NOT use checkboxes for acceptance criteria sub-items
+- File scope, `@see` links, and acceptance criteria go in HTML comments or indented text BELOW the checkbox
+- **NOT**: `  - [ ] indented`, `* [ ] asterisk`, `- [ ] **1.1** bold-prefixed`
+- Parser regex: `/^-\s+\[([ xX])\]\s+(.*)$/`
+
+### Section Order
+
+After frontmatter, the parser expects this order:
+
+1. `# Title`
+2. `## Task Numbering Convention` (optional)
+3. `## Phase 0:` through `## Phase N:` (phases in order)
+4. `## Implementation Flow` (optional)
+5. `## Cross-Reference Index`
+6. `## Notes` (optional)
+7. `## Work Sessions` — **MUST be last**
+
+**CRITICAL**: `## Cross-Reference Index` must come AFTER all Phase sections. `## Work Sessions` must be the absolute last section — nothing below it.
+
+### Work Sessions Table
+
+- Header regex: `/^##\s+Work\s+Sessions/i`
+- Row format: `| YYYY-MM-DD | task-id | Action | files | [x]/[] | [x]/[] |`
+- Date column must start with a 4-digit year
+- Row regex: `/^\|\s*(\d{4}-\d{2}-\d{2}(?:T[\d:.]+Z?)?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|/`
 
 ---
 
@@ -280,13 +374,22 @@ After EVERY `/afx-task` action, suggest the next command:
    If critical sections are empty (`[DES-ARCH]`, `[DES-API]`, `[DES-DATA]`), warn the user but continue — do not block.
 
 3. **Generate Task Breakdown** using the tasks template (`assets/tasks-template.md`):
+
+   **FORMAT ENFORCEMENT** — the VSCode extension parser will silently break if these are violated. See **Template Format Rules (CRITICAL)** section above for the full regex reference.
+   - Phase headers MUST be `## Phase N: {Name}` (h2, the word "Phase", a digit, colon, name)
+   - Task checkboxes MUST be `- [ ] {text}` at column 0 — NO indentation, NO bold task ID prefix
+   - Each `- [ ]` line = one task in the extension UI. Do NOT use checkboxes for acceptance criteria sub-items
+   - Section order: Phases first, then Cross-Reference Index, then Work Sessions (last)
+   - Cross-Reference Index MUST come AFTER all Phase sections, never before
+
+   **Task content requirements:**
    - Organize into phases (setup, core, integration, testing, docs)
    - Each task must have:
      - WBS numbering (Phase.Task, e.g., `1.1`, `2.3`)
      - Clear description of what to implement
-     - File scope — list the specific files this task creates or modifies
-     - `@see` links using Node ID syntax with **full paths**: `@see docs/specs/{feature}/design.md [DES-API]`, `@see docs/specs/{feature}/spec.md [FR-1]`
-     - Acceptance criteria (how to verify the task is done)
+     - File scope — list the specific files this task creates or modifies (use `<!-- files: ... -->` comment)
+     - `@see` links using Node ID syntax with **full paths** (use `<!-- @see docs/specs/{feature}/design.md [DES-API] | docs/specs/{feature}/spec.md [FR-1] -->` comment)
+     - Acceptance criteria — as plain text or indented sub-items, NOT as checkboxes
    - **Parallelization**: Tasks within a phase should be **independent by default** — no shared mutable state, no file overlap. When two tasks in the same phase DO depend on each other, note the dependency explicitly: `<!-- depends: 1.1 -->`. Cross-phase dependencies are implicit (phase N depends on phase N-1).
    - Order phases by dependency (setup before core, core before integration)
    - Generate Cross-Reference Index table linking tasks → spec requirements → design sections
@@ -345,10 +448,10 @@ During implementation, if you discover that the requested logic fundamentally co
 
 1. **STOP CODING.** Do not hack around the design or unilaterally invent new architecture.
 2. **Proactive Capture:** Log the drift in `journal.md` detailing the discrepancy, the impact, and your recommended architectural course correction.
-3. **Escalate:** Stop execution and prompt the user: *"I've hit a logic conflict with the design. See `journal.md` for my analysis. We need to update the design via `/afx-design` or `/afx-spec` before I can continue coding this task."*
+3. **Escalate:** Stop execution and prompt the user: _"I've hit a logic conflict with the design. See `journal.md` for my analysis. We need to update the design via `/afx-design` or `/afx-spec` before I can continue coding this task."_
 4. **Resume:** Once the user updates the source of truth, resume the `/afx-task code {id}` command.
 
-3. **Add `@see` Annotations** (class and function level):
+5. **Add `@see` Annotations** (class and function level):
 
    ```typescript
    /**
@@ -375,7 +478,7 @@ During implementation, if you discover that the requested logic fundamentally co
    - **NEVER** dump blanket `@see` at the top of the file
    - **NEVER** annotate every line — that creates noise
 
-4. **Update tasks.md**:
+6. **Update tasks.md**:
    - Mark task checkbox `[x]`
    - **Locate `## Work Sessions`** at the bottom. Append a `Coded` row with the files you modified:
 
@@ -516,6 +619,116 @@ Recommendations:
 
 ---
 
+### validate <name>
+
+**Purpose:** Structural AND spec compliance check for `tasks.md` — validates against the canonical template (`assets/tasks-template.md`) AND verifies spec requirement coverage.
+
+**Template Reference:** `assets/tasks-template.md`
+
+**Implementation:**
+
+1. **File Existence**: Check `tasks.md` exists at `docs/specs/<name>/tasks.md`
+2. **Template Alignment**: Compare tasks.md structure against `assets/tasks-template.md`:
+   - Frontmatter schema matches (afx, type, status, version, created_at, updated_at, tags, spec, design)
+   - Section order: `## Phase N:`, `## Implementation Flow`, `## Cross-Reference Index`, `## Work Sessions` (last)
+   - Task format uses `- [ ]` checkboxes
+   - WBS numbering uses `N.x` format (not `FEATURE-N.x`)
+3. **Content Validation**:
+   - Tasks have `@see` links to design/spec
+   - No orphaned tasks (tasks without `@see` links)
+   - No duplicate task IDs
+4. **Spec Compliance**:
+   - Read `spec.md` from same directory
+   - Extract all FR-_ and NFR-_ requirements
+   - For each FR/NFR, verify at least one task has a `@see` reference to it
+   - Report any FR/NFR without task coverage
+
+**Output:**
+
+```
+Validation: 39-package-ec3 (tasks.md)
+
+--- Template Alignment ---
+Frontmatter: ✓ Matches template
+Section Order: ✓ Correct
+Task Format: ✓ Uses checkboxes, WBS N.x
+--- Content Validation ---
+@see Links: ✓ All tasks linked
+Orphaned Tasks: ✓ None
+Duplicate IDs: ✓ None
+--- Spec Compliance ---
+FR Coverage: 11/11 (100%)
+NFR Coverage: 6/6 (100%)
+
+Status: PASSED
+```
+
+**FR/NFR Coverage Logic:**
+
+```
+For each requirement in spec.md:
+  1. Extract pattern: ### FR-{number} or ### NFR-{number}
+  2. In tasks.md, grep for "@see ... [FR-N]"
+  3. If found → ✓ covered
+  4. If not found → ✗ GAP
+
+Coverage = (requirements with tasks) / (total requirements)
+```
+
+---
+
+### status <name>
+
+**Purpose:** Quick phase-by-phase task completion overview.
+
+**Implementation:**
+
+1. Read tasks.md, count total tasks per phase
+2. Count completed (`[x]`) vs total tasks per phase
+3. Find blocked tasks (dependency not met) and next actionable task
+4. Output progress bars + next action suggestion
+
+**Output:**
+
+```
+Status: 39-package-ec3
+
+Phase 1 (Core Types): ████████░░ 80% (4/5 tasks)
+Phase 2 (Providers): ██░░░░░░░░ 20% (1/5 tasks)
+Phase 3-6: Not started
+Phase 7-9 (Backlog): Pending
+
+Blocked: None
+Next Action: /afx-task pick 2.2
+```
+
+---
+
+### verify all <name>
+
+**Purpose:** Bottom-up verification — verify ALL tasks against spec coverage.
+
+**Implementation:**
+
+1. For each uncompleted task in tasks.md:
+   - Run existing `verify <task-id>` logic
+2. Aggregate results
+3. Output: list of [OK] / [PARTIAL] / [MISSING] across all tasks
+
+**Output:**
+
+```
+Verify All: 39-package-ec3 (13 tasks)
+
+OK (9): 1.1, 2.1, 2.2, 3.1, 3.2, 3.3, 4.1, 4.2, 5.1
+PARTIAL (2): 4.3, 5.2
+MISSING (2): 6.1, 7.1
+
+Recommendation: /afx-task code <id> for PARTIAL/MISSING tasks
+```
+
+---
+
 ## Error Handling
 
 ### Common Errors
@@ -562,13 +775,13 @@ Recommendations:
 
    ```text
    BLOCKED: Logic drift detected in Task 2.1.
-   
+
    The required implementation deviates from design.md [DES-API] regarding token rotation.
-   
+
    Action Taken:
      - Analysis logged to docs/specs/auth/journal.md
      - Coding paused to prevent technical debt
-   
+
    Next Step:
      - Review analysis in journal.md
      - Update design: /afx-design modify auth

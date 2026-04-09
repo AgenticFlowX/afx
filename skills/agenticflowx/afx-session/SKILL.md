@@ -56,6 +56,7 @@ After modifying `journal.md`, you MUST (see `assets/journal-template.md` for can
 2. **Append-Only Entries**: Never edit or remove existing journal entries. Only append new ones.
 3. **Format Preservation**: Maintain canonical frontmatter field order. Use double quotes.
 4. **Discussion IDs**: New discussions must use the next sequential ID (e.g., if last is XX-D003, use XX-D004).
+5. **Template Format Check**: Verify discussion headers use `### {PREFIX}-D{NNN} - Title` format, status uses backtick `` `status:active` `` markers, and all mandatory bold sections (`**Context**:`, `**Summary**:`, `**Decisions**:`) are present. Custom sections allowed but mandatory ones must not be omitted. See **Template Format Rules (CRITICAL)** section.
 
 ---
 
@@ -165,6 +166,73 @@ Determine action from first argument:
 - **log**: Summarize a conversation into a permanent record
 - **recap**: "What did we discuss last time?"
 - **promote**: "This discussion is now an ADR or a new Feature"
+
+---
+
+## Template Format Rules (CRITICAL)
+
+The VSCode extension parses `journal.md` to display discussions, statuses, and notes. If the generated file deviates from these rules, the extension **silently fails** to display entries. These rules define the canonical format — custom sections are allowed but mandatory ones must not be omitted.
+
+**Template reference:** `assets/journal-template.md`
+
+### Document Structure
+
+Mandatory sections in order:
+
+1. YAML frontmatter (between `---` delimiters)
+2. `# Journal - {Feature Name}` (h1 title)
+3. `<!-- prefix: XX -->` comment (defines discussion ID prefix)
+4. `## Captures` section (quick notes during active chat)
+5. `## Discussions` section (recorded discussions with IDs)
+
+### Frontmatter
+
+**Canonical field order**: `afx → type → status → owner → created_at → updated_at → tags`. `type` MUST be `JOURNAL`, `status` MUST be `Living`. See `assets/journal-template.md` for full schema.
+
+### Discussion Headers
+
+**Required format**: `### {PREFIX}-D{NNN} - Topic Title`
+
+- MUST be an h3 heading (`### `)
+- Prefix: 2-4 uppercase letters derived from feature name (e.g., `user-auth` → `UA`)
+- ID number: zero-padded 3 digits (`D001`, `D042`, `D999`)
+- Separator between prefix-ID and title: `-` (space-dash-space)
+- NO date in the heading — date goes in inline metadata below
+- **NOT**: `## UA-D001` (wrong level), `### UA-D1` (not zero-padded), `### UA-D001 - 2026-04-09 - Title` (date in heading)
+
+### Inline Metadata
+
+Line immediately below the discussion header:
+
+```markdown
+`status:active` `2026-04-09T14:30:00.000Z` `[tag1, tag2]`
+```
+
+- **Status**: `` `status:active` ``, `` `status:blocked` ``, or `` `status:closed` `` — backtick-quoted, no spaces around colon, lowercase value
+- **Timestamp**: ISO 8601 with milliseconds in backticks
+- **Tags**: comma-separated in backticks with square brackets
+
+### Mandatory Bold Section Headers
+
+Every discussion MUST include at minimum:
+
+| Section   | Format           | Purpose                      |
+| --------- | ---------------- | ---------------------------- |
+| Context   | `**Context**:`   | What prompted the discussion |
+| Summary   | `**Summary**:`   | 2-3 sentence overview        |
+| Decisions | `**Decisions**:` | List items with `- ` prefix  |
+
+Format rule: `**Word**:` — double-asterisk bold, immediately followed by colon and space.
+
+### Optional Standard Sections
+
+These are expected but not strictly required:
+
+- `**Progress**:` — checkbox items (`- [x]` / `- [ ]`)
+- `**Tips/Ideas**:` — list items
+- `**Notes**:` — append-only notes with sub-ID format `**[XX-D001.N1]** **[timestamp]** content`
+- `**Related Files**:` — cumulative comma-separated file list (grows as notes are appended)
+- `**Participants**:` — @handles
 
 ---
 

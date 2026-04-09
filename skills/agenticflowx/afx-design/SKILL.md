@@ -136,8 +136,8 @@ After completing any action that modifies `design.md`, you MUST:
 2. **Verify `spec` backlink**: Ensure `spec: spec.md` is present in frontmatter.
 3. **Contextual Tagging**: If changes introduce new domains, frameworks, or concepts (e.g., adding Redis, a new API pattern), append relevant keywords to the `tags` array.
 4. **Version & State Management**: If modifying a `design.md` that is currently `status: Approved`, evaluate the change. If it alters architecture or scope, bump `version` (e.g., "1.0" → "1.1") and revert `status: Draft` to force re-approval.
-5. **Format Preservation**: Frontmatter fields must remain in canonical order. Use double quotes for all string values.
-6. **Node ID Integrity**: Every major design section MUST have a `[DES-ID]` Node ID in its heading (e.g., `## [DES-API] API Contracts`). When adding new sections, scan existing IDs to avoid duplicates.
+5. **Format Preservation**: Frontmatter fields must remain in canonical order (see **Frontmatter (MANDATORY)** section). Use double quotes for all string values.
+6. **Template & Node ID Check**: Verify all 12 required `[DES-*]` sections are present, each `##` heading starts with a unique `[DES-ID]` node ID, and no IDs are duplicated. Custom sections allowed but required ones must not be omitted. See **Template Format Rules (CRITICAL)** section for the canonical list and format.
 
 ---
 
@@ -172,6 +172,56 @@ After EVERY `/afx-design` action, suggest the next command:
 | After `review` (critical issues)    | Fix issues, then `/afx-design validate <name>`  |
 | After `review` (no critical issues) | `/afx-design approve <name>` to approve design  |
 | After `approve`                     | `/afx-task plan <name>` to generate tasks       |
+
+---
+
+## Template Format Rules (CRITICAL)
+
+The VSCode extension parses `design.md` to extract sections and node IDs. If the generated file deviates from these rules, the extension **silently fails** to display sections. These rules define the canonical format — custom sections are allowed but required ones must not be omitted.
+
+**Template reference:** `assets/design-template.md`
+
+### Section Headings
+
+Heading levels determine what the extension can see:
+
+- `#` (h1): Document title only — `# {Feature Name} — Design`
+- `##` (h2): Major design sections — **captured by the extension**, MUST include `[DES-ID]` node ID
+- `###` (h3): Sub-sections — **captured by the extension**
+- `####` and deeper: **NOT captured** — do not use for sections that need to be visible in the extension
+
+### Required Sections with Node IDs
+
+All `design.md` files MUST contain these `##` sections with their `[DES-ID]` anchors:
+
+| #   | Heading                                     | Node ID         |
+| --- | ------------------------------------------- | --------------- |
+| 1   | `## [DES-OVR] Overview`                     | `[DES-OVR]`     |
+| 2   | `## [DES-ARCH] Architecture`                | `[DES-ARCH]`    |
+| 3   | `## [DES-UI] User Interface & UX`           | `[DES-UI]`      |
+| 4   | `## [DES-DEC] Key Decisions`                | `[DES-DEC]`     |
+| 5   | `## [DES-DATA] Data Model`                  | `[DES-DATA]`    |
+| 6   | `## [DES-API] API Contracts`                | `[DES-API]`     |
+| 7   | `## [DES-FILES] File Structure`             | `[DES-FILES]`   |
+| 8   | `## [DES-DEPS] Dependencies`                | `[DES-DEPS]`    |
+| 9   | `## [DES-SEC] Security Considerations`      | `[DES-SEC]`     |
+| 10  | `## [DES-ERR] Error Handling`               | `[DES-ERR]`     |
+| 11  | `## [DES-TEST] Testing Strategy`            | `[DES-TEST]`    |
+| 12  | `## [DES-ROLLOUT] Migration / Rollout Plan` | `[DES-ROLLOUT]` |
+
+Optional: `## File Reference Map`, `## Open Technical Questions`
+
+### Node ID Format
+
+- Uppercase kebab-case inside square brackets: `[DES-API]`, `[DES-DATA]`
+- MUST appear at the **start** of the `##` heading: `## [DES-API] API Contracts`
+- Each ID MUST be unique within the file — no duplicates
+- These IDs are referenced by `@see` annotations in source code and tasks.md
+- **NOT**: `## API Contracts` (missing ID), `## API Contracts [DES-API]` (ID at end), `## [des-api]` (lowercase)
+
+### Frontmatter
+
+See **Frontmatter (MANDATORY)** section above for canonical field order and full schema. `type` MUST be `DESIGN`, `spec: spec.md` backlink is mandatory.
 
 ---
 
@@ -244,16 +294,7 @@ After EVERY `/afx-design` action, suggest the next command:
 3. **Node ID Check**:
    - Every `##` heading has a `[DES-ID]` prefix
    - No duplicate Node IDs within the file
-4. **Template Section Compliance**: Check required sections exist:
-   - `[DES-OVR]` Overview
-   - `[DES-ARCH]` Architecture
-   - `[DES-DEC]` Key Decisions
-   - `[DES-DATA]` Data Model
-   - `[DES-API]` API Contracts
-   - `[DES-FILES]` File Structure
-   - `[DES-SEC]` Security Considerations
-   - `[DES-ERR]` Error Handling
-   - `[DES-TEST]` Testing Strategy
+4. **Template Section Compliance**: Check all 12 required `[DES-*]` sections exist (see **Template Format Rules** → Required Sections with Node IDs for the canonical list)
 5. **Traceability Check**: At least one `@see spec.md [FR-X]` or `[NFR-X]` reference exists
 
 **Output:**
@@ -277,8 +318,8 @@ Status: PASSED
 
 **Implementation:**
 
-1. **FR Completeness**: Does the design cover ALL functional requirements (FR-*) from spec.md? Cross-reference every FR-N ID in the spec requirements table against design sections — each must have at least one DES-* section addressing it.
-2. **NFR Completeness**: Does the design cover ALL non-functional requirements (NFR-*) from spec.md? Cross-reference every NFR-N ID in the spec requirements table against design sections — each must have at least one DES-* section or explicit mention. Do NOT rely on named categories alone (performance, security, etc.) — check the actual NFR IDs.
+1. **FR Completeness**: Does the design cover ALL functional requirements (FR-_) from spec.md? Cross-reference every FR-N ID in the spec requirements table against design sections — each must have at least one DES-_ section addressing it.
+2. **NFR Completeness**: Does the design cover ALL non-functional requirements (NFR-_) from spec.md? Cross-reference every NFR-N ID in the spec requirements table against design sections — each must have at least one DES-_ section or explicit mention. Do NOT rely on named categories alone (performance, security, etc.) — check the actual NFR IDs.
 3. **Acceptance Criteria Coverage**: Does spec.md have acceptance criteria for every FR and NFR? If a requirement has no acceptance criteria section, flag it as a gap.
 4. **Error Boundaries**: Are error scenarios defined for each component?
 5. **Consistency**: Does design terminology match spec terminology?
