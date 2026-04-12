@@ -27,16 +27,25 @@ If neither file exists, use defaults.
 
 ## Template Sources
 
-Templates are co-located with the skill that owns each artifact type. Read via relative paths from this skill's directory:
+Templates are co-located with the skill that owns each artifact type.
 
-| Artifact     | Template path                                 |
-| ------------ | --------------------------------------------- |
-| `spec.md`    | `../afx-spec/assets/spec-template.md`         |
-| `design.md`  | `../afx-design/assets/design-template.md`     |
-| `tasks.md`   | `../afx-task/assets/tasks-template.md`        |
-| `journal.md` | `../afx-session/assets/journal-template.md`   |
-| ADR          | `../afx-adr/assets/adr-template.md`           |
-| Research     | `../afx-research/assets/research-template.md` |
+**Delegated artifacts** — these are handled by the delegated skill; do NOT read their templates from this skill:
+
+| Artifact     | Delegated to       | Template owned by that skill             |
+| ------------ | ------------------ | ---------------------------------------- |
+| `spec.md`    | `/afx-spec create` | `afx-spec/assets/spec-template.md`       |
+| `design.md`  | `/afx-spec create` | `afx-design/assets/design-template.md`   |
+| `tasks.md`   | `/afx-spec create` | `afx-task/assets/tasks-template.md`      |
+| `journal.md` | `/afx-spec create` | `afx-session/assets/journal-template.md` |
+| ADR          | `/afx-adr create`  | `afx-adr/assets/adr-template.md`         |
+
+**Directly owned** — this skill reads this template itself for the `research` subcommand:
+
+| Artifact | Relative path (from this SKILL.md's folder)   |
+| -------- | --------------------------------------------- |
+| Research | `../afx-research/assets/research-template.md` |
+
+> **Path resolution:** The base is the folder containing this SKILL.md (e.g., `<skills-root>/afx-scaffold/`). `../afx-research/` means go up one level to `<skills-root>/`, then into `afx-research/`. Do NOT prepend `assets/` to the base.
 
 ## Usage
 

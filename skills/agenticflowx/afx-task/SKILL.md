@@ -248,6 +248,9 @@ After completing any action that modifies `tasks.md` or source code, you MUST:
    - **Agent/Human**: `[x]` for who performed, `[]` for pending human review
 
 10. **`@see` Annotations (code subcommand only)**: Add `@see` links at the **class and function level** via JSDoc on exported classes, interfaces, and functions. Line-level annotations ONLY when a specific line implements a non-obvious requirement. **CRITICAL ANTI-PATTERN**: Do NOT dump blanket `@see` links at the top of the file. Do NOT annotate every line.
+    - **Full path required**: Always use `docs/specs/{feature}/design.md`, never shorthand like `design.md` or `spec.md`
+    - **Node IDs only**: After the file path, only use bracket-wrapped IDs: `[DES-UI]`, `[FR-12]`, `[NFR-1]`. Never append subsection numbers (e.g., `3.5.0.1`) — the code lens parser cannot parse them
+    - **Format**: `@see docs/specs/{feature}/design.md [DES-UI]` — path + space + Node ID(s). Multiple Node IDs space-separated: `[FR-1] [FR-2]`
 11. **Task Checkbox**: After `code` and `complete`, mark the relevant task checkbox `[x]`.
 
 ---
@@ -290,6 +293,40 @@ After EVERY `/afx-task` action, suggest the next command:
 | After `validate` (failed)   | Fix format issues in tasks.md                   |
 | After `status`              | `/afx-task pick <next-id>` based on overview    |
 | After `sync`                | `/afx-task pick` to resume work                 |
+
+### Interactive Lifecycle Actions (MANDATORY)
+
+When the agent detects a lifecycle gate is actionable after completing work, use `ask_followup_question` to present options as clickable buttons instead of text-only suggestions.
+
+**Trigger conditions:**
+
+| Condition                                                                       | Question                                                                            | Options                                                 |
+| ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| After `plan` generates tasks                                                    | "Tasks planned. Pick the first task?"                                               | "Pick first task" / "Review tasks" / "Not now"          |
+| After `pick` checks out a task                                                  | "Task checked out. Start implementing?"                                             | "Code task" / "View brief" / "Not now"                  |
+| After `code` completes                                                          | "Implementation done. Verify against spec?"                                         | "Verify implementation" / "Continue coding" / "Not now" |
+| After `verify` returns [OK]                                                     | "Task verified successfully. Mark as complete?"                                     | "Complete task" / "Pick next task" / "Not now"          |
+| After `verify` returns [PARTIAL]                                                | "Task partially implemented. Continue coding?"                                      | "Continue coding" / "View gaps" / "Not now"             |
+| After `verify` returns [MISSING]                                                | "Task not yet implemented. Start coding?"                                           | "Code task" / "Pick different task" / "Not now"         |
+| After `complete` with more tasks remaining in current phase                     | "Task completed. Pick the next task in this phase?"                                 | "Pick next task" / "Review progress" / "Not now"        |
+| After all tasks in a phase complete                                             | "Phase {N} complete. Start next phase?"                                             | "Start Phase {N+1}" / "Review progress" / "Not now"     |
+| After all tasks in ALL phases complete                                          | "All tasks complete. Run final quality check?"                                      | "Run quality check" / "Sync to GitHub" / "Not now"      |
+| After `validate` passes (all checks ✓)                                          | "Tasks validated. Ready to start implementation?"                                   | "Pick first task" / "Review gaps" / "Not now"           |
+| After `validate` fails (format or coverage issues)                              | "Validation found issues in tasks.md. Fix them now?"                                | "Show issues" / "Not now"                               |
+| After `review` finds coverage gaps                                              | "Requirements without tasks detected. Add missing tasks?"                           | "Add tasks" / "Review gaps" / "Not now"                 |
+| After `sync` finds discrepancies (task done but issue open, or vice versa)      | "GitHub sync found mismatches. Reconcile now?"                                      | "Reconcile" / "View details" / "Not now"                |
+| Code drift detected during `code` (design mismatch)                             | "Logic drift detected — implementation conflicts with design. Review the analysis?" | "Review in journal" / "Update design" / "Not now"       |
+| After `code` modifies a Hard Anchor file (detected via Architectural Core rule) | "Hard Anchor file modified. This requires a design update first."                   | "Review design" / "Revert changes" / "Not now"          |
+| Task has unmet dependency (detected during `pick`)                              | "Task {id} depends on {dep-id} which is not complete yet."                          | "Pick dependency first" / "Pick anyway" / "Not now"     |
+
+**Rules:**
+
+- Only trigger when the lifecycle gate is actually actionable (preconditions met)
+- Include "Not now" as the last option — never force the user
+- If user selects an action, execute it immediately (run the verify/complete/pick flow)
+- If user selects "Not now", continue normally — do not re-ask in the same conversation
+- Keep existing text-only "Next Command Suggestion" for non-lifecycle contexts
+- These buttons complement, not replace, the text suggestions
 
 ---
 

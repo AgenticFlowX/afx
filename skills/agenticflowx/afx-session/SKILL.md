@@ -120,6 +120,34 @@ Next (ranked):
 5. /afx-help # See all options
 ```
 
+### Interactive Lifecycle Actions (MANDATORY)
+
+When the agent detects a lifecycle gate is actionable after completing work, use `ask_followup_question` to present options as clickable buttons instead of text-only suggestions.
+
+**Trigger conditions:**
+
+| Condition                                                          | Question                                                              | Options                                              |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------- | ---------------------------------------------------- |
+| After `note` with decision or ADR-worthy content                   | "This looks like an architectural decision. Promote to ADR?"          | "Promote to ADR" / "Keep as note" / "Not now"        |
+| After `note --ref` appends to a discussion with `status:closed`    | "This discussion is closed. Reopen it or start a new one?"            | "Reopen discussion" / "New discussion" / "Not now"   |
+| After `log` with unresolved items                                  | "Session logged. Some items are unresolved. Continue?"                | "Continue discussion" / "Pick next task" / "Not now" |
+| After `log` with all items resolved                                | "Session logged. All items resolved — ready to move on?"              | "Pick next task" / "Save context" / "Not now"        |
+| After `recap` showing stale context                                | "Context is stale. Save a fresh context bundle?"                      | "Save context" / "Continue working" / "Not now"      |
+| After `recap` showing open decisions across multiple features      | "Open decisions span multiple features. Review cross-feature impact?" | "Review impact" / "Continue working" / "Not now"     |
+| After `promote` to ADR completes                                   | "ADR created. Ready to implement the decision?"                       | "Implement now" / "Review ADR" / "Not now"           |
+| After `promote --to` creates new feature spec                      | "New feature spec created. Author the spec?"                          | "Author spec" / "Pick task" / "Not now"              |
+| `## Captures` has 5+ unlogged entries (detected during any action) | "Multiple captures are piling up. Consolidate into a discussion?"     | "Log session" / "Keep capturing" / "Not now"         |
+| Discussion has 3+ notes appended (detected during `note --ref`)    | "This discussion has grown. Summarize into a new log entry?"          | "Log summary" / "Keep appending" / "Not now"         |
+
+**Rules:**
+
+- Only trigger when the lifecycle gate is actually actionable (preconditions met)
+- Include "Not now" as the last option — never force the user
+- If user selects an action, execute it immediately (run the promote/log/save flow)
+- If user selects "Not now", continue normally — do not re-ask in the same conversation
+- Keep existing text-only "Next Command Suggestion" for non-lifecycle contexts
+- These buttons complement, not replace, the text suggestions
+
 ---
 
 ### Timestamp Format (MANDATORY)

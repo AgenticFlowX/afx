@@ -173,6 +173,34 @@ After EVERY `/afx-design` action, suggest the next command:
 | After `review` (no critical issues) | `/afx-design approve <name>` to approve design  |
 | After `approve`                     | `/afx-task plan <name>` to generate tasks       |
 
+### Interactive Lifecycle Actions (MANDATORY)
+
+When the agent detects a lifecycle gate is actionable after completing work, use `ask_followup_question` to present options as clickable buttons instead of text-only suggestions.
+
+**Trigger conditions:**
+
+| Condition                                                                         | Question                                                                       | Options                                           |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------- |
+| After `review` with 0 Critical issues                                             | "Design has no critical issues. Ready to approve?"                             | "Approve design" / "Review again" / "Not now"     |
+| After `review` with Critical issues found                                         | "Critical issues found that should be fixed before approval."                  | "Fix issues" / "Review again" / "Not now"         |
+| After `author` completes                                                          | "Design authored. Want to review it?"                                          | "Review design" / "Continue editing" / "Not now"  |
+| After `validate` passes (all checks ✓)                                            | "Validation passed. Want a quality review?"                                    | "Review design" / "Approve design" / "Not now"    |
+| After `validate` fails (structural issues)                                        | "Validation found structural issues. Fix them now?"                            | "Show issues" / "Not now"                         |
+| After `approve` completes successfully                                            | "Design approved. Task planning is now unlocked."                              | "Plan tasks" / "Not now"                          |
+| design.md is Draft + spec.md is Approved (detected during any action)             | "Design is ready for approval. Approving unlocks task planning."               | "Approve design" / "Review first" / "Not now"     |
+| spec.md is Approved + no design.md exists (detected during any action)            | "Approved spec found with no design yet. Ready to author?"                     | "Author design" / "Not now"                       |
+| design.md is Approved + has been modified (version bump triggered status → Draft) | "Approved design was modified. Status reverted to Draft — re-approval needed." | "Re-approve design" / "Review first" / "Not now"  |
+| spec.md `updated_at` > design.md `updated_at` (detected during any action)        | "Spec was updated after this design was written. Design may be stale."         | "Review design" / "Diff spec changes" / "Not now" |
+
+**Rules:**
+
+- Only trigger when the lifecycle gate is actually actionable (preconditions met)
+- Include "Not now" as the last option — never force the user
+- If user selects an action, execute it immediately (run the approval/review flow)
+- If user selects "Not now", continue normally — do not re-ask in the same conversation
+- Keep existing text-only "Next Command Suggestion" for non-lifecycle contexts
+- These buttons complement, not replace, the text suggestions
+
 ---
 
 ## Template Format Rules (CRITICAL)

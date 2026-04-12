@@ -233,6 +233,36 @@ Next (ranked):
 5. /afx-session note "<note>" # Capture findings
 ```
 
+### Interactive Lifecycle Actions (MANDATORY)
+
+When the agent detects a lifecycle gate is actionable after completing work, use `ask_followup_question` to present options as clickable buttons instead of text-only suggestions.
+
+**Trigger conditions:**
+
+| Condition                                                                         | Question                                                                     | Options                                           |
+| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------- |
+| After `create` completes                                                          | "Spec scaffolded. Discuss requirements to fill in gaps?"                     | "Discuss spec" / "Edit manually" / "Not now"      |
+| After `validate` passes (all checks ✓)                                            | "Validation passed. Want a quality review?"                                  | "Review spec" / "Approve spec" / "Not now"        |
+| After `validate` fails (structural issues)                                        | "Validation found structural issues. Fix them now?"                          | "Show issues" / "Not now"                         |
+| After `discuss` with all action items resolved                                    | "All discussion items addressed. Review the spec?"                           | "Review spec" / "Continue discussing" / "Not now" |
+| After `discuss` with new requirements identified                                  | "New requirements identified during discussion. Update the spec?"            | "Update spec" / "Review first" / "Not now"        |
+| After `review` with 0 Critical issues                                             | "Spec has no critical issues. Ready to approve?"                             | "Approve spec" / "Discuss issues" / "Not now"     |
+| After `review` with Critical issues found                                         | "Critical issues found that must be fixed before approval."                  | "Fix issues" / "Discuss spec" / "Not now"         |
+| After `approve` (spec approved)                                                   | "Spec approved. Author the technical design?"                                | "Author design" / "Not now"                       |
+| After `approve --reviewer` (human sign-off recorded)                              | "Human sign-off recorded. Ready to start implementation?"                    | "Author design" / "Plan tasks" / "Not now"        |
+| spec.md is Approved + has been modified (version bump triggered status → Draft)   | "Approved spec was modified. Status reverted to Draft — re-approval needed." | "Re-approve spec" / "Review first" / "Not now"    |
+| spec.md exists but is missing required sections (detected during any action)      | "Spec is incomplete — missing required sections."                            | "Validate spec" / "Discuss gaps" / "Not now"      |
+| design.md or tasks.md has `@see` links to non-existent FR/NFR IDs (during review) | "Downstream docs reference requirements that don't exist in this spec."      | "Review references" / "Validate spec" / "Not now" |
+
+**Rules:**
+
+- Only trigger when the lifecycle gate is actually actionable (preconditions met)
+- Include "Not now" as the last option — never force the user
+- If user selects an action, execute it immediately (run the approval/review/author flow)
+- If user selects "Not now", continue normally — do not re-ask in the same conversation
+- Keep existing text-only "Next Command Suggestion" for non-lifecycle contexts
+- These buttons complement, not replace, the text suggestions
+
 ---
 
 ## Template Format Rules (CRITICAL)
