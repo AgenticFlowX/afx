@@ -5,6 +5,19 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.4] - 2026-04-12
+
+### Fixed
+
+- **`afx-task` skill**: Adjusted `@see` annotation rules — full path required, Node IDs only (no subsection numbers), format: `@see docs/specs/{feature}/design.md [DES-UI]`
+- **Skills**: Added Template Format Rules section to prevent agent drift in generated docs (phase headers, checkbox indentation, section order, Work Sessions table)
+
+### Changed
+
+- **Repository references**: Updated to use `AgenticFlowX` org repo
+- **`afx-cli` example**: Updated to use RoomLedger sample
+- **Sample project**: Revised with improved RoomLedger example
+
 ## [2.5.3] - 2026-04-06
 
 ### Added
