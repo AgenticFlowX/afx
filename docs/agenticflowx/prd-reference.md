@@ -397,7 +397,7 @@ depends_on:
 | `spec.md`    | `/afx-spec`    | create, validate, review, approve        |
 | `design.md`  | `/afx-design`  | author, validate, review, approve        |
 | `tasks.md`   | `/afx-task`    | plan, pick, code, verify, complete, sync |
-| `journal.md` | `/afx-session` | note, log, active, recap, promote        |
+| `journal.md` | `/afx-session` | note, log, recap, promote, capture       |
 | Source Code  | `/afx-task`    | code (task-driven with traceability)     |
 | Source Code  | `/afx-dev`     | debug, refactor, review, test, optimize  |
 

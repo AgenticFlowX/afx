@@ -17,6 +17,37 @@ tags: [afx, reference, cheatsheet]
 
 ---
 
+## AFX Core — daily use
+
+These six commands cover 90% of the workflow:
+
+| Command         | Purpose                                               |
+| :-------------- | :---------------------------------------------------- |
+| `/afx-spec`     | Spec lifecycle (create, review, approve)              |
+| `/afx-design`   | Design authoring and approval                         |
+| `/afx-task`     | Implementation lifecycle (plan, pick, code, complete) |
+| `/afx-research` | Research workflow (explore, compare, finalize)        |
+| `/afx-session`  | Session capture (note, log, recap, capture)           |
+| `/afx-context`  | Agent handoff (save, load)                            |
+
+## AFX Support — situational
+
+| Command         | Purpose                            |
+| :-------------- | :--------------------------------- |
+| `/afx-next`     | Context-aware next action          |
+| `/afx-sprint`   | Single-doc SDD (fast prototyping)  |
+| `/afx-scaffold` | Scaffold spec folders and ADRs     |
+| `/afx-adr`      | ADR management                     |
+| `/afx-check`    | Quality gates (path, trace, links) |
+| `/afx-report`   | Traceability metrics               |
+| `/afx-discover` | Project intelligence               |
+| `/afx-dev`      | Debug, refactor, review, test      |
+| `/afx-release`  | Release management                 |
+| `/afx-hello`    | Installation verification          |
+| `/afx-help`     | Command reference                  |
+
+---
+
 ## Phase 1: Plan & Init
 
 | Goal                    | Command                           | Notes                                 |

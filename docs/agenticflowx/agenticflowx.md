@@ -11,6 +11,8 @@ tags: [framework, specification, afx]
   <img src="https://raw.githubusercontent.com/AgenticFlowX/afx/main/assets/agenticflow_logo_light.svg" alt="AgenticFlowX Logo" width="600"/>
 </p>
 
+> **New to AFX?** Start with [quickstart.md](quickstart.md) — scaffold your first spec and pick your first task in under 5 minutes. This document is the full reference manual.
+
 # AgenticFlowX (AFX)
 
 > **Pause. Think. Plan. Ship.**
