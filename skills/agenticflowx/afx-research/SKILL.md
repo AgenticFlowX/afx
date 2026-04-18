@@ -73,6 +73,8 @@ When this skill detects a high-impact context change, auto-capture to `journal.m
 
 **Triggers for `/afx-research`**: Research finding that invalidates assumption, technology limitation discovered.
 
+**Prompt-capture triggers** (propose + confirm via `/afx-session capture`): a finding that invalidates a spec assumption or changes a design direction. After updating the research doc, run the [Significance Check](../afx-session/SKILL.md#significance-check-context-aware-gate) first — skip silently for cosmetic edits. Only call `/afx-session capture --trigger design-pivot|missed-req --links <research-slug>` when the finding genuinely shifts direction. See [Prompt Capture Triggers](../afx-session/SKILL.md#prompt-capture-triggers-propose--confirm).
+
 ## Post-Action Checklist (MANDATORY)
 
 After creating or modifying any research or ADR file, you MUST:

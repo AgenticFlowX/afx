@@ -72,10 +72,11 @@ When this skill detects a high-impact context switch or critical gap, auto-captu
 
 1. **Environment detection:** Check if IDE context is available (`ide_opened_file` or `ide_selection` tags in conversation).
 2. **Feature inference:**
-   - **IDE:** Infer feature from the active file path (e.g., `docs/specs/user-auth/tasks.md` → `user-auth`). If code is selected, use it as additional input context for the analysis.
+   - **IDE:** Infer feature from the active file path (e.g., `docs/specs/user-auth/tasks.md` → `user-auth`, or `docs/specs/user-auth/user-auth.md` → `user-auth` for sprint-format). If code is selected, use it as additional input context for the analysis.
    - **CLI:** Infer from explicit arguments first, then cwd or branch name (`feat/user-auth` → `user-auth`), then conversation history.
    - **Fallback:** Analyse all features if no context can be inferred — `/afx-next` is valid without a feature scope.
-3. **Trailing parameters (`[...context]`):** Treat extra words as focus constraints (e.g., `/afx-next user-auth` scopes the analysis to that feature only).
+3. **Format detection**: check whether the feature uses **sprint format** (`<feature>.md` present with `type: SPRINT`) or **standard 4-file format** (`spec.md`, `design.md`, `tasks.md`). Sprint-format features route suggestions through `/afx-sprint` subcommands; 4-file features use `/afx-spec`, `/afx-design`, `/afx-task`. A feature with neither is untouched — suggest `/afx-scaffold spec` or `/afx-sprint new`.
+4. **Trailing parameters (`[...context]`):** Treat extra words as focus constraints (e.g., `/afx-next user-auth` scopes the analysis to that feature only).
 
 ### Analysis Logic
 

@@ -98,6 +98,8 @@ When this skill detects a high-impact context change, auto-capture to `journal.m
 
 **Triggers for `/afx-design`**: Design decision with significant trade-offs, architecture change from original spec intent, approval with conditions.
 
+**Prompt-capture triggers** (propose + confirm via `/afx-session capture`): new `[DES-X]` section added, Key Decisions table entry changed, architecture pivot. After applying the edit, run the [Significance Check](../afx-session/SKILL.md#significance-check-context-aware-gate) first — skip silently for cosmetic edits. Only call `/afx-session capture --trigger design-pivot --links <DES-anchor>` when the change encodes a real decision or reversal. See [Prompt Capture Triggers](../afx-session/SKILL.md#prompt-capture-triggers-propose--confirm).
+
 ---
 
 ## Lifecycle Precondition (BLOCKING)

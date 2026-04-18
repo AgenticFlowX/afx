@@ -110,6 +110,18 @@ When trailing arguments are passed (e.g., `/afx-help task`, `/afx-help guides se
 /afx-design approve <name>                 # Approve design (unlocks task planning)
 ```
 
+### Sprint (Single-Document SDD)
+
+```bash
+/afx-sprint new <feature>                  # Scaffold <feature>.md + journal.md (single-doc)
+/afx-sprint spec <feature> [--approve]     # Refine or approve the Spec section
+/afx-sprint design <feature> [--approve]   # Refine or approve the Plan section (gated)
+/afx-sprint task <feature> [--approve]     # Refine or approve the Tasks section (gated)
+/afx-sprint verify <feature>               # Sanity-check before coding
+/afx-sprint code <feature> [task-id]       # Implement (delegates to /afx-task code)
+/afx-sprint graduate <feature>             # Split to spec.md/design.md/tasks.md when scope grows
+```
+
 ### Task Verification
 
 ```bash
@@ -142,10 +154,11 @@ When trailing arguments are passed (e.g., `/afx-help task`, `/afx-help guides se
 ### Session Notes
 
 ```bash
-/afx-session note "content" [tags]  # Smart Note (capture/append logic)
-/afx-session log [feature]         # Save session to log
-/afx-session recap [feature|all]    # AI synthesis for session resumption
-/afx-session promote <id>           # Promote to ADR
+/afx-session note "content" [tags]                                                # Smart Note (capture/append logic)
+/afx-session log [feature]                                                        # Save session to log
+/afx-session recap [feature|all]                                                  # AI synthesis for session resumption
+/afx-session promote <id>                                                         # Promote to ADR
+/afx-session capture [feature] [--trigger <kind>] [--links <anchors>] [--agent <name>] [--model <id>] [...context] # Verbatim prompt + agent-reply excerpt at a pivotal moment
 ```
 
 ### Reporting

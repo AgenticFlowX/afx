@@ -115,6 +115,8 @@ When this skill detects a high-impact context change, auto-capture to `journal.m
 
 **Triggers for `/afx-spec`**: Requirement deferred during review, spec gap identified, approval with conditions.
 
+**Prompt-capture triggers** (propose + confirm via `/afx-session capture`): new FR/NFR added, FR/NFR moved to Non-Goals, Open Question resolved, missed requirement surfaced. After applying the edit, run the [Significance Check](../afx-session/SKILL.md#significance-check-context-aware-gate) first — if the edit is cosmetic (typo, rewording, formatting) **skip silently**. Only call `/afx-session capture --trigger <new-fr|new-nfr|scope-cut|question-resolved|missed-req> --links <anchors>` when the change encodes a new decision, preserves institutional knowledge, or emerged from discussion. See [Prompt Capture Triggers](../afx-session/SKILL.md#prompt-capture-triggers-propose--confirm).
+
 ## Post-Action Checklist (MANDATORY)
 
 After completing any action that modifies `spec.md`, you MUST:

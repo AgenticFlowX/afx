@@ -151,6 +151,8 @@ When this skill detects a high-impact context change, auto-capture to `journal.m
 - Discussion about task sequencing, implementation approach, or design direction
 - Verify/review request without explicit coding (discussion context)
 
+**Prompt-capture triggers** (propose + confirm via `/afx-session capture`): task scope cut, re-plan of `tasks.md` phases, missed task discovered mid-implementation. After applying the change, run the [Significance Check](../afx-session/SKILL.md#significance-check-context-aware-gate) first — skip silently for cosmetic edits (reordering, rewording, typo fixes). Only call `/afx-session capture --trigger scope-cut|missed-req --links <task-id>` when the change encodes a real scope shift or discovery. See [Prompt Capture Triggers](../afx-session/SKILL.md#prompt-capture-triggers-propose--confirm).
+
 **Discussion Context Triggers (automated journal capture):**
 
 ```
