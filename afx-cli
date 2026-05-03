@@ -12,7 +12,7 @@
 #   --no-claude-md    Skip CLAUDE.md snippet integration
 #   --no-agents-md    Skip AGENTS.md snippet integration
 #   --with-gemini-md  Include GEMINI.md snippet integration (opt-in)
-#   --no-docs         Skip copying AFX documentation to docs/agenticflowx/
+#   --with-docs       Install AFX framework docs to docs/agenticflowx/ (default: skip — skill links point to GitHub)
 #   --force           Overwrite all existing files (fresh install)
 #   --dry-run         Show what would be changed without making changes
 #   --yes             Skip all confirmation prompts (non-interactive mode)
@@ -54,10 +54,15 @@ NO_CLAUDE_MD=""
 NO_AGENTS_MD=""
 NO_GEMINI_MD=""
 NO_DOCS=false
+WITH_DOCS=false
 FORCE=false
 DRY_RUN=false
 YES=false
 RESET=false
+case "${AFX_NO_VSCODE_TIP:-}" in
+    1|true|TRUE|True|yes|YES|Yes|on|ON|On) NO_VSCODE_TIP=true ;;
+    *) NO_VSCODE_TIP=false ;;
+esac
 TARGET_DIR=""
 
 # Pack management options
@@ -91,11 +96,13 @@ while [[ $# -gt 0 ]]; do
         --no-claude-md)   NO_CLAUDE_MD=true; NO_CLAUDE_MD_FLAG=true; shift ;;
         --no-agents-md)   NO_AGENTS_MD=true; NO_AGENTS_MD_FLAG=true; shift ;;
         --with-gemini-md)  NO_GEMINI_MD=false; NO_GEMINI_MD_FLAG=true; shift ;;
-        --no-docs)        NO_DOCS=true; shift ;;
+        --no-docs)        NO_DOCS=true; shift ;;  # backward-compat no-op; docs are off by default
+        --with-docs)      WITH_DOCS=true; shift ;;
         --force)          FORCE=true; shift ;;
         --dry-run)        DRY_RUN=true; shift ;;
         --yes|-y)         YES=true; shift ;;
         --reset)          RESET=true; shift ;;
+        --no-vscode-tip)  NO_VSCODE_TIP=true; shift ;;
         --pack)           PACK_NAMES+=("$2"); shift 2 ;;
         --pack-remove)    PACK_REMOVE="$2"; shift 2 ;;
         --pack-list)      PACK_LIST=true; shift ;;
@@ -110,98 +117,51 @@ while [[ $# -gt 0 ]]; do
         --verbose)        VERBOSE=true; shift ;;
         -h|--help)
             cat <<'HELPEOF'
-AFX Installer
+AFX Installer — install or update AFX in a project
 
 Usage: ./afx-cli [OPTIONS] [target-project-path]
        ./afx-cli example <name> [target-dir]
 
 Options:
   --update          Update existing AFX installation
-  --skills-only     Only sync skills to .agents/skills/ (skip templates, docs, MD)
-  --commands-only   Alias for --skills-only (backward compat)
-  --no-claude-md    Skip CLAUDE.md snippet integration
-  --no-agents-md    Skip AGENTS.md snippet integration
-  --with-gemini-md  Include GEMINI.md snippet integration (opt-in)
-  --no-docs         Skip copying AFX documentation to docs/agenticflowx/
+  --skills-only     Only sync skills (skip templates, docs, MD)
+  --no-claude-md    Skip CLAUDE.md integration
+  --no-agents-md    Skip AGENTS.md integration
+  --with-gemini-md  Include GEMINI.md (opt-in)
+  --with-docs       Install AFX framework docs to docs/agenticflowx/
+                    (off by default — skill links point to GitHub)
+  --no-vscode-tip   Suppress the VS Code extension tip in summary output
+                    (also via AFX_NO_VSCODE_TIP=1)
   --force           Overwrite all files (fresh install)
   --dry-run         Preview changes without applying
   --yes, -y         Skip all confirmation prompts
-  --reset           Reset AFX: recreate .afx/ folder and config files
+  --reset           Recreate .afx/ folder and config files
   --branch NAME     Use a specific branch (default: main)
-  --version TAG     Use a specific version tag (e.g., 1.5.3 or v1.5.3)
-  --source PATH     Use local AFX checkout instead of downloading from GitHub.
-                    Useful for development, testing, or offline installs.
-  --target PATH     Target project directory (alternative to positional argument)
-  --verbose         Show detailed logging (curl, tar, file copies, git operations)
-  -h, --help        Show this help message
+  --version TAG     Use a specific version tag (e.g. v1.5.3)
+  --source PATH     Use a local AFX checkout instead of GitHub
+  --target PATH     Target directory (alternative to positional arg)
+  --verbose         Show detailed logging
+  -h, --help        Show this help
 
-Pack Management:
+Pack management:
   --pack NAME                     Install a pack
-  --pack-remove NAME              Remove a pack entirely
+  --pack-remove NAME              Remove a pack
   --pack-list                     List installed packs and skills
-  --skill-disable NAME            Disable a skill (remove from .agents/skills/)
-  --skill-enable NAME             Re-enable a skill (sync to .agents/skills/)
+  --skill-disable NAME            Disable a skill
+  --skill-enable NAME             Re-enable a skill
   --update --packs                Update all installed packs
   --add-skill REPO:PATH/SKILL     Install a single skill (no pack)
 
 Examples:
-  # Fresh install
-  ./afx-cli .
-
-  # Non-interactive install
-  ./afx-cli --yes .
-
-  # Update existing installation
-  ./afx-cli --update .
-
-  # Remote install
+  ./afx-cli .                                # fresh install
+  ./afx-cli --yes .                          # non-interactive
+  ./afx-cli --update .                       # update in place
+  ./afx-cli --pack qa --pack security .      # install role packs
+  ./afx-cli --source ../afx-workflow .       # install from local checkout
+  ./afx-cli example basic .                  # copy an example project
   curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .
 
-  # Install QA pack (short or full name)
-  ./afx-cli --pack qa .
-  ./afx-cli --pack afx-pack-qa .
-
-  # Install from version
-  ./afx-cli --version 1.5.3 --pack qa .
-
-  # Multiple packs
-  ./afx-cli --pack qa --pack security .
-
-  # Manage packs (short or full name)
-  ./afx-cli --pack-disable afx-pack-qa .
-  ./afx-cli --pack-enable qa .
-  ./afx-cli --pack-list .
-
-  # Update all packs
-  ./afx-cli --update --packs .
-
-  # Install from local AFX checkout (dev/testing/offline)
-  ./afx-cli --source ../afx .
-  ./afx-cli --source ../afx --target /path/to/project
-  ./afx-cli --update --source ../afx .
-  ./afx-cli --pack qa --source ../afx .
-
-  # Debug install issues
-  ./afx-cli --verbose .
-
-  # Reset AFX (recreate .afx/ folder and config)
-  ./afx-cli --reset .
-
-  # Copy an example project (local)
-  ./afx-cli example list
-  ./afx-cli example basic .
-  ./afx-cli example full ./demo
-
-  # Copy an example project (remote — downloads from GitHub automatically)
-  curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- example basic .
-  curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- example full ./demo
-
-  # Example from a specific branch or version
-  ./afx-cli --branch develop example full .
-  curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- --branch develop example full .
-
-  # Overwrite existing example files
-  ./afx-cli --force example basic .
+Full docs and the VS Code extension: https://agenticflowx.github.io
 HELPEOF
             exit 0
             ;;
@@ -620,7 +580,7 @@ write_minimal_user_config() {
 # │  Defaults are in .afx/.afx.yaml (managed by AFX — do not edit).         │
 # │  Add overrides below — they take precedence over defaults.              │
 # │                                                                         │
-# │  Docs: docs/agenticflowx/agenticflowx.md                                │
+# │  Docs: https://github.com/AgenticFlowX/afx/blob/main/docs/agenticflowx/ │
 # │  Help: /afx-help (Claude) or afx-help (Codex)                           │
 # └─────────────────────────────────────────────────────────────────────────┘
 
@@ -2218,7 +2178,7 @@ total_steps() {
     [[ "$NO_CLAUDE_MD" != "true" ]] && ((++count))
     [[ "$NO_AGENTS_MD" != "true" ]] && ((++count))
     [[ "$NO_GEMINI_MD" != "true" ]] && ((++count))
-    [[ "$NO_DOCS" != "true" ]] && ((++count))
+    [[ "$WITH_DOCS" == "true" ]] && ((++count))
     ((++count))  # directory structure
     echo "$count"
 }
@@ -2267,7 +2227,7 @@ if [[ "$NO_GEMINI_MD" != "true" ]]; then
     run_step "GEMINI.md integration" step_gemini_md
 fi
 
-if [[ "$NO_DOCS" != "true" ]]; then
+if [[ "$WITH_DOCS" == "true" ]]; then
     run_step "AFX documentation" step_docs
 fi
 
@@ -2325,7 +2285,11 @@ else
     echo -e "${BLUE}Next steps:${NC}"
     echo "  1. Edit .afx.yaml to configure your project"
     echo "  2. Run /afx-scaffold spec <name> (Claude) or ask Codex to run afx-scaffold"
-    echo "  3. See docs/agenticflowx/ for AFX reference documentation"
+    if [[ "$WITH_DOCS" == "true" ]]; then
+        echo "  3. See docs/agenticflowx/ for AFX reference documentation"
+    else
+        echo "  3. AFX docs: https://github.com/AgenticFlowX/afx/blob/main/docs/agenticflowx/"
+    fi
     echo "  4. Run /afx-help (Claude) or afx-help (Codex) for command reference"
     echo ""
     echo -e "${GREEN}Get started with an example:${NC}"
@@ -2334,6 +2298,11 @@ else
     echo -e "See all examples: ${CYAN}afx-cli example list${NC}"
 fi
 echo ""
+if [ "$NO_VSCODE_TIP" != "true" ]; then
+    echo -e "${DIM}Tip: Prefer a GUI? The AgenticFlowX VS Code extension runs the same workflow."
+    echo -e "     https://agenticflowx.github.io${NC}"
+    echo ""
+fi
 update_ref=$(resolve_ref)
 echo -e "${CYAN}To update AFX later:${NC}"
 echo "  ./afx-cli --update ."

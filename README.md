@@ -1,11 +1,11 @@
 <p align="center">
   <img src="assets/agenticflow_logo_light.svg" alt="AgenticFlowX Logo" width="600"/>
   <br/><br/>
-  <a href="https://marketplace.visualstudio.com/items?itemName=AgenticFlowX.agenticflowx"><img src="https://img.shields.io/badge/NEW-AgenticFlowX_VS_Code_Extension-ea9d34?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="AgenticFlowX VS Code Extension"/></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=AgenticFlowX.agenticflowx"><img src="https://img.shields.io/badge/Get_the-AgenticFlowX_VS_Code_Extension-ea9d34?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="AgenticFlowX VS Code Extension"/></a>
   <br/>
-  <sub>The spec-driven AI coding environment — now on the <a href="https://marketplace.visualstudio.com/items?itemName=AgenticFlowX.agenticflowx">Marketplace</a> · <a href="https://agenticflowx.github.io/">Website</a> · <a href="https://github.com/AgenticFlowX/agenticflowx">GitHub</a></sub>
+  <sub><a href="https://agenticflowx.github.io/">Website</a> · <a href="https://marketplace.visualstudio.com/items?itemName=AgenticFlowX.agenticflowx">Marketplace</a> · <a href="https://github.com/AgenticFlowX/agenticflowx">GitHub</a></sub>
   <br/><br/>
-  <strong>Works with</strong>
+  <strong>Headless mode works with</strong>
   <br/><br/>
   <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude_Code-D97757?style=flat&logo=anthropic&logoColor=white" alt="Claude Code"/></a>
   <a href="https://platform.openai.com/docs/guides/codex"><img src="https://img.shields.io/badge/Codex-412991?style=flat&logo=openai&logoColor=white" alt="Codex"/></a>
@@ -15,13 +15,13 @@
 
 ---
 
-# AFX (AgenticFlowX)
+# AFX (AgenticFlowX) — CLI + Skills
 
 > **Pause. Think. Plan. Ship.**
 
-AFX is a **spec-driven development framework** for AI coding assistants — Claude Code, Codex, Gemini CLI, and GitHub Copilot. It keeps AI agents aligned with what you actually want to build, across sessions, across agents, across time.
+AFX is the spec-driven workflow that runs inside the **[AgenticFlowX VS Code extension](https://agenticflowx.github.io)**. This repo is the CLI and skill packs that power it — and lets you run the same workflow **headless** in Claude Code, Codex, Gemini CLI, or GitHub Copilot.
 
-**[Quick Start](docs/agenticflowx/quickstart.md) · [Why AFX](docs/agenticflowx/why-afx.md) · [Is AFX for me?](docs/agenticflowx/is-afx-for-me.md) · [Full Docs](docs/agenticflowx/agenticflowx.md)**
+For the long-form treatment — what AFX is, why it exists, and the problems it solves — read the in-repo manual at **[docs/agenticflowx/agenticflowx.md](docs/agenticflowx/agenticflowx.md)**. For the short pitch and product surfaces, see **[agenticflowx.github.io](https://agenticflowx.github.io)**. The rest of this README is the developer reference: install path, document templates, traceability rules, and command surface.
 
 ```mermaid
 flowchart LR
@@ -83,7 +83,15 @@ Or if you have AFX cloned locally:
 ./path/to/afx/afx-cli /path/to/your/project
 ```
 
-The installer prompts for your AI agents, then sets up skills, config, docs, and directory structure. **New to AFX?** Follow [quickstart.md](docs/agenticflowx/quickstart.md) to scaffold your first spec and pick your first task in under 5 minutes.
+The installer prompts for your AI agents, then sets up:
+
+- AFX skills (`.claude/skills/` and/or `.agents/skills/`), with templates bundled in each skill's `assets/`
+- Configuration: `.afx.yaml`
+- Docs: `docs/agenticflowx/`
+- Agent context files: `CLAUDE.md`, `AGENTS.md`, optionally `GEMINI.md`
+- Directories: `docs/specs/` and `docs/adr/`
+
+**New to AFX?** Follow [quickstart.md](docs/agenticflowx/quickstart.md) to scaffold your first spec and pick your first task in under 5 minutes.
 
 ## What's actually in the box?
 
@@ -428,35 +436,6 @@ afx-spec create → afx-spec approve → afx-design author → afx-design approv
 ```
 
 > **Faster start?** `/afx-sprint new <feature>` collapses the entire flow into a single document with per-section approval gates. Same discipline — graduate to four files when scope demands it.
-
-## Quick Start
-
-### One-Line Install
-
-> **Note on OS Support**: The AFX CLI and commands are heavily tested on macOS and Unix-like systems (Linux/WSL). They have not been formally tested on native Windows.
-
-```bash
-# From your project directory
-curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .
-```
-
-Or if you have AFX cloned locally:
-
-```bash
-./path/to/afx/afx-cli /path/to/your/project
-```
-
-The installer prompts you to select which AI agents you use, then installs:
-
-- AFX skills to selected skill targets (`.claude/skills/` and/or `.agents/skills/`), including templates bundled in skill `assets/` directories
-- Configuration file `.afx.yaml`
-- AFX documentation to `docs/agenticflowx/`
-- Context files for selected agents (`CLAUDE.md`, `AGENTS.md`, and optionally `GEMINI.md`)
-- Directory structure: `docs/specs/` and `docs/adr/`
-
-## First time?
-
-See **[quickstart.md](docs/agenticflowx/quickstart.md)** — install, scaffold your first spec with `/afx-spec create`, and pick your first task in under 5 minutes.
 
 ## Reality Check: Working with LLMs
 
