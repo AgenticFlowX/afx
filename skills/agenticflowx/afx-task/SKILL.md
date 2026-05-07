@@ -6,7 +6,7 @@ metadata:
   afx-owner: "@rix"
   afx-status: Living
   afx-tags: "workflow,task,implementation,coding,verification,lifecycle"
-  afx-argument-hint: "plan | pick | code | verify | complete | sync | brief | review | validate | status"
+  afx-argument-hint: "plan | refine | pick | code | verify | complete | sync | brief | review | validate | status"
   modeSlugs:
     - focus-review-tasks
     - focus-code
@@ -30,6 +30,7 @@ If neither file exists, use defaults.
 ```bash
 # Task Planning (lifecycle-gated)
 /afx-task plan <name>                      # Generate tasks.md from approved design
+/afx-task refine <name>                    # Alias: refine or draft tasks.md from approved design
 
 # Work Management
 /afx-task pick <id>                        # Check out a task as active
@@ -57,6 +58,24 @@ If neither file exists, use defaults.
 ## Purpose
 
 Owns the `tasks.md` artifact AND the implementation engine. Owns coding with traceability, task state management, and GitHub sync. All spec-driven coding is tied to a task ID.
+
+## SDD Vocabulary (CANONICAL)
+
+Use these terms consistently across AFX skills, docs, chat actions, and UI surfaces:
+
+- **Refine**: improve living artifact content. In `/afx-task`, this maps to `refine` (preferred alias), `plan` (legacy-compatible initial draft), and targeted updates to `tasks.md`.
+- **Validate**: check structural, parser, template, frontmatter, and coverage correctness for `tasks.md`.
+- **Review**: apply LLM judgment for task planning gaps, sequencing risk, ambiguity, and missing coverage.
+- **Verify**: check implementation evidence against the approved spec, design, and task intent.
+- **Approve**: advance a lifecycle gate. Task approval is represented by completing planning readiness; task completion is separate.
+- **Evolve**: handle post-ship feature, bug, or change work by refining living docs and capturing history in `journal.md` / `tasks.md`.
+
+## Documentation Principles
+
+- `spec.md` and `design.md` are living documents: they represent current product and technical truth.
+- `journal.md` captures decisions, amendments, production notes, and change rationale.
+- `tasks.md` captures execution plan, active work, verification history, and work sessions.
+- Do not introduce amendment directories or new artifact types for ordinary feature evolution; update the living docs and preserve history in the log artifacts.
 
 ## Context Resolution
 
@@ -283,6 +302,7 @@ After EVERY `/afx-task` action, suggest the next command:
 | Context                     | Suggested Next Command                          |
 | --------------------------- | ----------------------------------------------- |
 | After `plan`                | `/afx-task pick <first-task-id>` to start work  |
+| After `refine`              | `/afx-task review <name>` to validate task plan |
 | After `pick {id}`           | `/afx-task code {id}` to implement              |
 | After `code {id}`           | `/afx-task verify {id}` to check implementation |
 | After `verify` ([OK])       | `/afx-task complete {id}` to mark done          |
@@ -291,7 +311,7 @@ After EVERY `/afx-task` action, suggest the next command:
 | After `complete {id}`       | `/afx-task pick <next-id>` for next task        |
 | After `brief`               | `/afx-task code {id}` or `/afx-task pick`       |
 | After `review` (gaps found) | Address gaps in tasks.md                        |
-| After `validate` (passed)   | Proceed with implementation or `/afx-task plan` |
+| After `validate` (passed)   | Proceed with implementation or `/afx-task refine` |
 | After `validate` (failed)   | Fix format issues in tasks.md                   |
 | After `status`              | `/afx-task pick <next-id>` based on overview    |
 | After `sync`                | `/afx-task pick` to resume work                 |
@@ -382,6 +402,14 @@ After frontmatter, the parser expects this order:
 ---
 
 ## Subcommands
+
+### refine <name>
+
+**Purpose:** Preferred alias for `plan`; refine or draft `tasks.md` from an approved design.
+
+**Behavior:** Execute the same core flow as `plan <name>`. If `tasks.md` is empty or scaffold-only, generate the implementation plan from the approved design. If `tasks.md` already has content, perform targeted refinement that preserves task IDs, Work Sessions, and human-authored task notes. Do not modify source code during `refine`.
+
+Keep `plan` supported indefinitely for compatibility, but prefer `refine` in new UI labels, help text, and examples.
 
 ### plan <name>
 
@@ -678,7 +706,7 @@ Recommendations:
    - No duplicate task IDs
 4. **Spec Compliance**:
    - Read `spec.md` from same directory
-   - Extract all FR-_ and NFR-_ requirements
+   - Extract all `FR-*` and `NFR-*` requirements
    - For each FR/NFR, verify at least one task has a `@see` reference to it
    - Report any FR/NFR without task coverage
 
@@ -832,13 +860,13 @@ Recommendation: /afx-task code <id> for PARTIAL/MISSING tasks
 
 ### From Other Commands → `/afx-task`
 
-- `/afx-design approve` → Suggest `/afx-task plan <name>`
+- `/afx-design approve` → Suggest `/afx-task refine <name>`
 - `/afx-check trace` → Suggest `/afx-task verify` if broken `@see` links found
 - `/afx-next` → Suggest `/afx-task pick` if tasks are pending
 
 ### From `/afx-task` → Other Commands
 
-- `/afx-task plan` → Suggest `/afx-task pick <first-id>`
+- `/afx-task refine` / `/afx-task plan` → Suggest `/afx-task pick <first-id>`
 - `/afx-task complete` → Suggest `/afx-task pick <next-id>` or `/afx-check path` for gate verification
 - `/afx-task verify` ([OK]) → Suggest `/afx-task complete <id>`
 - `/afx-task review` (gaps) → Suggest editing `tasks.md` to add missing tasks
