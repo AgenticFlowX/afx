@@ -38,10 +38,12 @@ If neither file exists, use defaults.
 
 # Implementation (from afx-dev code)
 /afx-task code <id>                        # Implement task with @see traceability
+/afx-task code all <name>                  # Implement all open tasks in the feature, in tasks.md order
 
 # Verification
 /afx-task verify <task-id>                 # Verify task implementation vs spec
 /afx-task verify <spec>#<task-id>          # Explicit spec (e.g., user-auth#7.1)
+/afx-task verify all <name>                # Verify all tasks in a feature
 /afx-task brief <task-id>                  # Get implementation summary
 
 # Quality
@@ -509,6 +511,8 @@ Keep `plan` supported indefinitely for compatibility, but prefer `refine` in new
    - Follow existing code patterns and architecture in the project
    - Run build/test/lint as needed
 
+**`code all <name>` variant:** Resolve the feature's `tasks.md`, collect all unchecked task IDs in document order, and run the same `code {id}` implementation flow for each task one at a time. Stop after the first failed build/test/verification gate and report the next remaining task instead of continuing blindly.
+
 ### Code Drift Guardrail (MANDATORY)
 
 During implementation, if you discover that the requested logic fundamentally conflicts with the codebase, introduces severe edge cases unaccounted for in `design.md`, or requires >5 lines of unmapped complex logic:
@@ -622,6 +626,42 @@ Unlike `/afx-check path` which verifies runtime execution paths, this verifies i
 
 5. Update `updated_at` in `tasks.md` frontmatter
 6. Output confirmation and suggest next task
+
+---
+
+### Sign Off (extension-side action)
+
+**Purpose:** Atomic human-verification step that closes the Work Sessions loop on a `tasks.md`. Surfaced by AFX UI hosts (e.g. the AgenticFlowX VS Code extension) as a brass-accented `[Sign Off ▾]` button, not an LLM round-trip.
+
+**Visibility conditions** (all four MUST hold):
+
+1. Every body checkbox in `tasks.md` is `[x]` — the implementation work is finished.
+2. Every Work Sessions row has `Agent: [x]` — the agent has verified each completed task.
+3. At least one Work Sessions row still has `Human: [ ]` — there is something to sign off.
+4. `tasks.md` is the active editor (UI hosts only; CLI surfaces resolve the file from arguments).
+
+When any condition fails, the Sign Off affordance MUST NOT render — no greyed-out / disabled state.
+
+**Atomic mutation** (single transaction; one undo entry):
+
+1. Tick every Work Sessions row where `Agent: [x]` and `Human: [ ]` so its `Human` cell becomes `[x]`.
+2. Promote frontmatter `status` to `Living` (skip if already `Living`).
+3. Bump frontmatter `updated_at` to the current ISO 8601 timestamp with millisecond precision.
+
+The `tasks.md` lifecycle is `Draft → Living` — there is no `Approved` intermediate state for tasks, so Sign Off promotes the file straight to `Living` regardless of the prior value. UI copy SHOULD say "Promote status to Living" rather than naming a source state.
+
+**Why extension-side, not a slash command:**
+
+- **Deterministic** — the mutation is parsing + rewriting markdown, not a probabilistic LLM operation.
+- **Cheap** — no model token cost, no latency.
+- **Auditable** — the diff is computed before sending; the host SHOULD show a confirm popover that previews exactly what will change (rows ticked, status promotion, `updated_at` bump).
+- **Single undo** — UI hosts SHOULD apply the three changes as one transactional edit so `Cmd/Ctrl+Z` reverts everything in one step.
+
+**Cross-harness contract:**
+
+Any AFX UI host (VS Code extension, web UI, CLI prompt) MAY implement this action so users can finalize a `tasks.md` without leaving the workflow. The conditions and atomic mutations above are the canonical contract — implementations MUST NOT auto-tick a `Human` cell whose corresponding `Agent` cell is still `[ ]`.
+
+**Reference implementation:** afx-vscode `apps/vscode/src/services/tasks-signoff.ts` (`buildTasksSignOffEdit` + `applyTasksSignOff`).
 
 ---
 
