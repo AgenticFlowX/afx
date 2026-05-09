@@ -633,22 +633,24 @@ Unlike `/afx-check path` which verifies runtime execution paths, this verifies i
 
 **Purpose:** Atomic human-verification step that closes the Work Sessions loop on a `tasks.md`. Surfaced by AFX UI hosts (e.g. the AgenticFlowX VS Code extension) as a brass-accented `[Sign Off ▾]` button, not an LLM round-trip.
 
-**Visibility conditions** (all four MUST hold):
+**Two visibility gates** — strict and relaxed:
+
+The strict gate (`ready`) holds when **all four** conditions are true:
 
 1. Every body checkbox in `tasks.md` is `[x]` — the implementation work is finished.
 2. Every Work Sessions row has `Agent: [x]` — the agent has verified each completed task.
 3. At least one Work Sessions row still has `Human: [ ]` — there is something to sign off.
 4. `tasks.md` is the active editor (UI hosts only; CLI surfaces resolve the file from arguments).
 
-When any condition fails, the Sign Off affordance MUST NOT render — no greyed-out / disabled state.
+The loose gate (`signable`) holds whenever **condition 3** alone is true. Hosts SHOULD use the loose gate for button visibility so users can tick Human cells mid-flight; the popover MUST surface unmet strict conditions as warnings (e.g. "2 tasks still unchecked", "1 Agent row not yet `[x]`"). When neither gate holds (no pending Human cells), the affordance MUST NOT render — no greyed-out / disabled state.
 
 **Atomic mutation** (single transaction; one undo entry):
 
-1. Tick every Work Sessions row where `Agent: [x]` and `Human: [ ]` so its `Human` cell becomes `[x]`.
-2. Promote frontmatter `status` to `Living` (skip if already `Living`).
-3. Bump frontmatter `updated_at` to the current ISO 8601 timestamp with millisecond precision.
+1. Tick every Work Sessions row where `Agent: [x]` and `Human: [ ]` so its `Human` cell becomes `[x]`. **Always runs** when at least one such row exists, regardless of whether the strict gate held.
+2. Promote frontmatter `status` to `Living` — **only when the strict gate (`ready`) held** AND the file isn't already `Living`. Under the relaxed gate the file stays at its current status until body tasks + Agent rows are also clean; users re-run Sign Off later to promote.
+3. Bump frontmatter `updated_at` to the current ISO 8601 timestamp with millisecond precision. Always runs when step 1 ticked at least one row.
 
-The `tasks.md` lifecycle is `Draft → Living` — there is no `Approved` intermediate state for tasks, so Sign Off promotes the file straight to `Living` regardless of the prior value. UI copy SHOULD say "Promote status to Living" rather than naming a source state.
+The `tasks.md` lifecycle is `Draft → Living` — there is no `Approved` intermediate state for tasks, so when Sign Off DOES promote, the file moves straight to `Living` regardless of the prior value. UI copy SHOULD say "Promote status to Living" rather than naming a source state.
 
 **Why extension-side, not a slash command:**
 
