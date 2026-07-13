@@ -8,8 +8,9 @@ description: Starter pack — verify AFX installation and multi-provider routing
 category: utility
 
 includes:
-  # AFX-built skills (all-provider test skill)
+  # Reuse the canonical workflow copy so Starter remains optional without
+  # maintaining a second afx-hello implementation.
   - repo: AgenticFlowX/afx
-    path: skills/starter/
+    path: skills/agenticflowx/
     items:
       - afx-hello # Multi-provider vibe check

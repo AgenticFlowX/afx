@@ -1183,30 +1183,46 @@ pack_install() {
 
     # ── Local source path (--source) ──────────────────────────────────────
     if [[ -n "$SOURCE_DIR" ]]; then
-        local local_skills_dir="$SOURCE_DIR/skills/$category"
-        if [[ ! -d "$local_skills_dir" ]]; then
-            echo -e "${RED}Error: Category '$category' not found in source: $local_skills_dir${NC}"
+        local local_manifest="$SOURCE_DIR/packs/$pack_name.yaml"
+        if [[ ! -f "$local_manifest" ]]; then
+            echo -e "${RED}Error: Pack manifest not found in source: $local_manifest${NC}"
             return 1
         fi
 
-        echo -e "  ${CYAN}Reading from local source: $local_skills_dir${NC}"
+        echo -e "  ${CYAN}Reading local manifest: $local_manifest${NC}"
+        while IFS= read -r include_line; do
+            [[ -z "$include_line" ]] && continue
+            local repo path
+            repo=$(echo "$include_line" | awk '{print $1}')
+            path=$(echo "$include_line" | awk '{print $2}')
+            local items_str
+            items_str=$(echo "$include_line" | cut -d' ' -f3-)
 
-        for item_dir in "$local_skills_dir"/*/; do
-            [[ -d "$item_dir" ]] || continue
-            local item_name=$(basename "$item_dir")
-
-            local type
-            type=$(detect_type "$item_dir" "${AFX_REPO}")
-            echo -e "  ${GREEN}Found: $item_name (type: $type)${NC}"
-
-            if [[ "$DRY_RUN" != "true" ]]; then
-                route_item "$item_dir" "$item_name" "$type" "$category"
-                afx_yaml_add_skill "$item_name" "$category" "$pack_name" "$type"
-                skill_sync "$item_name" "$category" "$type"
-            else
-                INSTALLED+=("  ↓ $item_name ($type)")
+            # --source supplies the AFX checkout. Upstream items remain external
+            # integrations and are intentionally not copied from this tree.
+            if [[ "$repo" != "${AFX_REPO}" ]]; then
+                echo -e "  ${CYAN}Skipping upstream items from $repo in local-source mode${NC}"
+                continue
             fi
-        done
+
+            for item_name in $items_str; do
+                local item_dir="$SOURCE_DIR/${path}${item_name}"
+                if [[ ! -f "$item_dir/SKILL.md" ]]; then
+                    echo -e "${RED}Error: Declared skill '$item_name' not found at $item_dir${NC}"
+                    return 1
+                fi
+                local type
+                type=$(detect_type "$item_dir" "$repo")
+                echo -e "  ${GREEN}Found: $item_name (type: $type)${NC}"
+                if [[ "$DRY_RUN" != "true" ]]; then
+                    route_item "$item_dir" "$item_name" "$type" "$category"
+                    afx_yaml_add_skill "$item_name" "$category" "$pack_name" "$type"
+                    skill_sync "$item_name" "$category" "$type"
+                else
+                    INSTALLED+=("  ↓ $item_name ($type)")
+                fi
+            done
+        done < <(for_each_include "$local_manifest")
 
         afx_yaml_set_pack "$pack_name" "$ref"
         echo -e "${GREEN}Pack '$pack_name' installed from local source.${NC}"
@@ -1239,8 +1255,9 @@ pack_install() {
         for item_name in $items_str; do
             local item_dir="$temp/${path}${item_name}"
             if [[ ! -d "$item_dir" ]]; then
-                echo -e "  ${YELLOW}Warning: '$item_name' not found in download — skipping${NC}"
-                continue
+                echo -e "${RED}Error: Declared skill '$item_name' not found in download${NC}"
+                rm -rf "$temp"
+                return 1
             fi
 
             local type
