@@ -4,7 +4,6 @@ description: Choose the right architecture pattern — compare Clean Architectur
 license: MIT
 metadata:
   afx-owner: "@rix"
-  afx-status: Living
   afx-tags: "architecture,patterns,clean-architecture,hexagonal,ddd"
 ---
 
@@ -37,7 +36,7 @@ Use this skill when you need to:
 If implementation is requested, respond with:
 
 ```text
-Out of scope for afx-architecture-patterns (read-only guidance mode). Use /afx-dev code to implement.
+Out of scope for afx-architecture-patterns (read-only guidance mode). Use /afx-task code to implement.
 ```
 
 ---

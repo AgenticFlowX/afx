@@ -4,7 +4,6 @@ description: Debug systematically to find root causes — investigate symptoms, 
 license: MIT
 metadata:
   afx-owner: "@rix"
-  afx-status: Living
   afx-tags: "debugging,root-cause,investigation,prevention"
 ---
 

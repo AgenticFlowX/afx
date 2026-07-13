@@ -4,7 +4,6 @@ description: Conduct deep evidence-based investigation — trace code execution 
 license: MIT
 metadata:
   afx-owner: "@rix"
-  afx-status: Living
   afx-tags: "research,investigation,evidence,analysis"
 ---
 
@@ -38,7 +37,7 @@ Use this skill when you need to:
 If implementation is requested, respond with:
 
 ```text
-Out of scope for afx-deep-research (read-only investigation mode). Use /afx-dev code to implement findings.
+Out of scope for afx-deep-research (read-only investigation mode). Use /afx-task code to implement findings.
 ```
 
 ---

@@ -4,7 +4,6 @@ description: Drive product decisions — prioritize features with RICE scoring, 
 license: MIT
 metadata:
   afx-owner: "@rix"
-  afx-status: Living
   afx-tags: "product,prioritization,prd,discovery,metrics"
 ---
 
@@ -38,7 +37,7 @@ Use this skill when you need to:
 If implementation is requested, respond with:
 
 ```text
-Out of scope for afx-product-owner (product planning mode). Use /afx-dev code to implement.
+Out of scope for afx-product-owner (product planning mode). Use /afx-task code to implement.
 ```
 
 ---

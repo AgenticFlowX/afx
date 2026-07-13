@@ -4,7 +4,6 @@ description: Write and review code for readability — apply naming conventions,
 license: MIT
 metadata:
   afx-owner: "@rix"
-  afx-status: Living
   afx-tags: "clean-code,readability,refactoring,code-quality"
 ---
 

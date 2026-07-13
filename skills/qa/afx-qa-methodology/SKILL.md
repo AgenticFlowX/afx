@@ -4,7 +4,6 @@ description: Plan and execute QA workflows — build test strategies, triage bug
 license: MIT
 metadata:
   afx-owner: "@rix"
-  afx-status: Living
   afx-tags: "qa,testing,test-strategy,bug-triage,coverage"
 ---
 

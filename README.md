@@ -71,6 +71,8 @@ flowchart LR
 ## Quick Start
 
 > **OS Support**: Tested on macOS and Linux/WSL. Windows users: use **Git Bash** — tested and working.
+>
+> **Optional acceleration**: **Node.js 18+** enables the AFX document query helper for fast, structured, low-context reads of spec/design/task documents. Without Node.js, AFX still works — skills fall back to targeted text search and warn once, broadening the read when needed. Install Node.js 18+ for faster structured loading.
 
 ```bash
 # From your project directory

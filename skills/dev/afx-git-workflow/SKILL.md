@@ -4,7 +4,6 @@ description: Apply advanced git techniques — interactive rebase, cherry-pick, 
 license: MIT
 metadata:
   afx-owner: "@rix"
-  afx-status: Living
   afx-tags: "git,workflow,rebase,cherry-pick,bisect"
 ---
 
@@ -40,7 +39,7 @@ Use this skill when you need to:
 If code changes are requested, respond with:
 
 ```text
-Out of scope for afx-git-workflow (git operations mode). Use /afx-dev code to modify source code.
+Out of scope for afx-git-workflow (git operations mode). Use /afx-task code to modify source code.
 ```
 
 ---

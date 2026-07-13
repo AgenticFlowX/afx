@@ -4,7 +4,6 @@ description: Conduct structured security audits — build threat models, review 
 license: MIT
 metadata:
   afx-owner: "@rix"
-  afx-status: Living
   afx-tags: "security,audit,threat-modeling,vulnerability,remediation"
 ---
 
@@ -35,7 +34,7 @@ Use this skill when you need to:
 If fixes are requested, respond with:
 
 ```text
-Out of scope for afx-security-audit (read-only audit mode). Use /afx-dev code to apply fixes.
+Out of scope for afx-security-audit (read-only audit mode). Use /afx-task code to apply fixes.
 ```
 
 ---

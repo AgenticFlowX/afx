@@ -4,7 +4,6 @@ description: Generate test plans from specifications — extract testable requir
 license: MIT
 metadata:
   afx-owner: "@rix"
-  afx-status: Living
   afx-tags: "qa,test-planning,spec-tracing,acceptance-criteria"
 ---
 

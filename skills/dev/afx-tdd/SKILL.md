@@ -4,7 +4,6 @@ description: Practice test-driven development — write failing tests first, imp
 license: MIT
 metadata:
   afx-owner: "@rix"
-  afx-status: Living
   afx-tags: "tdd,testing,red-green-refactor,test-first"
 ---
 
