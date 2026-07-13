@@ -263,7 +263,7 @@ References use Node IDs: `[FR-X]`, `[NFR-X]` (Spec section), `[DES-X]` (Design s
 ## 4. Work Sessions
 
 <!-- IMPORTANT: This section MUST remain the LAST section in {feature}.md. Do not add content below it. -->
-<!-- Task execution log — append-only, updated by /afx-sprint code, /afx-task pick, /afx-task code, /afx-task complete -->
+<!-- Task execution log — append-only, updated by /afx-sprint code, /afx-task pick, /afx-task code, /afx-task verify, /afx-task complete -->
 <!-- Columns: Date (YYYY-MM-DD) | Task (WBS ID) | Action (Picked/Coded/Completed/Verified/Reviewed) | Files Modified | Agent ([x] or []) | Human ([x] or []) -->
 
 | Date | Task | Action | Files Modified | Agent | Human |

@@ -10,8 +10,14 @@ Unlike `/afx-check path` which verifies runtime execution paths, this verifies i
 2. **Check files exist** — verify files mentioned in task exist
 3. **Scan for `@see` backlinks** — check source code for `@see` references to this task
 4. **Scan for incomplete markers** — grep for `TODO`, `FIXME` related to this task
-5. **Check Work Sessions table** in the resolved artifact — verify a session log entry exists
-6. **Output verification result**:
+5. **Check Work Sessions table** in the resolved artifact — verify a session log entry exists.
+6. **Append a `Verified` row** using the canonical schema; verification changes no source files, so use `-` for Files Modified:
+
+   ```markdown
+   | YYYY-MM-DD | {id} | Verified | - | [x] | [] |
+   ```
+
+7. **Output verification result**:
 
 ```markdown
 ## Task 7.1 Verify

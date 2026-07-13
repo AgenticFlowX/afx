@@ -30,10 +30,10 @@ Approve the design first:
 
 ## Post-Action Checklist (MANDATORY)
 
-After completing any action that modifies `tasks.md` or source code, you MUST:
+After completing any action that modifies a resolved task artifact (`tasks.md` or a Dash) or source code, you MUST:
 
 1. **Verify Implementation vs. Governing Context**: For standard SDD, perform a mental reset against relevant `spec.md`/`design.md` sections. For Dash, re-read Purpose, the selected task, and escalation boundaries; do not require missing full-SDD artifacts.
-2. **Update `updated_at`**: Set to current ISO 8601 timestamp in `tasks.md` frontmatter.
+2. **Update `updated_at`**: Set the current ISO 8601 timestamp in the resolved task artifact's frontmatter.
 3. **Verify backlinks**: Standard `tasks.md` keeps `spec: spec.md` and `design: design.md`. A Dash instead keeps source links on its own `[N.N]` IDs.
 4. **Contextual Tagging**: If changes introduce new domains or concepts, append to `tags` array.
 5. **Version Management**: If a change alters task scope (adding/removing phases), bump `version`. (`tasks.md` carries no `Living` lifecycle status; progress is derived — see Sign Off.)
@@ -44,8 +44,8 @@ After completing any action that modifies `tasks.md` or source code, you MUST:
    - Logging: Does it use the project's logging utility?
    - Consistency: Compare with 3 existing files in the project to ensure stylistic alignment.
 9. **Work Sessions Table** (CRITICAL — agents frequently get this wrong):
-   - The `## Work Sessions` section MUST be the **last section** in `tasks.md`, after all Phase sections and after the Cross-Reference Index. If it has drifted above other sections, move it back to the bottom before appending.
-   - After `pick`, `code`, and `complete`, **append a new row** to the table. Do NOT replace existing rows.
+   - The `## Work Sessions` section MUST be the **last section** in the resolved task artifact. In `tasks.md`, it follows all Phase sections and the Cross-Reference Index; in a Dash, it follows Tasks. If it has drifted, move it back to the bottom before appending.
+   - After `pick`, `code`, `verify`, and `complete`, **append a new row** to the table. Do NOT replace existing rows.
    - Use this exact column structure — no variations:
 
      ```markdown

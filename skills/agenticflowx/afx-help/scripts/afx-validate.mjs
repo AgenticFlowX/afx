@@ -106,6 +106,15 @@ function validateSkill(dir) {
     if (/ask_followup_question/.test(file.text)) errors.push(`${label}: provider-specific tool ask_followup_question`);
     if (/^\s*(?:afx-status|status):\s*["']?Living["']?\s*$/m.test(file.text)) errors.push(`${label}: emits removed status Living`);
     if (/^\s*modeSlugs:\s*$/m.test(file.text)) errors.push(`${label}: legacy modeSlugs`);
+
+    const hasWorkSessions = /^##(?: \d+\.)? Work Sessions\s*$/m.test(file.text);
+    if (label.startsWith('assets/') && hasWorkSessions) {
+      const canonicalHeader = /^\| Date \| Task \| Action \| Files Modified \| Agent \| Human \|\s*$/m;
+      if (!canonicalHeader.test(file.text)) errors.push(`${label}: Work Sessions must use canonical six-column header`);
+
+      const h2 = [...file.text.matchAll(/^##\s+(.+)$/gm)].map(match => match[1].trim());
+      if (!/(?:^|\d+\. )Work Sessions$/.test(h2.at(-1) || '')) errors.push(`${label}: Work Sessions must be the final section`);
+    }
   }
 
   // --- Reference link integrity + nesting depth ---

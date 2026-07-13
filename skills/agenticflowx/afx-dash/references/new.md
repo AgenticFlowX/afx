@@ -9,7 +9,7 @@ Create a new Dash at `docs/specs/<name>/<name>.md` from `assets/dash-template.md
 3. Copy the template. Fill frontmatter: real `created_at`/`updated_at` via `date -u +"%Y-%m-%dT%H:%M:%S.000Z"` (see `../afx-help/references/timestamp-rule.md`), `owner` from AFX/project config or Git identity, `tags`.
 4. Write **Purpose** from the `[context]` argument and the conversation: observed/current situation, intended outcome, bounded scope. Keep it to one concise section.
 5. Write the first **Tasks** group(s) as `### N.N` WBS groups with column-zero `- [ ]` criteria and a `<!-- files: ... -->` scope comment where known.
-6. Leave the empty **Work Sessions** section as the final section.
+6. Leave the empty **Work Sessions** section as the final section, preserving the exact shared columns: `Date | Task | Action | Files Modified | Agent | Human`.
 7. Do **not** emit `status` or `version` — progress is derived from task/evidence state.
 
 ## Result
