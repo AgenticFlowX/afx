@@ -21,3 +21,6 @@ tmp
 !.agents/skills/**
 /.afx/
 .claude/*
+
+# Generated marketplace/plugin bundles (scripts/build-plugins.mjs)
+dist/
