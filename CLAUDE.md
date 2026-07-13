@@ -119,7 +119,7 @@ All AFX documents use YAML frontmatter:
 ---
 afx: true # AFX ownership marker
 type: SPEC # SPEC | DESIGN | TASKS | JOURNAL
-status: Draft # Draft | Approved | Living
+status: Draft # SPEC/DESIGN only: Draft | Approved | Superseded; omit for TASKS/JOURNAL
 owner: "@handle"
 version: "1.0" # Quoted string
 created_at: YYYY-MM-DDTHH:MM:SS.mmmZ # ISO 8601 with milliseconds

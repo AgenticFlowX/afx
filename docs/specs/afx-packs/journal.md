@@ -1,7 +1,6 @@
 ---
 afx: true
 type: JOURNAL
-status: Living
 owner: "@rix"
 tags: [packs, install, skills, ecosystem, journal]
 ---

@@ -94,7 +94,7 @@ All AFX-managed files use YAML frontmatter for Obsidian/Dataview compatibility. 
 ---
 afx: true # AFX ownership marker (required)
 type: SPEC # Document type (required)
-status: Draft # Draft | Approved | Living
+status: Draft # SPEC/DESIGN only: Draft | Approved | Superseded
 owner: "@handle" # GitHub handle
 version: "1.0" # Semantic versioning (quoted string)
 created_at: YYYY-MM-DDTHH:MM:SS.mmmZ # ISO 8601 creation timestamp (millisecond precision)
@@ -109,7 +109,6 @@ tags: [feature, topic] # Content tags (Obsidian convention)
 ---
 afx: true
 type: COMMAND
-status: Living
 tags: [afx, command, topic]
 ---
 ```

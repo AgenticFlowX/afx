@@ -99,7 +99,7 @@ Before ANY write operation, scan context for:
 ---
 afx: true
 type: SPEC # SPEC | DESIGN | TASKS | JOURNAL | RES | ADR
-status: Draft # Draft | Approved | Living | Deprecated
+status: Draft # Artifact-specific; SPEC/DESIGN: Draft | Approved | Superseded
 owner: "@handle"
 version: "2.0"
 created_at: YYYY-MM-DDTHH:MM:SS.mmmZ

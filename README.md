@@ -311,7 +311,6 @@ mindmap
   ---
   afx: true
   type: JOURNAL
-  status: Living
   owner: "@rix"
   created_at: "2025-10-20T10:00:00.000Z"
   updated_at: "2025-10-24T14:00:00.000Z"

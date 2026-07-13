@@ -1,7 +1,6 @@
 ---
 afx: true
 type: FRAMEWORK
-status: Living
 owner: "@rix"
 version: "1.0"
 created_at: "2026-03-31T00:00:00.000Z"
@@ -74,7 +73,7 @@ All AFX artifacts use YAML frontmatter with a canonical field order. Double quot
 ### Canonical Field Order
 
 ```
-afx → type → status → owner → version → created_at → updated_at → tags → [depends_on] → [backlinks]
+afx → type → [status] → owner → version → created_at → updated_at → tags → [depends_on] → [backlinks]
 ```
 
 ### Field Definitions
@@ -83,7 +82,7 @@ afx → type → status → owner → version → created_at → updated_at → 
 | --------------- | -------- | ------------------- | --------------------------------------------------------------- |
 | `afx`           | boolean  | All files           | Always `true`. Marks the file as AFX-managed.                   |
 | `type`          | enum     | All files           | `SPEC` \| `DESIGN` \| `TASKS` \| `JOURNAL` \| `ADR` \| `RES`    |
-| `status`        | enum     | All files           | `Draft` \| `Approved` \| `Living`                               |
+| `status`        | enum     | spec, design        | `Draft` \| `Approved` \| `Superseded`                           |
 | `owner`         | string   | All files           | GitHub handle of the responsible person (e.g., `"@rix"`)        |
 | `version`       | string   | spec, design, tasks | Semantic version as a quoted string (e.g., `"1.0"`)             |
 | `created_at`    | ISO 8601 | All files           | Creation timestamp with ms precision. Immutable after creation. |

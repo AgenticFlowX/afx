@@ -214,7 +214,6 @@ description: > # Required. Describes WHAT it does AND WHEN to activate.
 license: MIT # Recommended
 metadata: # Optional key-value pairs (AFX uses afx-* prefix)
   afx-owner: "@rix"
-  afx-status: Living
 ---
 # Instructions (full Markdown body)
 ...

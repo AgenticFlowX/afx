@@ -306,7 +306,7 @@ All AFX-managed documentation MUST include YAML frontmatter.
 ---
 afx: true # AFX ownership marker (required)
 type: SPEC # Document type (SPEC | DESIGN | TASKS | JOURNAL)
-status: Draft # Draft | Approved | Living
+status: Draft # SPEC/DESIGN only: Draft | Approved | Superseded
 owner: "@handle" # GitHub handle
 version: "2.0" # Semantic versioning
 depends_on: [] # List of dependent spec/feature IDs
@@ -439,7 +439,6 @@ model User {
 ---
 afx: true
 type: TASKS
-status: Living
 owner: "@rix"
 version: "2.0"
 created_at: 2025-10-22T08:00:00.000Z
@@ -474,7 +473,6 @@ design: design.md
 ---
 afx: true
 type: JOURNAL
-status: Living
 owner: "@rix"
 created_at: 2025-10-20T10:00:00.000Z
 updated_at: 2025-10-24T14:32:00.000Z

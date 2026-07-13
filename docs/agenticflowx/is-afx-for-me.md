@@ -1,7 +1,6 @@
 ---
 afx: true
 type: GUIDE
-status: Living
 tags: [afx, onboarding, fit-check]
 ---
 

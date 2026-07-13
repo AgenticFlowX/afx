@@ -1,7 +1,6 @@
 ---
 afx: true
 type: TASKS
-status: Draft
 owner: "@owner"
 version: "1.0"
 created_at: "{YYYY-MM-DDTHH:MM:SS.mmmZ}"

@@ -1,7 +1,6 @@
 ---
 afx: true
 type: JOURNAL
-status: Living
 tags: [roomledger, check-in, example]
 ---
 
