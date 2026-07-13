@@ -15,6 +15,7 @@ includes:
       - afx-design      # Design authoring, validation, approval (owns design.md)
       - afx-task        # Implementation lifecycle — plan, pick, code, verify, complete, sync (owns tasks.md + source code)
       - afx-sprint      # Single-document SDD — fast, surgical feature work (owns {feature}.md; graduates to 4-file)
+      - afx-dash        # Low-ceremony structured work (Purpose + Tasks); graduates to Sprint/Full
       - afx-dev         # Advanced diagnostics — debug, refactor, review, test, optimize
       # Quality & reporting
       - afx-check       # Quality gates — path, trace, links, schema, deps, coverage
