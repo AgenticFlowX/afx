@@ -141,8 +141,6 @@ When committing to this repository, append the appropriate co-author trailer to 
 ```
 Co-authored-by: claude <noreply@anthropic.com>
 Co-authored-by: codex <noreply@openai.com>
-Co-authored-by: gemini-code-assist <noreply@gemini.google.com>
-Co-authored-by: gemini-code-assist[bot] <176961590+gemini-code-assist[bot]@users.noreply.github.com>
 Co-authored-by: copilot <noreply@github.com>
 ```
 
@@ -174,7 +172,6 @@ curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash 
 - `--skills-only` - Only install skill assets (`.claude/skills/` + `.agents/skills/`)
 - `--no-claude-md` - Skip Claude Code setup (`.claude/skills/` + CLAUDE.md)
 - `--no-agents-md` - Skip Codex/Copilot/Antigravity setup (`.agents/skills/` + AGENTS.md)
-- `--with-gemini-md` - Opt-in to Gemini CLI setup (GEMINI.md)
 - `--no-docs` - Skip copying AFX documentation to docs/agenticflowx/
 - `--source PATH` - Use local AFX checkout instead of downloading from GitHub
 - `--verbose` - Show detailed logging (curl, tar, file copies, git operations)

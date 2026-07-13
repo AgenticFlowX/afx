@@ -25,12 +25,12 @@ Or if you have AFX cloned locally:
 ./path/to/afx/afx-cli /path/to/your/project
 ```
 
-The installer will ask which AI agents you use (Claude Code, Codex, Copilot, Gemini) and set up:
+The installer will ask which AI agents you use (Claude Code, Codex, Copilot, or Antigravity) and set up:
 
 - Skills in `.claude/skills/` and/or `.agents/skills/`
 - Config: `.afx.yaml`
 - Docs: `docs/agenticflowx/`
-- Context files: `CLAUDE.md`, `AGENTS.md` (optionally `GEMINI.md`)
+- Context files: `CLAUDE.md` and/or `AGENTS.md`
 - Directory structure: `docs/specs/`, `docs/adr/`
 
 > **OS note**: Tested on macOS and Linux/WSL. Windows users: use **Git Bash** — tested and working. Native Windows cmd/PowerShell is not supported.

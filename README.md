@@ -9,7 +9,6 @@
   <br/><br/>
   <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude_Code-D97757?style=flat&logo=anthropic&logoColor=white" alt="Claude Code"/></a>
   <a href="https://platform.openai.com/docs/guides/codex"><img src="https://img.shields.io/badge/Codex-412991?style=flat&logo=openai&logoColor=white" alt="Codex"/></a>
-  <a href="https://cloud.google.com/products/gemini/code-assist"><img src="https://img.shields.io/badge/Gemini_CLI-4285F4?style=flat&logo=google-gemini&logoColor=white" alt="Gemini CLI"/></a>
   <a href="https://docs.github.com/en/copilot"><img src="https://img.shields.io/badge/GitHub_Copilot-000000?style=flat&logo=github-copilot&logoColor=white" alt="GitHub Copilot"/></a>
 </p>
 
@@ -19,7 +18,7 @@
 
 > **Pause. Think. Plan. Ship.**
 
-AFX is the spec-driven workflow that runs inside the **[AgenticFlowX VS Code extension](https://agenticflowx.github.io)**. This repo is the CLI and skill packs that power it — and lets you run the same workflow **headless** in Claude Code, Codex, Gemini CLI, or GitHub Copilot.
+AFX is the spec-driven workflow that runs inside the **[AgenticFlowX VS Code extension](https://agenticflowx.github.io)**. This repo is the CLI and skill packs that power it — and lets you run the same workflow **headless** in Claude Code, Codex, or GitHub Copilot.
 
 For the long-form treatment — what AFX is, why it exists, and the problems it solves — read the in-repo manual at **[docs/agenticflowx/agenticflowx.md](docs/agenticflowx/agenticflowx.md)**. For the short pitch and product surfaces, see **[agenticflowx.github.io](https://agenticflowx.github.io)**. The rest of this README is the developer reference: install path, document templates, traceability rules, and command surface.
 
@@ -58,10 +57,11 @@ flowchart LR
 - Always represent the _current factual state_ of the system, written in the present tense
 - Updated in place when scope changes; historical context lives in `journal.md`
 
-**Sprint mode for fast work.** Start a feature in minutes, not hours of setup.
+**Dash and Sprint modes for fast work.** Match the ceremony to the job.
 
+- `/afx-dash` — purpose + tasks for surgical changes and bug fixes
 - `/afx-sprint` — spec + design + tasks in one document with per-section approval gates
-- Graduate to four files when scope grows: `/afx-sprint graduate`
+- Graduate Dash to Sprint, or Sprint to the four-file workflow, when scope grows
 
 **Prompt fidelity.** Capture the exact conversation that changed the spec, not just the outcome.
 
@@ -88,7 +88,7 @@ The installer prompts for your AI agents, then sets up:
 - AFX skills (`.claude/skills/` and/or `.agents/skills/`), with templates bundled in each skill's `assets/`
 - Configuration: `.afx.yaml`
 - Docs: `docs/agenticflowx/`
-- Agent context files: `CLAUDE.md`, `AGENTS.md`, optionally `GEMINI.md`
+- Agent context files: `CLAUDE.md` and/or `AGENTS.md`
 - Directories: `docs/specs/` and `docs/adr/`
 
 **New to AFX?** Follow [quickstart.md](docs/agenticflowx/quickstart.md) to scaffold your first spec and pick your first task in under 5 minutes.
@@ -106,9 +106,8 @@ AFX isn't just a script you run; it's made up of three parts that work together:
 | Agent              | Status            | Notes                           |
 | :----------------- | :---------------- | :------------------------------ |
 | **Claude Code**    | ✅ Heavily tested | Primary development environment |
-| **GitHub Codex**   | ✅ Tested         | Several validation runs         |
+| **Codex**          | ✅ Tested         | Several validation runs         |
 | **GitHub Copilot** | ✅ Tested         | Via `.github/prompts/`          |
-| **Gemini CLI**     | ✅ Tested         | Via `.gemini/commands/`         |
 | **Cline**          | ⚠️ Untested       | May work, not verified          |
 | **AugmentCode**    | ⚠️ Untested       | May work, not verified          |
 | **KiloCode**       | ⚠️ Untested       | May work, not verified          |
@@ -393,6 +392,10 @@ Scans your codebase to understand build systems, test runners, package managers,
 
 ### Development
 
+**`/afx-dash new|refine|code|verify|graduate`** - Purpose + tasks for surgical changes and bug fixes
+
+**`/afx-sprint new|spec|design|task|code|verify|graduate`** - Single-document SDD for focused feature work
+
 **`/afx-task plan|pick|code|verify|complete|sync`** - Implementation lifecycle — plan, pick, code, verify, complete, sync
 
 **`/afx-dev debug|refactor|review|test|optimize`** - Advanced diagnostics — debug, refactor, review, test, optimize
@@ -435,7 +438,7 @@ afx-spec create → afx-spec approve → afx-design author → afx-design approv
                           └────────── afx-next (resume next session) ──────┘
 ```
 
-> **Faster start?** `/afx-sprint new <feature>` collapses the entire flow into a single document with per-section approval gates. Same discipline — graduate to four files when scope demands it.
+> **Faster start?** Use `/afx-dash new <change>` for purpose + tasks, or `/afx-sprint new <feature>` for spec + design + tasks in one document. Both preserve a clear graduation path when scope grows.
 
 ## Reality Check: Working with LLMs
 
@@ -471,4 +474,4 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Acknowledgments
 
-AFX was developed as part of real-world production projects and refined through extensive use with Claude Code, Codex, Gemini CLI, and GitHub Copilot.
+AFX was developed as part of real-world production projects and refined through extensive use with Claude Code, Codex, and GitHub Copilot.

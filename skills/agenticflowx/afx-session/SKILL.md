@@ -594,8 +594,8 @@ Preserve a **verbatim user prompt + focused agent-reply excerpt** at a pivotal m
 - `[feature]`: feature slug. Omitted → inferred from IDE/CLI context, falls back to global journal (`docs/specs/journal.md`).
 - `--trigger <kind>`: one of `new-fr`, `new-nfr`, `removed-fr`, `design-pivot`, `missed-req`, `scope-cut`, `ambiguity-resolved`, `question-resolved`, `other`. Optional — agent infers from recent changes if omitted.
 - `--links <anchors>`: comma-separated anchors affected (e.g., `FR-4,DES-RATE-LIMIT,1.3`). Optional — agent infers from recent tool-use if omitted.
-- `--agent <name>`: explicit agent identity override (e.g., `claude-code`, `codex`, `copilot`, `gemini-code-assist`). Optional — defaults to the running agent's self-reported name.
-- `--model <id>`: explicit model identifier override (e.g., `claude-opus-4-7`, `claude-sonnet-4-6`, `gpt-5-codex`, `gemini-2.5-pro`). Optional — defaults to the running agent's self-reported model.
+- `--agent <name>`: explicit agent identity override (e.g., `claude-code`, `codex`, `copilot`). Optional — defaults to the running agent's self-reported name.
+- `--model <id>`: explicit model identifier override (e.g., `claude-opus-4-7`, `claude-sonnet-4-6`, `gpt-5-codex`). Optional — defaults to the running agent's self-reported model.
 - `[...context]`: free-text hint about which exchange to capture or why it matters (e.g., `"the lockout discussion"`, `"that security pivot"`).
 
 ### Process (Manual Invocation)
@@ -611,8 +611,8 @@ Preserve a **verbatim user prompt + focused agent-reply excerpt** at a pivotal m
    - **Compute outcome links**: scan recent Edit / Write tool-use for file modifications that align with this exchange. List concrete file:anchor changes.
    - **Resolve agent + model identity**:
      - If `--agent` and `--model` flags provided → use verbatim.
-     - Otherwise → the running agent self-reports its own name and model (each AFX-supported agent has runtime access to this: Claude Code, Codex, Copilot, Gemini Code Assist, etc.).
-     - Use canonical names matching the git co-author convention: `claude-code`, `codex`, `copilot`, `gemini-code-assist`. For model, use the official model ID (e.g., `claude-opus-4-7`, `claude-sonnet-4-6`, `claude-haiku-4-5`, `gpt-5-codex`, `gemini-2.5-pro`).
+     - Otherwise → the running agent self-reports its own name and model (each AFX-supported agent has runtime access to this: Claude Code, Codex, Copilot, etc.).
+     - Use canonical names matching the git co-author convention: `claude-code`, `codex`, `copilot`. For model, use the official model ID (e.g., `claude-opus-4-7`, `claude-sonnet-4-6`, `claude-haiku-4-5`, `gpt-5-codex`).
      - If identity cannot be determined → write `unknown` for either field. **Never fabricate** an agent or model name.
    - **Tag**: auto-generate 2–5 tags from prompt keywords + the trigger kind.
 4. **Show preview** (complete markdown block, exactly as it will be appended) and ask `Apply this capture? [y/n]`.
@@ -639,8 +639,8 @@ Appended to `## Prompt Captures` in `journal.md`:
 - `type:prompt-capture` `{YYYY-MM-DDTHH:MM:SS.mmmZ}` `[tag1, tag2, trigger-kind]`
 - trigger: {kind}
 - triggered-change: {FR-X}, {[DES-X]}, {task X.Y}, ...
-- agent: {claude-code | codex | copilot | gemini-code-assist | other | unknown}
-- model: {claude-opus-4-7 | claude-sonnet-4-6 | gpt-5-codex | gemini-2.5-pro | ... | unknown}
+- agent: {claude-code | codex | copilot | other | unknown}
+- model: {claude-opus-4-7 | claude-sonnet-4-6 | gpt-5-codex | ... | unknown}
 
 **User prompt** (verbatim):
 

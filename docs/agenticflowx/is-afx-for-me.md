@@ -14,7 +14,7 @@ A 30-second fit check. Read the two lists below and see where you land.
 ## AFX fits well if…
 
 - Your features run **days or weeks**, not hours — context handoffs between sessions or agents matter
-- You use an **AI coding assistant** (Claude Code, Codex, Copilot, Gemini) as your primary implementation tool
+- You use an **AI coding assistant** (Claude Code, Codex, Copilot, or Antigravity) as your primary implementation tool
 - You want **specs and code to stay linked** — you care about knowing what requirement produced each function
 - Multiple people or agents **touch the same feature** over time
 - You want to know **why a decision was made**, not just what it is

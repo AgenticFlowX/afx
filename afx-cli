@@ -11,7 +11,6 @@
 #   --skills-only     Only sync skills to .agents/skills/ (skip templates, docs, MD)
 #   --no-claude-md    Skip CLAUDE.md snippet integration
 #   --no-agents-md    Skip AGENTS.md snippet integration
-#   --with-gemini-md  Include GEMINI.md snippet integration (opt-in)
 #   --with-docs       Install AFX framework docs to docs/agenticflowx/ (default: skip — skill links point to GitHub)
 #   --force           Overwrite all existing files (fresh install)
 #   --dry-run         Show what would be changed without making changes
@@ -31,8 +30,6 @@ AFX_START_MARKER="<!-- AFX:START - Managed by AFX. Do not edit manually. -->"
 AFX_END_MARKER="<!-- AFX:END -->"
 AFX_AGENTS_START_MARKER="<!-- AFX-CODEX:START - Managed by AFX. Do not edit manually. -->"
 AFX_AGENTS_END_MARKER="<!-- AFX-CODEX:END -->"
-AFX_GEMINI_START_MARKER="<!-- AFX-GEMINI:START - Managed by AFX. Do not edit manually. -->"
-AFX_GEMINI_END_MARKER="<!-- AFX-GEMINI:END -->"
 
 # Colors
 RED='\033[0;31m'
@@ -52,7 +49,6 @@ UPDATE_MODE=false
 SKILLS_ONLY=false
 NO_CLAUDE_MD=""
 NO_AGENTS_MD=""
-NO_GEMINI_MD=""
 NO_DOCS=false
 WITH_DOCS=false
 FORCE=false
@@ -95,7 +91,6 @@ while [[ $# -gt 0 ]]; do
         --commands-only)  SKILLS_ONLY=true; shift ;;  # backward compat alias
         --no-claude-md)   NO_CLAUDE_MD=true; NO_CLAUDE_MD_FLAG=true; shift ;;
         --no-agents-md)   NO_AGENTS_MD=true; NO_AGENTS_MD_FLAG=true; shift ;;
-        --with-gemini-md)  NO_GEMINI_MD=false; NO_GEMINI_MD_FLAG=true; shift ;;
         --no-docs)        NO_DOCS=true; shift ;;  # backward-compat no-op; docs are off by default
         --with-docs)      WITH_DOCS=true; shift ;;
         --force)          FORCE=true; shift ;;
@@ -127,7 +122,6 @@ Options:
   --skills-only     Only sync skills (skip templates, docs, MD)
   --no-claude-md    Skip CLAUDE.md integration
   --no-agents-md    Skip AGENTS.md integration
-  --with-gemini-md  Include GEMINI.md (opt-in)
   --with-docs       Install AFX framework docs to docs/agenticflowx/
                     (off by default — skill links point to GitHub)
   --no-vscode-tip   Suppress the VS Code extension tip in summary output
@@ -491,7 +485,7 @@ ${end_marker}"
 
 
 # Read agent selection from existing .afx.yaml (if present).
-# Sets NO_CLAUDE_MD/NO_AGENTS_MD/NO_GEMINI_MD only if still empty (not set by flags).
+# Sets NO_CLAUDE_MD/NO_AGENTS_MD only if still empty (not set by flags).
 read_agent_config() {
     local yaml="$TARGET_DIR/.afx.yaml"
     [[ -f "$yaml" ]] || return 0
@@ -512,14 +506,6 @@ read_agent_config() {
             false) NO_AGENTS_MD=true ;;
         esac
     fi
-    if [[ -z "$NO_GEMINI_MD" ]]; then
-        local val
-        val=$(sed -n '/^agents:/,/^[^ #]/{ s/^  gemini: *//p; }' "$yaml" | head -1)
-        case "$val" in
-            true)  NO_GEMINI_MD=false ;;
-            false) NO_GEMINI_MD=true ;;
-        esac
-    fi
 }
 
 # Update the agents: block in .afx.yaml with current selection.
@@ -529,13 +515,12 @@ update_agent_config() {
     [[ -f "$yaml" ]] || return 0
     [[ "$DRY_RUN" == "true" ]] && return 0
 
-    local claude_val="true" agents_val="true" gemini_val="false"
+    local claude_val="true" agents_val="true"
     [[ "$NO_CLAUDE_MD" == "true" ]] && claude_val="false"
     [[ "$NO_AGENTS_MD" == "true" ]] && agents_val="false"
-    [[ "$NO_GEMINI_MD" != "true" ]] && gemini_val="true"
 
     local block
-    block="agents:\n  claude: ${claude_val}\n  agents: ${agents_val}\n  gemini: ${gemini_val}"
+    block="agents:\n  claude: ${claude_val}\n  agents: ${agents_val}"
 
     local tmp="$yaml.tmp.$$"
 
@@ -554,7 +539,7 @@ update_agent_config() {
 
     # Insert agents block before skills: line (or append)
     if grep -q '^skills:' "$tmp"; then
-        awk -v b="agents:\n  claude: ${claude_val}\n  agents: ${agents_val}\n  gemini: ${gemini_val}" '
+        awk -v b="agents:\n  claude: ${claude_val}\n  agents: ${agents_val}" '
             /^skills:/ { n=split(b, lines, "\\n"); for(i=1;i<=n;i++) print lines[i]; print ""; }
             { print }
         ' "$tmp" > "$tmp.2"
@@ -568,10 +553,9 @@ update_agent_config() {
 # Write minimal user-facing .afx.yaml (version + agents + packs + override guide)
 # All defaults live in .afx/.afx.yaml — user only adds overrides here.
 write_minimal_user_config() {
-    local claude_val="true" agents_val="true" gemini_val="false"
+    local claude_val="true" agents_val="true"
     [[ "$NO_CLAUDE_MD" == "true" ]] && claude_val="false"
     [[ "$NO_AGENTS_MD" == "true" ]] && agents_val="false"
-    [[ "$NO_GEMINI_MD" != "true" ]] && gemini_val="true"
 
     cat > "$TARGET_DIR/.afx.yaml" <<YAMLEOF
 # ┌─────────────────────────────────────────────────────────────────────────┐
@@ -593,7 +577,6 @@ version: main
 agents:
   claude: ${claude_val}
   agents: ${agents_val}
-  gemini: ${gemini_val}
 
 # ── Installed Packs & Skills ─────────────────────────────────────────────
 # Managed by afx-cli. Add packs with:
@@ -1571,22 +1554,6 @@ step_agents_md() {
     fi
 }
 
-step_gemini_md() {
-    echo -e "${BLUE}Updating GEMINI.md...${NC}"
-    local snippet_file="$AFX_DIR/prompts/gemini.md"
-    if [ -f "$snippet_file" ]; then
-        local snippet_content
-        snippet_content=$(sed -n '/^---$/,$p' "$snippet_file" | tail -n +2)
-        update_md_with_markers \
-            "$TARGET_DIR/GEMINI.md" \
-            "$AFX_GEMINI_START_MARKER" \
-            "$AFX_GEMINI_END_MARKER" \
-            "$snippet_content" \
-            "GEMINI.md" \
-            "$(printf '# GEMINI.md\n\nProject context for Gemini CLI when working with code in this repository.\n')"
-    fi
-}
-
 step_docs() {
     echo -e "${BLUE}Installing AFX documentation...${NC}"
     local dir="$TARGET_DIR/docs/agenticflowx"
@@ -1692,7 +1659,7 @@ step_reset() {
 
     # Legacy v1
     for check in ".claude/commands/afx-*.md" ".claude/plugins/*" ".codex/skills/afx-*" \
-                  ".gemini/commands/afx-*.toml" ".github/prompts/afx-*.prompt.md"; do
+                  ".github/prompts/afx-*.prompt.md"; do
         c=$(count_glob "$TARGET_DIR/$check")
         [[ "$c" -gt 0 ]] && inventory+="  ${RED}DELETE${NC}  $check ($c items, legacy)\n"
     done
@@ -1702,8 +1669,6 @@ step_reset() {
         inventory+="  ${RED}STRIP${NC}   CLAUDE.md AFX section\n"
     [[ -f "$TARGET_DIR/AGENTS.md" ]] && grep -q "$AFX_AGENTS_START_MARKER" "$TARGET_DIR/AGENTS.md" 2>/dev/null && \
         inventory+="  ${RED}STRIP${NC}   AGENTS.md AFX section\n"
-    [[ -f "$TARGET_DIR/GEMINI.md" ]] && grep -q "$AFX_GEMINI_START_MARKER" "$TARGET_DIR/GEMINI.md" 2>/dev/null && \
-        inventory+="  ${RED}STRIP${NC}   GEMINI.md AFX section\n"
 
     # AFX docs
     [[ -d "$TARGET_DIR/docs/agenticflowx" ]] && \
@@ -1754,7 +1719,6 @@ inventory+="  ${GREEN}KEEP${NC}    docs/specs/, docs/adr/, docs/research/\n"
         ".claude/commands/afx-*.md" \
         ".claude/plugins/*" \
         ".codex/skills/afx-*" \
-        ".gemini/commands/afx-*.toml" \
         ".github/prompts/afx-*.prompt.md"; do
         local c=$(count_glob "$TARGET_DIR/$check")
         if [[ "$c" -gt 0 ]]; then
@@ -1773,7 +1737,6 @@ inventory+="  ${GREEN}KEEP${NC}    docs/specs/, docs/adr/, docs/research/\n"
             remove_glob "$TARGET_DIR/.claude/commands/afx-*.md" ".claude/commands/afx-*.md (legacy)" "file"
             remove_glob "$TARGET_DIR/.claude/plugins/*" ".claude/plugins/ (legacy)" "dir"
             remove_glob "$TARGET_DIR/.codex/skills/afx-*" ".codex/skills/ (legacy)" "dir"
-            remove_glob "$TARGET_DIR/.gemini/commands/afx-*.toml" ".gemini/commands/ (legacy)" "file"
             remove_glob "$TARGET_DIR/.github/prompts/afx-*.prompt.md" ".github/prompts/ (legacy)" "file"
             remove_glob "$TARGET_DIR/.github/prompts/README.md" ".github/prompts/README.md (legacy)" "file"
         else
@@ -1791,14 +1754,12 @@ inventory+="  ${GREEN}KEEP${NC}    docs/specs/, docs/adr/, docs/research/\n"
     local md_targets=()
     [[ -f "$TARGET_DIR/CLAUDE.md" ]] && grep -q "$AFX_START_MARKER" "$TARGET_DIR/CLAUDE.md" 2>/dev/null && md_targets+=("CLAUDE.md")
     [[ -f "$TARGET_DIR/AGENTS.md" ]] && grep -q "$AFX_AGENTS_START_MARKER" "$TARGET_DIR/AGENTS.md" 2>/dev/null && md_targets+=("AGENTS.md")
-    [[ -f "$TARGET_DIR/GEMINI.md" ]] && grep -q "$AFX_GEMINI_START_MARKER" "$TARGET_DIR/GEMINI.md" 2>/dev/null && md_targets+=("GEMINI.md")
 
     if [[ ${#md_targets[@]} -gt 0 ]]; then
         echo -e "      ${DIM}${md_targets[*]}${NC}"
         if confirm "  Strip AFX sections? (user content preserved)"; then
             strip_afx_section "$TARGET_DIR/CLAUDE.md" "$AFX_START_MARKER" "$AFX_END_MARKER" "CLAUDE.md"
             strip_afx_section "$TARGET_DIR/AGENTS.md" "$AFX_AGENTS_START_MARKER" "$AFX_AGENTS_END_MARKER" "AGENTS.md"
-            strip_afx_section "$TARGET_DIR/GEMINI.md" "$AFX_GEMINI_START_MARKER" "$AFX_GEMINI_END_MARKER" "GEMINI.md"
         else
             echo -e "  ${YELLOW}Skipped${NC}"
         fi
@@ -2090,7 +2051,6 @@ fi
 # Determines which skill targets and context files to install:
 #   Claude Code:               .claude/skills/ + CLAUDE.md  (ask, default Y)
 #   Codex/Copilot/Antigravity: .agents/skills/ + AGENTS.md  (ask, default Y)
-#   Gemini CLI:                GEMINI.md                    (ask, default N)
 #
 # Skipped with --yes or --skills-only (use defaults).
 # Explicit flags take precedence over prompts.
@@ -2135,31 +2095,15 @@ if [[ "$YES" != "true" && "$SKILLS_ONLY" != "true" ]]; then
         fi
     fi
 
-    # Gemini CLI: GEMINI.md (partial .agents/skills/ support)
-    if [[ "$NO_GEMINI_MD_FLAG" != "true" ]]; then
-        hint="y/N"
-        [[ "$NO_GEMINI_MD" == "false" ]] && hint="Y/n"
-        echo -en "  Gemini CLI ${DIM}→ GEMINI.md${NC} [$hint] "
-        read -r answer </dev/tty
-        if [[ -z "$answer" ]]; then
-            [[ "$NO_GEMINI_MD" == "false" ]] && NO_GEMINI_MD=false || NO_GEMINI_MD=true
-        else
-            case "$answer" in
-                [yY]|[yY][eE][sS]) NO_GEMINI_MD=false ;;
-                *) NO_GEMINI_MD=true ;;
-            esac
-        fi
-    fi
     echo ""
 fi
 
 # Apply defaults for non-interactive mode (--yes, --skills-only)
 [[ -z "$NO_CLAUDE_MD" ]] && NO_CLAUDE_MD=false
 [[ -z "$NO_AGENTS_MD" ]] && NO_AGENTS_MD=false
-[[ -z "$NO_GEMINI_MD" ]] && NO_GEMINI_MD=true
 
 # Bail if no agents selected — nothing to install
-if [[ "$NO_CLAUDE_MD" == "true" && "$NO_AGENTS_MD" == "true" && "$NO_GEMINI_MD" == "true" ]]; then
+if [[ "$NO_CLAUDE_MD" == "true" && "$NO_AGENTS_MD" == "true" ]]; then
     echo -e "${YELLOW}No AI agents selected. At least one is required to install AFX.${NC}"
     echo -e "${DIM}Re-run and select at least one agent, or use --yes for defaults.${NC}"
     exit 1
@@ -2177,7 +2121,6 @@ total_steps() {
     ((++count))    # config (always)
     [[ "$NO_CLAUDE_MD" != "true" ]] && ((++count))
     [[ "$NO_AGENTS_MD" != "true" ]] && ((++count))
-    [[ "$NO_GEMINI_MD" != "true" ]] && ((++count))
     [[ "$WITH_DOCS" == "true" ]] && ((++count))
     ((++count))  # directory structure
     echo "$count"
@@ -2221,10 +2164,6 @@ fi
 
 if [[ "$NO_AGENTS_MD" != "true" ]]; then
     run_step "AGENTS.md integration" step_agents_md
-fi
-
-if [[ "$NO_GEMINI_MD" != "true" ]]; then
-    run_step "GEMINI.md integration" step_gemini_md
 fi
 
 if [[ "$WITH_DOCS" == "true" ]]; then

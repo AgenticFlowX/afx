@@ -32,7 +32,6 @@ AFX skills follow the **agentskills.io** standard. Tested platforms:
 | **Claude Code**                               | ✅ Heavily tested | Primary environment     |
 | **GitHub Codex**                              | ✅ Tested         | Several runs            |
 | **GitHub Copilot**                            | ✅ Tested         | Via `.github/prompts/`  |
-| **Gemini CLI**                                | ✅ Tested         | Via `.gemini/commands/` |
 | **Cline / AugmentCode / KiloCode / OpenCode** | ⚠️ Untested       | May work, not verified  |
 
 ---

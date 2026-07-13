@@ -129,7 +129,7 @@ with 15-min cooldown. Wiring a [DES-RATE-LIMIT] section to design.
 - **Not a code generator**: AFX does not generate code from specs. It ensures the code that gets written links back to specs.
 - **Not a heavy process**: six daily-use commands cover 90% of the workflow. Sprint mode reduces that further.
 - **Not AI-only**: the two-stage gate (Agent `[x]` + Human `[x]`) keeps a human in the loop at every task boundary.
-- **Not locked to one agent**: works with Claude Code, Codex, Gemini CLI, GitHub Copilot, and others.
+- **Not locked to one agent**: works with Claude Code, Codex, GitHub Copilot, and other Agent Skills-compatible tools.
 
 ---
 
@@ -140,7 +140,7 @@ AFX ships as a portable workflow (markdown skills + CLI installer) that any edit
 - **CodeLens + Problems panel** — orphan code and ghost requirements surface where engineers already look
 - **Spec injection** — active spec, next task, and prior decisions auto-injected into every agent prompt
 - **Focus Track** — select a spec; the extension loads the right skill automatically
-- **Right-click dispatch** — send a task to Claude Code, Copilot, Codex, or Gemini from `tasks.md`
+- **Right-click dispatch** — send a task to Claude Code, Copilot, or Codex from `tasks.md`
 - **7-tab bottom panel** — Pipeline, Workbench, Board, Journal, Documents, Notes, Analytics
 
 ---

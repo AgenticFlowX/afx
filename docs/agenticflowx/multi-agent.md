@@ -18,23 +18,23 @@ AFX supports multiple AI agents through platform-specific command implementation
 
 ## Parity Map
 
-| Claude Slash Command | Gemini Command  | Codex Skill    | Copilot Prompt           |
-| -------------------- | --------------- | -------------- | ------------------------ |
-| `/afx-next`          | `/afx-next`     | `afx-next`     | `afx-next.prompt.md`     |
-| `/afx-discover`      | `/afx-discover` | `afx-discover` | `afx-discover.prompt.md` |
-| `/afx-spec`          | `/afx-spec`     | `afx-spec`     | `afx-spec.prompt.md`     |
-| `/afx-design`        | `/afx-design`   | `afx-design`   | `afx-design.prompt.md`   |
-| `/afx-task`          | `/afx-task`     | `afx-task`     | `afx-task.prompt.md`     |
-| `/afx-dev`           | `/afx-dev`      | `afx-dev`      | `afx-dev.prompt.md`      |
-| `/afx-check`         | `/afx-check`    | `afx-check`    | `afx-check.prompt.md`    |
-| `/afx-session`       | `/afx-session`  | `afx-session`  | `afx-session.prompt.md`  |
-| `/afx-scaffold`      | `/afx-scaffold` | `afx-scaffold` | `afx-scaffold.prompt.md` |
-| `/afx-adr`           | `/afx-adr`      | `afx-adr`      | `afx-adr.prompt.md`      |
-| `/afx-context`       | `/afx-context`  | `afx-context`  | `afx-context.prompt.md`  |
-| `/afx-report`        | `/afx-report`   | `afx-report`   | `afx-report.prompt.md`   |
-| `/afx-research`      | `/afx-research` | `afx-research` | `afx-research.prompt.md` |
-| `/afx-hello`         | `/afx-hello`    | `afx-hello`    | `afx-hello.prompt.md`    |
-| `/afx-help`          | `/afx-help`     | `afx-help`     | `afx-help.prompt.md`     |
+| Claude Slash Command | Codex Skill    | Copilot Prompt           |
+| -------------------- | -------------- | ------------------------ |
+| `/afx-next`          | `afx-next`     | `afx-next.prompt.md`     |
+| `/afx-discover`      | `afx-discover` | `afx-discover.prompt.md` |
+| `/afx-spec`          | `afx-spec`     | `afx-spec.prompt.md`     |
+| `/afx-design`        | `afx-design`   | `afx-design.prompt.md`   |
+| `/afx-task`          | `afx-task`     | `afx-task.prompt.md`     |
+| `/afx-dev`           | `afx-dev`      | `afx-dev.prompt.md`      |
+| `/afx-check`         | `afx-check`    | `afx-check.prompt.md`    |
+| `/afx-session`       | `afx-session`  | `afx-session.prompt.md`  |
+| `/afx-scaffold`      | `afx-scaffold` | `afx-scaffold.prompt.md` |
+| `/afx-adr`           | `afx-adr`      | `afx-adr.prompt.md`      |
+| `/afx-context`       | `afx-context`  | `afx-context.prompt.md`  |
+| `/afx-report`        | `afx-report`   | `afx-report.prompt.md`   |
+| `/afx-research`      | `afx-research` | `afx-research.prompt.md` |
+| `/afx-hello`         | `afx-hello`    | `afx-hello.prompt.md`    |
+| `/afx-help`          | `afx-help`     | `afx-help.prompt.md`     |
 
 ## Behavior Contract
 

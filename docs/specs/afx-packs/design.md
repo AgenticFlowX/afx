@@ -552,7 +552,7 @@ The existing `afx-cli` (767 lines) handles core AFX installation only. No pack s
 7. [4/11] Install GitHub Copilot prompts (.github/prompts/)
 8. [5/11] Install templates
 9. [6/11] Create/update .afx.yaml
-10. [7/11]-[9/11] Update CLAUDE.md, AGENTS.md, GEMINI.md
+10. [7/11]-[8/11] Update CLAUDE.md and AGENTS.md
 11. [11/11] Install AFX documentation
 → Print summary
 ```
@@ -566,8 +566,6 @@ while [[ $# -gt 0 ]]; do
         --skills-only) COMMANDS_ONLY=true; shift ;;
         --no-claude-md)  NO_CLAUDE_MD=true; shift ;;
         --no-agents-md)  NO_AGENTS_MD=true; shift ;;
-        --no-gemini-md)  NO_GEMINI_MD=true; shift ;;
-        --with-gemini-md) WITH_GEMINI_MD=true; shift ;;
         --no-docs)       NO_DOCS=true; shift ;;
         --force)         FORCE=true; shift ;;
         --dry-run)       DRY_RUN=true; shift ;;
@@ -1800,8 +1798,6 @@ All current flags continue to work:
 | `--skills-only`    | Only install command assets            | Ignored when pack flags present |
 | `--no-claude-md`   | Skip CLAUDE.md snippet                 | N/A for pack ops                |
 | `--no-agents-md`   | Skip AGENTS.md snippet                 | N/A for pack ops                |
-| `--no-gemini-md`   | Skip GEMINI.md snippet                 | N/A for pack ops                |
-| `--with-gemini-md` | Opt-in to Gemini CLI setup (GEMINI.md) | N/A for pack ops                |
 | `--no-docs`        | Skip docs copy                         | N/A for pack ops                |
 | `--force`          | Overwrite all files                    | Also forces pack overwrites     |
 | `--dry-run`        | Preview without changes                | Works for all pack ops          |
@@ -1820,8 +1816,6 @@ Core Options:
   --skills-only   Only install/update command assets
   --no-claude-md    Skip CLAUDE.md snippet integration
   --no-agents-md    Skip AGENTS.md snippet integration
-  --no-gemini-md    Skip GEMINI.md snippet integration
-  --with-gemini-md  Opt-in to Gemini CLI setup (GEMINI.md)
   --no-docs         Skip copying AFX documentation
   --force           Overwrite all files (fresh install)
   --dry-run         Preview changes without applying

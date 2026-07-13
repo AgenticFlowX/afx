@@ -54,7 +54,7 @@ tags: [packs, install, skills, ecosystem, journal]
 
 `status:completed` `2026-02-28T00:00:00.000Z` `[implementation, antigravity]`
 
-**Context**: Implementing Phase 1 (Manifests & Index) and Phase 2 (AFX-Built Skills) from the approved spec. During implementation, discovered that `.agent/skills/` (Google Antigravity core skills) was missing from the AFX repo — we had `.claude/commands/`, `.codex/skills/`, `.gemini/commands/`, `.github/prompts/` but no Antigravity equivalent.
+**Context**: Implementing Phase 1 (Manifests & Index) and Phase 2 (AFX-Built Skills) from the approved spec. During implementation, discovered that `.agent/skills/` (Google Antigravity core skills) was missing from the AFX repo — we had `.claude/commands/`, `.codex/skills/`, and `.github/prompts/` but no Antigravity equivalent.
 
 **Summary**: Created 3 pack files (2 manifests + 1 index), 16 AFX-built skill files (4 skills × 4 provider variants), 13 Antigravity core skill files (mirroring `.codex/skills/`), and updated `afx-cli` to copy `.agent/skills/` as step 3/12.
 
@@ -62,7 +62,7 @@ tags: [packs, install, skills, ecosystem, journal]
 
 - Antigravity core skills follow same pattern as Codex skills: lightweight SKILL.md wrappers pointing to `.claude/commands/` as source of truth
 - No `openai.yaml` equivalent needed for Antigravity (only Codex has that)
-- `afx-cli` step count: 11 → 12 (added Antigravity between Codex and Gemini)
+- `afx-cli` step count: 11 → 12 after adding Antigravity
 - `--skills-only` help text updated to include `.agent`
 - CLAUDE.md repo structure updated with `.agent/`, `packs/`, `skills/`
 
@@ -135,7 +135,7 @@ tags: [packs, install, skills, ecosystem, journal]
 
 Spec approved and frozen. Further changes require version bump.
 
-Approved by: Gemini Code Assist (automated validation)
+Approved by: automated validation
 Review score: 100% compliant
 
 Validation Summary:

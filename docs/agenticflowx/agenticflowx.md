@@ -45,7 +45,7 @@ Unlike frameworks that generate code _from_ specs, AFX requires code to link _ba
 1. **Less hallucination**: Code MUST link back to an approved requirement. The AI can't invent features or drift out of scope as easily.
 2. **Focused context**: Separating concerns into 4 files (`spec`, `design`, `tasks`, `journal`) means the AI reads only what it needs, not the whole project.
 3. **Git traceability**: Any developer (or future agent) can follow a `@see` annotation back to `tasks.md`, then to `spec.md`, to understand _why_ a line of code exists.
-4. **Session handoff**: Journals and context saves let you resume work across sessions, or hand off state to a different model (e.g., pick up in Gemini where you left off in Claude).
+4. **Session handoff**: Journals and context saves let you resume work across sessions, or hand off state to a different model (e.g., pick up in Codex where you left off in Claude).
 
 ## Agent Compatibility
 
@@ -56,7 +56,6 @@ AFX skills are designed for the standard **agentskills.io** prompt format and ha
 | **Claude Code**    | ✅ Heavily tested | Primary development environment |
 | **GitHub Codex**   | ✅ Tested         | Several validation runs         |
 | **GitHub Copilot** | ✅ Tested         | Via `.github/prompts/`          |
-| **Gemini CLI**     | ✅ Tested         | Via `.gemini/commands/`         |
 | **Cline**          | ⚠️ Untested       | May work, not verified          |
 | **AugmentCode**    | ⚠️ Untested       | May work, not verified          |
 | **KiloCode**       | ⚠️ Untested       | May work, not verified          |
@@ -200,7 +199,7 @@ AFX prevents AI context window bloat and conflicting instructions by separating 
 graph TD
     A[CLAUDE.md<br/>Global Brain] -->|System-wide Tokens<br/>Tailwind, Shadcn, Colors| C[Claude Code Session]
     B[docs/specs/*/design.md<br/>Feature Brain] -->|Specific Layouts<br/>Grid, Forms, Composition| C
-    A --> D[Codex / Gemini / Copilot Session]
+    A --> D[Codex / Copilot Session]
     B --> D
 
     style A fill:#e1f5ff
@@ -547,7 +546,7 @@ We will systematically replace Prisma with Drizzle ORM across all data access pa
 
 # Part 9: Context Management
 
-To prevent LLMs from losing context between sessions or when switching between different models (e.g., from Claude to Gemini), AFX provides a strict mechanism to serialize the current architectural and operational state.
+To prevent LLMs from losing context between sessions or when switching between different models (e.g., from Claude to Codex), AFX provides a strict mechanism to serialize the current architectural and operational state.
 
 ### Generating a Context Payload
 

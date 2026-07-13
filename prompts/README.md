@@ -2,7 +2,7 @@
 
 This directory contains **copy-paste snippets** for integrating AFX into your project's agent context files.
 
-These are not skills — they are fragments you add to `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md` in your target project. The AFX CLI installer handles this automatically; these files exist for manual integration or selective adoption.
+These are not skills — they are fragments you add to `CLAUDE.md` or `AGENTS.md` in your target project. The AFX CLI installer handles this automatically; these files exist for manual integration or selective adoption.
 
 ## Files
 
@@ -14,7 +14,6 @@ These are not skills — they are fragments you add to `CLAUDE.md`, `AGENTS.md`,
 | `code-traceability.md` | `@see` annotation rules and format only                                  | `CLAUDE.md` (append)                         |
 | `yaml-frontmatter.md`  | Frontmatter schema and timestamp rules only                              | `CLAUDE.md` (append)                         |
 | `agents.md`            | Multi-agent routing and handoff conventions                              | `AGENTS.md`                                  |
-| `gemini.md`            | Gemini CLI–specific setup                                                | `GEMINI.md`                                  |
 
 ## Usage
 

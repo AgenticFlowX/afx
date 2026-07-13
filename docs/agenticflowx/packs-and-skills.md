@@ -119,7 +119,7 @@ your-project/
 │   └── skills/
 │       ├── afx-next/          # Synced from .afx/
 │       └── ...
-└── .agents/                   # Codex, Copilot, Gemini read from here
+└── .agents/                   # Codex, Copilot, and Antigravity read from here
     └── skills/
         ├── afx-next/          # Synced from .afx/
         └── ...
@@ -172,7 +172,6 @@ version: main
 agents:
   claude: true
   agents: true
-  gemini: false
 
 packs:
   - name: afx-pack-agenticflowx
@@ -199,7 +198,7 @@ The `source` field links each skill back to its pack — used by `--pack-remove`
 
 ## The agentskills.io Standard
 
-AFX skills follow the **agentskills.io** open format — an Anthropic-maintained standard adopted by 26+ platforms (Claude Code, Codex, GitHub Copilot, Cursor, Gemini CLI, Roo Code, Antigravity, and more).
+AFX skills follow the **agentskills.io** open format — an Anthropic-maintained standard adopted by 26+ platforms (Claude Code, Codex, GitHub Copilot, Cursor, Roo Code, Antigravity, and more).
 
 Core idea: _"Write once, use everywhere."_ A skill is a folder with a `SKILL.md` file. No build step, no runtime.
 

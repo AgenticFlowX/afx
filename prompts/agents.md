@@ -14,12 +14,6 @@ Use `afx-xxx` command names to run the matching AFX workflow:
 
 - `afx-next`, `afx-discover`, `afx-design`, `afx-dev`, `afx-check`, `afx-task`, `afx-session`, `afx-scaffold`, `afx-adr`, `afx-context`, `afx-spec`, `afx-report`, `afx-help`, `afx-hello`.
 
-### Gemini CLI Commands
-
-Use `/afx-xxx` slash commands to run AFX workflows:
-
-- `/afx-next`, `/afx-discover`, `/afx-design`, `/afx-dev`, `/afx-check`, `/afx-task`, `/afx-session`, `/afx-scaffold`, `/afx-adr`, `/afx-context`, `/afx-spec`, `/afx-report`, `/afx-help`, `/afx-hello`.
-
 ### GitHub Copilot Prompts
 
 Use `afx-xxx` prompt files in `.github/agents/`:
