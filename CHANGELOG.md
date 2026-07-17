@@ -5,6 +5,31 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-07-17
+
+### Breaking Changes
+
+- **Agent support**: Removed Gemini installer paths, prompts, configuration, and documentation
+- **Lifecycle states**: Removed the shared `Living` status in favor of artifact-specific approval and progress states
+
+### Added
+
+- **Structured workflows**: Added AFX Dash for low-ceremony Purpose-and-Tasks work, plus Sprint and Session capture workflows
+- **Skill distribution**: Added seven isolated pack marketplaces with missing-skill and cross-pack drift validation; upstream standard skills remain external references and are not re-bundled
+- **Document queries**: Added optional Node.js helpers for deterministic spec, design, task, status, and journal reads with targeted-search fallbacks
+
+### Changed
+
+- **Skill loading**: Split large workflow routers into focused references and aligned generated Work Sessions with the shared six-column schema
+- **Onboarding**: Expanded quick-start, positioning, fit-check, contribution, and provider-routing documentation
+
+### Fixed
+
+- **Generated documents**: Reconciled WBS task groups and derived progress, removed TASKS/JOURNAL lifecycle status, anchored DESIGN sections, restored legacy journal parsing, removed stray spec fences, and added deterministic contract fixtures
+- **Pack ownership**: Protected canonical AgenticFlowX skills from stale or same-name pack and standard-skill overwrites while preserving shared external pack ownership
+- **Pack lifecycle**: Made removal, final sync, listing, offline local pack updates that preserve cached upstream standard skills, unique summaries, local version reporting, and millisecond timestamps ownership-safe and deterministic
+- **Local installs**: Resolved declared pack skills from manifests and reused the canonical `afx-hello` implementation
+
 ## [2.5.4] - 2026-04-12
 
 ### Fixed
