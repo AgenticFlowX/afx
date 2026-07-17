@@ -10,7 +10,7 @@
 2. **Template Alignment**: Compare tasks.md structure against `assets/tasks-template.md`:
    - Frontmatter schema matches (afx, type, owner, version, created_at, updated_at, tags, spec, design); reject a stored task lifecycle `status`
    - Section order: `## Phase N:`, `## Implementation Flow`, `## Cross-Reference Index`, `## Work Sessions` (last)
-   - Task format uses `- [ ]` checkboxes
+   - Each `### N.N` heading is a dispatchable task group; its completion criteria use column-zero `- [ ]` checkboxes
    - WBS numbering uses `N.x` format (not `FEATURE-N.x`)
 3. **Content Validation**:
    - Tasks have `@see` links to design/spec

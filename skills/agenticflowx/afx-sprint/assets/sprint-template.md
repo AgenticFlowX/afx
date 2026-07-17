@@ -190,7 +190,7 @@ export interface {EntityName} {
 - {Rollout steps, if any}
 - {Rollback plan}
 
-### Open Technical Questions
+### [DES-QUESTIONS] Open Technical Questions
 
 | #   | Question             | Status |
 | --- | -------------------- | ------ |
@@ -224,16 +224,16 @@ References use Node IDs: `[FR-X]`, `[NFR-X]` (Spec section), `[DES-X]` (Design s
 <!-- files: path/to/file.ts, path/to/other.ts -->
 <!-- @see docs/specs/{feature}/{feature}.md [FR-1] [DES-ARCH] -->
 
-- [ ] {Task item}
-- [ ] {Task item}
+- [ ] {Completion criterion}
+- [ ] {Completion criterion}
 
 #### 1.2 {Task Group Name}
 
 <!-- files: path/to/another.ts -->
 <!-- @see docs/specs/{feature}/{feature}.md [FR-2] [DES-DATA] -->
 
-- [ ] {Task item}
-- [ ] {Task item}
+- [ ] {Completion criterion}
+- [ ] {Completion criterion}
 
 ### Phase 2: {Phase Name}
 
@@ -244,8 +244,8 @@ References use Node IDs: `[FR-X]`, `[NFR-X]` (Spec section), `[DES-X]` (Design s
 <!-- files: path/to/third-file.ts -->
 <!-- @see docs/specs/{feature}/{feature}.md [FR-3] [DES-API] -->
 
-- [ ] {Task item}
-- [ ] {Task item}
+- [ ] {Completion criterion}
+- [ ] {Completion criterion}
 
 ### Cross-Reference Index
 

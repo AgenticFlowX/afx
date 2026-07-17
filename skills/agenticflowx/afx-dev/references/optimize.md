@@ -61,7 +61,7 @@ Optimize performance based on constraints.
 ### Traceability
 
 - [ ] Session Log updated
-- [ ] Task checkbox marked (if task-based)
+- [ ] Proven completion criteria marked (if task-based)
 - [ ] Discovered Issues documented (See [Bidirectional Traceability](#bidirectional-traceability-mandatory))
 
 Next: /afx-check path {feature-path} # Verify optimization

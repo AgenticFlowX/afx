@@ -1,7 +1,6 @@
 ---
 afx: true
 type: TASKS
-status: Approved
 owner: "@agenticflowx"
 version: "2.0"
 created_at: "2026-04-06T10:14:58.000Z"

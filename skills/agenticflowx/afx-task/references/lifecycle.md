@@ -66,4 +66,4 @@ After completing any action that modifies a resolved task artifact (`tasks.md` o
     - **Full path required**: Always use `docs/specs/{feature}/design.md`, never shorthand like `design.md` or `spec.md`
     - **Node IDs only**: After the file path, only use bracket-wrapped IDs: `[DES-UI]`, `[FR-12]`, `[NFR-1]`. Never append subsection numbers (e.g., `3.5.0.1`) — the code lens parser cannot parse them
     - **Format**: `@see docs/specs/{feature}/design.md [DES-UI]` — path + space + Node ID(s). Multiple Node IDs space-separated: `[FR-1] [FR-2]`
-11. **Task Checkbox**: After `code` and `complete`, mark the relevant task checkbox `[x]`.
+11. **Completion Criteria**: After `code`, mark only the selected task group's criteria that have supporting implementation and verification evidence. `complete` requires every criterion in that group to be `[x]`; it does not infer evidence.

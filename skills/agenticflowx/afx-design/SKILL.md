@@ -258,7 +258,7 @@ All `design.md` files MUST contain these `##` sections with their `[DES-ID]` anc
 | 11  | `## [DES-TEST] Testing Strategy`            | `[DES-TEST]`    |
 | 12  | `## [DES-ROLLOUT] Migration / Rollout Plan` | `[DES-ROLLOUT]` |
 
-Optional: `## File Reference Map`, `## Open Technical Questions`
+Optional: `## [DES-REFS] File Reference Map`, `## [DES-QUESTIONS] Open Technical Questions`. Any other custom H2 follows the same anchored form and uses a unique `[DES-*]` ID.
 
 ### Node ID Format
 
@@ -361,7 +361,7 @@ Validation: user-authentication (design.md)
 
 Frontmatter: ✓ Valid (DESIGN, spec backlink present)
 Node IDs: ✓ All sections have [DES-ID], no duplicates
-Template Sections: ✓ All 9 required sections present
+Template Sections: ✓ All 12 required sections present
 Traceability: ✓ 12 @see links to spec requirements
 
 Status: PASSED

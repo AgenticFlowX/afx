@@ -24,7 +24,7 @@ Dispatch implementation. **Delegates to `/afx-task code`** with the sprint file 
 
 1. **Locate file**: `docs/specs/<feature>/<feature>.md`. Error if missing.
 2. **Check approval gate** (see above). Stop if any section is Draft.
-3. **Resolve target task**: if `[task-id]` given, find it. Otherwise list unchecked tasks and ask the user to pick.
+3. **Resolve target task**: if `[task-id]` is given, find that WBS task group. Otherwise list groups with at least one unchecked completion criterion and ask the user to pick.
 4. **Verify target task has `@see` comment**: if not, error and direct to `/afx-sprint task` to add traceability.
 5. **Compose delegation** to `/afx-task code` with:
    - `feature`: `<feature>`

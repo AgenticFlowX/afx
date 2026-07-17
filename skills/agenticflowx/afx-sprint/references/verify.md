@@ -22,7 +22,7 @@ Trailing context narrows focus. Examples:
 4. **Design section**: at least one `[DES-X]` section, Key Decisions table is filled (or explicitly marked N/A).
 5. **Tasks section**: every task group has an `@see` comment using `docs/specs/<feature>/<feature>.md`, and every `[FR-X]` / `[NFR-X]` / `[DES-X]` anchor from sections 1–2 appears in at least one `@see`.
 6. **Anchor integrity**: `[FR-X]` IDs are unique, `[DES-X]` IDs are unique, task numbers `[X.Y]` are unique.
-7. **Task parseability**: every task item is a valid `- [ ]` or `- [x]` checkbox.
+7. **Task parseability**: each WBS heading is one task group with at least one valid column-zero `- [ ]` or `- [x]` completion criterion.
 
 ### Output (pass)
 

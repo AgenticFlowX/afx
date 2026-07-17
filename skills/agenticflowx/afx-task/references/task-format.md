@@ -13,14 +13,19 @@ The AFX `tasks.md` format is strict by design. Downstream consumers — the CLI,
 - **NOT**: `## 1. Core Types`, `## Step 1:`, `### Phase 1:`, `# Phase 1:`
 - Parser regex: `/^##\s+Phase\s+(\d+):?\s+(.*)$/`
 
-## Task Checkboxes
+## Task Groups and Completion Criteria
+
+Each `### N.N {Task Group Name}` heading is one stable, dispatchable task. Its WBS ID is the identity used by `/afx-task pick`, `code`, `verify`, and `complete`.
+
+The column-zero checkboxes beneath that heading are the task group's completion criteria:
 
 **Required format**: `- [ ] {Task text}` or `- [x] {Task text}` at column 0
 
 - MUST start at the beginning of the line (column 0) — NO indentation
 - MUST use `- [ ] ` (incomplete) or `- [x] ` / `- [X] ` (complete)
-- **Each checkbox = one task** when rendered by AFX tools. Do NOT use checkboxes for acceptance criteria sub-items
-- File scope, `@see` links, and acceptance criteria go in HTML comments or indented text BELOW the checkbox
+- A task group is complete only when it has at least one completion criterion and every criterion is checked
+- Do NOT use checkboxes for nested notes, evidence, or sub-items; keep those as plain indented bullets or HTML comments
+- File scope and `@see` links go in HTML comments beneath the task-group heading
 - **NOT**: `  - [ ] indented`, `* [ ] asterisk`, `- [ ] **1.1** bold-prefixed`
 - Parser regex: `/^-\s+\[([ xX])\]\s+(.*)$/`
 

@@ -5,8 +5,8 @@
 **Implementation:**
 
 1. Read `tasks.md`, find task `{id}`
-2. Verify task checkbox is marked `[x]` (should be done by `code`)
-3. If not marked, mark it now
+2. Verify every completion criterion beneath the selected `### N.N` task-group heading is marked `[x]` (normally done by `code` after its checks pass)
+3. If any criterion remains unchecked, stop and list it. Do not mark completion evidence without implementing and verifying that criterion.
 4. **Locate `## Work Sessions`** at the bottom of `tasks.md`. Append a row:
 
    ```markdown

@@ -115,6 +115,8 @@ function validateSkill(dir) {
       const h2 = [...file.text.matchAll(/^##\s+(.+)$/gm)].map(match => match[1].trim());
       if (!/(?:^|\d+\. )Work Sessions$/.test(h2.at(-1) || '')) errors.push(`${label}: Work Sessions must be the final section`);
     }
+
+    if (label.startsWith('assets/')) validateGeneratedDocumentAsset(file.text, label, errors);
   }
 
   // --- Reference link integrity + nesting depth ---
@@ -137,6 +139,42 @@ function validateSkill(dir) {
     errors.push('mutation contract says no stored lifecycle status but a bundled Markdown file emits status');
 
   return { skill, lines: lineCount, errors, advisories };
+}
+
+function validateGeneratedDocumentAsset(text, label, errors) {
+  const fm = frontmatter(text);
+  const type = fm.map.type;
+  if (!['SPEC', 'DESIGN', 'TASKS', 'JOURNAL'].includes(type)) return;
+
+  const hasStatus = Object.hasOwn(fm.map, 'status');
+  if (['SPEC', 'DESIGN'].includes(type) && !hasStatus) errors.push(`${label}: ${type} requires lifecycle status`);
+  if (['TASKS', 'JOURNAL'].includes(type) && hasStatus) errors.push(`${label}: ${type} must not carry lifecycle status`);
+
+  if (type === 'DESIGN') {
+    const headings = [...text.matchAll(/^##\s+(.+)$/gm)].map(match => match[1].trim());
+    for (const heading of headings) {
+      if (!/^\[DES-[A-Z0-9-]+\]\s+\S/.test(heading)) errors.push(`${label}: DESIGN H2 missing [DES-ID]: ${heading}`);
+    }
+    const ids = headings.map(heading => (heading.match(/^\[(DES-[A-Z0-9-]+)\]/) || [])[1]).filter(Boolean);
+    const duplicates = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
+    for (const id of duplicates) errors.push(`${label}: duplicate DESIGN H2 anchor: ${id}`);
+  }
+
+  if (type === 'TASKS') {
+    const lines = text.split('\n');
+    lines.forEach((line, index) => {
+      if (/^[ \t]+-\s+\[[ xX]\]\s+/.test(line)) errors.push(`${label}: TASKS checkbox must start at column 0 (line ${index + 1})`);
+    });
+    const groups = lines.flatMap((line, index) => /^###\s+\d+\.\d+\b/.test(line) ? [{ line: index, title: line.slice(4).trim() }] : []);
+    for (const group of groups) {
+      const nextHeading = lines.slice(group.line + 1).findIndex(line => /^#{1,3}\s+/.test(line));
+      const end = nextHeading === -1 ? lines.length : group.line + 1 + nextHeading;
+      const criteria = lines.slice(group.line + 1, end).filter(line => /^-\s+\[[ xX]\]\s+/.test(line));
+      if (criteria.length === 0) errors.push(`${label}: TASKS group has no completion criteria: ${group.title}`);
+    }
+  }
+
+  if (/^```[^\n]*\n(?:[ \t]*\n)*```[ \t]*$/m.test(text)) errors.push(`${label}: empty fenced code block`);
 }
 
 function isSkillDir(d) { return existsSync(join(d, 'SKILL.md')); }

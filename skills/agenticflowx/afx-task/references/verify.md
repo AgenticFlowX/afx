@@ -60,7 +60,7 @@ For a Dash, verify against Purpose + task criteria + file scope. Do not require 
 
 **Implementation:**
 
-1. For each uncompleted task in tasks.md:
+1. For each task group with at least one unchecked completion criterion in tasks.md:
    - Run existing `verify <task-id>` logic
 2. Aggregate results
 3. Output: list of [OK] / [PARTIAL] / [MISSING] across all tasks

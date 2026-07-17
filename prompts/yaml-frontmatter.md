@@ -6,7 +6,7 @@
 
 All AFX-managed files use YAML frontmatter to support external tooling and metadata queries. The `afx: true` marker identifies AFX-owned documents.
 
-**Full Schema (SPEC, DESIGN, TASKS):**
+**Lifecycle Schema (SPEC, DESIGN):**
 
 ```yaml
 ---
@@ -18,6 +18,22 @@ version: "1.0" # Semantic versioning (quoted string)
 created_at: YYYY-MM-DDTHH:MM:SS.mmmZ # ISO 8601 creation timestamp (millisecond precision)
 updated_at: YYYY-MM-DDTHH:MM:SS.mmmZ # Last review timestamp (millisecond precision)
 tags: [feature, topic] # Content tags (Obsidian convention)
+---
+```
+
+**Task Schema (TASKS — derived progress, no lifecycle `status`):**
+
+```yaml
+---
+afx: true
+type: TASKS
+owner: "@handle"
+version: "1.0"
+created_at: YYYY-MM-DDTHH:MM:SS.mmmZ
+updated_at: YYYY-MM-DDTHH:MM:SS.mmmZ
+tags: [feature, tasks]
+spec: spec.md
+design: design.md
 ---
 ```
 

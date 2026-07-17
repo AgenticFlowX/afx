@@ -316,6 +316,8 @@ tags: [feature, topic]
 ---
 ```
 
+Use `status` only for SPEC and DESIGN. TASKS omits it because progress is derived from task groups and Work Sessions; JOURNAL omits it because the artifact is append-only.
+
 ### Research / ADR Schema
 
 ```yaml
@@ -396,7 +398,7 @@ spec: spec.md
 
 # Auth System Architecture
 
-## Core Flow
+## [DES-ARCH] Core Flow
 
 1. User enters email in `<LoginForm />`.
 2. Action `signInWithEmail()` fires.
@@ -405,7 +407,7 @@ spec: spec.md
 5. User clicks link → `/api/auth/verify?token=...`
 6. Server validates, creates session cookie, redirects to `/dashboard`.
 
-## Database Schema (Prisma)
+## [DES-DATA] Database Schema (Prisma)
 
 ```prisma
 model VerificationToken {
@@ -422,9 +424,8 @@ model User {
   sessions      Session[]
 }
 ```
-````
 
-## Component Architecture
+## [DES-FILES] Component Architecture
 
 - `LoginForm.tsx`: Client component. Handles React Hook Form state and Zod validation.
 - `SubmitButton.tsx`: Reusable UI button showing loading spinners during network requests.
@@ -451,18 +452,34 @@ design: design.md
 # Implementation Checklist
 
 ## Phase 1: Database & Core Logic
-| Priority | Phase     | Description                                                                      | Status |
-| -------- | --------- | -------------------------------------------------------------------------------- | ------ |
-| 1.1      | Phase 1.1 | Add `VerificationToken` and `User` models to `schema.prisma` and run migrations. | [x]    |
-| 1.2      | Phase 1.2 | Implement `generateVerificationToken()` utility function in `src/lib/auth.ts`.   | [x]    |
-| 1.3      | Phase 1.3 | Create Resend API worker service `src/services/email.ts`.                        | [/]    |
+
+### 1.1 Add authentication models
+
+- [x] Add `VerificationToken` and `User` models to `schema.prisma` and run migrations
+
+### 1.2 Implement token generation
+
+- [x] Implement `generateVerificationToken()` in `src/lib/auth.ts`
+
+### 1.3 Create the email service
+
+- [ ] Create the Resend API worker in `src/services/email.ts`
 
 ## Phase 2: Frontend UI
-| Priority | Phase     | Description                                                                 | Status |
-| -------- | --------- | --------------------------------------------------------------------------- | ------ |
-| 2.1      | Phase 2.1 | Build basic styling for `<LoginForm />` using Tailwind spacing standard.    | [ ]    |
-| 2.2      | Phase 2.2 | Wire `<LoginForm />` to action and handle server-side errors (Zod mapping). | [ ]    |
-````
+
+### 2.1 Style the login form
+
+- [ ] Build `<LoginForm />` styling using the Tailwind spacing standard
+
+### 2.2 Wire login submission
+
+- [ ] Connect `<LoginForm />` to the action and map server-side Zod errors
+
+## Work Sessions
+
+| Date | Task | Action | Files Modified | Agent | Human |
+| ---- | ---- | ------ | -------------- | ----- | ----- |
+```
 
 </details>
 
@@ -479,7 +496,7 @@ updated_at: 2025-10-24T14:32:00.000Z
 tags: [auth, logs]
 ---
 
-# Agent Session: 2025-10-24T14:32:00Z
+# Agent Session: 2025-10-24T14:32:00.000Z
 
 **Agent**: Claude 3.5 Sonnet
 **Goal**: Complete Phase 1.1 and 1.2.
@@ -511,7 +528,7 @@ id: 0042
 type: ADR
 status: Approved
 owner: "@rix"
-date: 2025-10-24T14:32:00Z
+date: 2025-10-24T14:32:00.000Z
 tags: [database, orm, performance]
 ---
 

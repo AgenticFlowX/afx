@@ -62,7 +62,7 @@ Results: {X} passed, {Y} failed, {Z} skipped
 ### Traceability
 
 - [ ] Session Log updated
-- [ ] Task checkbox marked (if task-based)
+- [ ] Proven completion criteria marked (if task-based)
 - [ ] Discovered Issues documented (See [Bidirectional Traceability](#bidirectional-traceability-mandatory))
 
 Next: /afx-check path {feature-path} # Verify after tests pass

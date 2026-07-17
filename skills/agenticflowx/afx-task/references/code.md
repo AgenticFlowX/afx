@@ -21,7 +21,7 @@
    - Follow existing code patterns and architecture in the project
    - Run build/test/lint as needed
 
-**`code all <name>` variant:** Resolve the feature's `tasks.md`, collect all unchecked task IDs in document order, and run the same `code {id}` implementation flow for each task one at a time. Stop after the first failed build/test/verification gate and report the next remaining task instead of continuing blindly.
+**`code all <name>` variant:** Resolve the feature's `tasks.md`, collect task-group IDs with at least one unchecked completion criterion in document order, and run the same `code {id}` implementation flow for each task one at a time. Stop after the first failed build/test/verification gate and report the next remaining task instead of continuing blindly.
 
 ## Code Drift Guardrail (MANDATORY)
 

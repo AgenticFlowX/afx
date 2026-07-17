@@ -114,8 +114,8 @@ switch (cmd) {
     const startIdx = h.line - 1;
     const content = sectionAt(startIdx + 1, h.level);
     const criteria = content
-      .filter(x => /^\s*-\s*\[[ xX]\]/.test(x))
-      .map(x => ({ done: /\[[xX]\]/.test(x), text: x.replace(/^\s*-\s*\[[ xX]\]\s*/, '') }));
+      .filter(x => /^-\s+\[[ xX]\]\s+/.test(x))
+      .map(x => ({ done: /\[[xX]\]/.test(x), text: x.replace(/^-\s+\[[ xX]\]\s*/, '') }));
     const files = (content.join('\n').match(/<!--\s*files:\s*([^>]*?)-->/) || [])[1];
     out({
       file, task: id, title: h.title,
@@ -130,7 +130,9 @@ switch (cmd) {
     const offset = optNum('--offset', 0);
     const items = [];
     lines.forEach((ln, i) => {
-      const m = ln.match(/^###\s+([A-Z]+-D\d+)\s*-\s*(.*)$/);
+      // New documents use an ASCII hyphen. Read the em dash too because it was
+      // emitted by shipped AFX examples before the separator was canonicalized.
+      const m = ln.match(/^###\s+([A-Z]{2,4}-D\d{3})\s+(?:-|—)\s+(.*)$/);
       if (m) items.push({ line: i + 1, id: m[1], title: m[2].trim() });
     });
     const recent = items.reverse().slice(offset, offset + limit);
@@ -141,7 +143,7 @@ switch (cmd) {
     const heads = headingMap().filter(h => h.wbs);
     const groups = heads.map(h => {
       const content = sectionAt(h.line, h.level);
-      const crit = content.filter(x => /^\s*-\s*\[[ xX]\]/.test(x));
+      const crit = content.filter(x => /^-\s+\[[ xX]\]\s+/.test(x));
       const done = crit.filter(x => /\[[xX]\]/.test(x)).length;
       return { id: h.wbs, title: h.title, criteria: crit.length, done, complete: crit.length > 0 && done === crit.length };
     });

@@ -134,7 +134,6 @@ spec: spec.md
 ---
 afx: true
 type: TASKS
-status: Draft
 owner: "@rix"
 version: "1.0"
 created_at: "2026-03-31T14:30:00.000Z"
@@ -144,6 +143,8 @@ spec: spec.md
 design: design.md
 ---
 ```
+
+`tasks.md` has no lifecycle `status`; Planned/In Progress/Complete is derived from its WBS task groups, completion criteria, and Work Sessions.
 
 ---
 

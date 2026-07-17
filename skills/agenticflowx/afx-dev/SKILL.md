@@ -139,7 +139,7 @@ Timestamps use ISO 8601 millisecond precision — see `../afx-help/references/ti
 | Artifact             | When to Update                              |
 | -------------------- | ------------------------------------------- |
 | GitHub Session Log   | Always (date, task, action, files modified) |
-| Task Checkboxes      | Always for task-based work                  |
+| Completion Criteria  | Always for task-based work                  |
 | Discovered Issues    | If edge cases or issues found               |
 | `@see` links in code | Always for new code                         |
 

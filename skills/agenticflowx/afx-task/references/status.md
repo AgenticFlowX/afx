@@ -4,8 +4,8 @@
 
 **Implementation:**
 
-1. Read tasks.md, count total tasks per phase
-2. Count completed (`[x]`) vs total tasks per phase
+1. Read tasks.md and count `### N.N` task groups per phase
+2. Derive each task group's progress from its completion criteria: Planned = none checked, In Progress = some checked, Complete = at least one criterion and all checked
 3. Find blocked tasks (dependency not met) and next actionable task
 4. Output progress bars + next action suggestion
 

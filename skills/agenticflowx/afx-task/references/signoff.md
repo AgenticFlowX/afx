@@ -6,7 +6,7 @@
 
 The strict gate (`ready`) holds when **all four** conditions are true:
 
-1. Every body checkbox in `tasks.md` is `[x]` — the implementation work is finished.
+1. Every task-group completion-criteria checkbox in `tasks.md` is `[x]` — the implementation work is finished.
 2. Every Work Sessions row has `Agent: [x]` — the agent has verified each completed task.
 3. At least one Work Sessions row still has `Human: [ ]` — there is something to sign off.
 4. `tasks.md` is the active editor (UI hosts only; CLI surfaces resolve the file from arguments).

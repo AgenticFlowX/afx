@@ -2,6 +2,8 @@
 
 Use `../afx-help/scripts/afx-doc-query.mjs` for targeted reads when resolving frontmatter, sections, task groups, recent journal entries, or derived task status.
 
+For task documents, the helper treats each `### N.N` heading as one dispatchable task group. Column-zero checkboxes inside that group are completion criteria; `status` reports Planned/In Progress/Complete per task group rather than counting each checkbox as a separate task.
+
 ## Runtime Contract
 
 1. Check `node --version` before the first helper use in a session.

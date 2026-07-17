@@ -19,7 +19,8 @@
    - Field order is canonical: `afx → type → status → owner → version → created_at → updated_at → tags → [depends_on]`
 3. **Frontmatter Validation** (sibling files):
    - Each has `afx: true` and correct `type` (DESIGN, TASKS, JOURNAL)
-   - Each has `status` field
+   - `design.md` has a lifecycle `status` field (`Draft`, `Approved`, or `Superseded`)
+   - `tasks.md` and `journal.md` have no lifecycle `status`: task progress is derived from task groups and Work Sessions; journals are append-only
 4. **Requirement ID Check** (spec.md):
    - Every row in the Functional Requirements table has a `FR-N` ID
    - Every row in the Non-Functional Requirements table has a `NFR-N` ID

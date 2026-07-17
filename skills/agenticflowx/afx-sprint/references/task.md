@@ -41,8 +41,8 @@ Refine the **Tasks** section (phased hierarchical checklist with `@see` anchors 
 
 1. **Check gate**.
 2. **Read Tasks section**.
-3. **Run mini-audit**: every task group has `@see` comment; every `[FR-X]`/`[NFR-X]`/`[DES-X]` from earlier sections appears in at least one `@see`; all task items are valid `- [ ]` checkboxes.
-4. **If audit fails**: report the exact gaps (missing `@see`, uncovered anchors, malformed checkboxes).
+3. **Run mini-audit**: every WBS task group has an `@see` comment and at least one column-zero completion-criteria checkbox; every `[FR-X]`/`[NFR-X]`/`[DES-X]` from earlier sections appears in at least one `@see`; all criteria use valid `- [ ]` checkboxes.
+4. **If audit fails**: report the exact gaps (missing `@see`, uncovered anchors, missing criteria, malformed checkboxes).
 5. **If audit passes**: Edit `approval.tasks` → `Approved`. Also set top-level `status` → `Approved`. Update `updated_at`. Capture to journal.
 
 ### Output (refinement)

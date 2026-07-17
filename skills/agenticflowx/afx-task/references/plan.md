@@ -31,19 +31,20 @@
 
    **FORMAT ENFORCEMENT** — AFX parsers (CLI, the VS Code extension, and any other AFX-aware tool) will silently break if these are violated. See **Template Format Rules (CRITICAL)** (`references/task-format.md`) for the full regex reference.
    - Phase headers MUST be `## Phase N: {Name}` (h2, the word "Phase", a digit, colon, name)
-   - Task checkboxes MUST be `- [ ] {text}` at column 0 — NO indentation, NO bold task ID prefix
-   - Each `- [ ]` line = one task when rendered by AFX tools. Do NOT use checkboxes for acceptance criteria sub-items
+   - Each `### N.N {Task Group Name}` heading is one dispatchable task with a stable WBS ID
+   - Completion-criteria checkboxes MUST be `- [ ] {text}` at column 0 — NO indentation, NO bold task ID prefix
+   - Each `- [ ]` line is one completion criterion for its enclosing task group; nested notes/evidence MUST NOT use checkboxes
    - Section order: Phases first, then Cross-Reference Index, then Work Sessions (last)
    - Cross-Reference Index MUST come AFTER all Phase sections, never before
 
    **Task content requirements:**
    - Organize into phases (setup, core, integration, testing, docs)
-   - Each task must have:
+   - Each task group must have:
      - WBS numbering (Phase.Task, e.g., `1.1`, `2.3`)
      - Clear description of what to implement
      - File scope — list the specific files this task creates or modifies (use `<!-- files: ... -->` comment)
      - `@see` links using Node ID syntax with **full paths** (use `<!-- @see docs/specs/{feature}/design.md [DES-API] | docs/specs/{feature}/spec.md [FR-1] -->` comment)
-     - Acceptance criteria — as plain text or indented sub-items, NOT as checkboxes
+     - One or more completion criteria — column-zero checkboxes; supporting detail/evidence may use plain indented sub-items
    - **Parallelization**: Tasks within a phase should be **independent by default** — no shared mutable state, no file overlap. When two tasks in the same phase DO depend on each other, note the dependency explicitly: `<!-- depends: 1.1 -->`. Cross-phase dependencies are implicit (phase N depends on phase N-1).
    - Order phases by dependency (setup before core, core before integration)
    - Generate Cross-Reference Index table linking tasks → spec requirements → design sections
