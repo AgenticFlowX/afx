@@ -176,10 +176,10 @@ agents:
 packs:
   - name: afx-pack-agenticflowx
     installed_ref: main
-    installed_at: 2025-10-24T14:00:00Z
+    installed_at: 2025-10-24T14:00:00.000Z
   - name: afx-pack-qa
     installed_ref: main
-    installed_at: 2025-10-24T14:05:00Z
+    installed_at: 2025-10-24T14:05:00.000Z
 
 skills:
   - name: afx-clean-code

@@ -647,6 +647,29 @@ resolve_ref() {
     fi
 }
 
+# Resolve the display/release version without requiring network access for a
+# local checkout. skills.json is the canonical pack/plugin version source.
+resolve_afx_version() {
+    local ref="$1"
+    local resolved=""
+
+    if [[ -n "$SOURCE_DIR" ]]; then
+        if [[ -f "$SOURCE_DIR/skills.json" ]]; then
+            resolved=$(awk -F'"' '/"version"[[:space:]]*:/ { print $4; exit }' \
+                "$SOURCE_DIR/skills.json")
+        elif [[ -f "$SOURCE_DIR/CHANGELOG.md" ]]; then
+            resolved=$(awk '/^## \[/ { print substr($2, 2, length($2) - 2); exit }' \
+                "$SOURCE_DIR/CHANGELOG.md")
+        fi
+    else
+        resolved=$(curl -sL \
+            "https://raw.githubusercontent.com/${AFX_REPO}/${ref}/CHANGELOG.md" \
+            | awk '/^## \[/ { print substr($2, 2, length($2) - 2); exit }')
+    fi
+
+    [[ -n "$resolved" ]] && echo "$resolved" || echo "Unknown"
+}
+
 # Fetch a pack manifest YAML from raw.githubusercontent.com
 # @see docs/specs/afx-packs/design.md#34-download-strategy
 fetch_manifest() {
@@ -889,7 +912,7 @@ afx_yaml_set_pack() {
             elif $in_target && [[ "$line" =~ ^\ \ \ \ installed_ref: ]]; then
                 echo "    installed_ref: $ref" >> "$temp"
             elif $in_target && [[ "$line" =~ ^\ \ \ \ installed_at: ]]; then
-                echo "    installed_at: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$temp"
+                echo "    installed_at: $(afx_timestamp)" >> "$temp"
             else
                 echo "$line" >> "$temp"
             fi
@@ -906,7 +929,7 @@ afx_yaml_set_pack() {
         entry=$(cat <<PACKEOF
   - name: $pack_name
     installed_ref: $ref
-    installed_at: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+    installed_at: $(afx_timestamp)
 PACKEOF
 )
         local temp=$(afx_mktemp)
@@ -1519,6 +1542,41 @@ pack_list() {
     fi
 }
 
+# Reconcile only AFX-authored content during a local/offline pack refresh.
+# Upstream standard skills are not available from --source and must remain
+# cached, while AFX skills removed from the current manifest must be deleted.
+pack_reconcile_local_afx() {
+    local pack_name="$1"
+    local category
+    category=$(category_from_pack "$pack_name")
+    local manifest="$SOURCE_DIR/packs/$pack_name.yaml"
+    [[ -f "$manifest" ]] || return 0
+
+    local declared="|"
+    local include_line repo items_str item_name
+    while IFS= read -r include_line; do
+        [[ -z "$include_line" ]] && continue
+        repo=$(echo "$include_line" | awk '{ print $1 }')
+        [[ "$repo" == "$AFX_REPO" ]] || continue
+        items_str=$(echo "$include_line" | cut -d' ' -f3-)
+        for item_name in $items_str; do
+            declared+="$item_name|"
+        done
+    done < <(for_each_include "$manifest")
+
+    local skills_dir="$TARGET_DIR/.afx/skills/$category"
+    local skill_dir item_type
+    [[ -d "$skills_dir" ]] || return 0
+    for skill_dir in "$skills_dir"/*/; do
+        [[ -d "$skill_dir" ]] || continue
+        item_name=$(basename "$skill_dir")
+        [[ "$declared" == *"|$item_name|"* ]] && continue
+        item_type=$(afx_yaml_skill_field "$item_name" item_type || true)
+        [[ "$item_type" == "afx" ]] || continue
+        pack_remove_skill "$item_name" "$pack_name" "$category"
+    done
+}
+
 pack_update_all() {
     echo -e "${BLUE}Updating installed packs...${NC}"
     echo ""
@@ -1527,16 +1585,32 @@ pack_update_all() {
     index_ref=$(resolve_ref) || exit 1
     if [[ "$DRY_RUN" != "true" ]]; then
         mkdir -p "$TARGET_DIR/.afx/.cache"
-        vlog "fetching skills index: skills.json (ref: $index_ref)"
-        curl -sL "https://raw.githubusercontent.com/${AFX_REPO}/${index_ref}/skills.json" \
-            > "$TARGET_DIR/.afx/.cache/lastIndex.json" 2>/dev/null
+        if [[ -n "$SOURCE_DIR" ]]; then
+            if [[ ! -f "$SOURCE_DIR/skills.json" ]]; then
+                echo -e "${RED}Error: Local source is missing skills.json: $SOURCE_DIR${NC}" >&2
+                return 1
+            fi
+            vlog "copying local skills index: $SOURCE_DIR/skills.json"
+            cp "$SOURCE_DIR/skills.json" "$TARGET_DIR/.afx/.cache/lastIndex.json"
+        else
+            vlog "fetching skills index: skills.json (ref: $index_ref)"
+            curl -sfL "https://raw.githubusercontent.com/${AFX_REPO}/${index_ref}/skills.json" \
+                > "$TARGET_DIR/.afx/.cache/lastIndex.json" 2>/dev/null
+        fi
     fi
 
     local updated=0
     while IFS=: read -r pack_name pack_ref; do
         [[ -z "$pack_name" ]] && continue
         echo -e "${BLUE}Updating $pack_name (ref: $pack_ref)...${NC}"
-        pack_remove "$pack_name"
+        # Local-source mode intentionally skips upstream standard-skill
+        # downloads. Refresh in place so their cached canonical/provider copies
+        # and ownership metadata are not destroyed while offline.
+        if [[ -n "$SOURCE_DIR" ]]; then
+            pack_reconcile_local_afx "$pack_name"
+        else
+            pack_remove "$pack_name"
+        fi
         pack_install "$pack_name" "$pack_ref"
         ((++updated))
     done < <(afx_yaml_all_packs)
@@ -2054,11 +2128,8 @@ elif [[ -f "$TARGET_DIR/.afx.yaml" ]]; then
     fi
 fi
 vlog "resolved ref: $_afx_ref"
-vlog "fetching version from CHANGELOG.md (ref: $_afx_ref)"
-AFX_VERSION=$(curl -sL "https://raw.githubusercontent.com/${AFX_REPO}/${_afx_ref}/CHANGELOG.md" | awk '/^## \[/ {print substr($2, 2, length($2)-2); exit}')
-if [ -z "$AFX_VERSION" ]; then
-    AFX_VERSION="Unknown"
-fi
+vlog "resolving version (ref: $_afx_ref)"
+AFX_VERSION=$(resolve_afx_version "$_afx_ref")
 vlog "resolved version: $AFX_VERSION"
 
 # Header
