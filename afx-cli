@@ -80,6 +80,19 @@ INSTALLED=()
 UPDATED=()
 SKIPPED=()
 
+record_installed_once() {
+    local item="$1"
+    local existing
+    for existing in "${INSTALLED[@]}"; do
+        [[ "$existing" == "$item" ]] && return 0
+    done
+    INSTALLED+=("$item")
+}
+
+afx_timestamp() {
+    date -u +"%Y-%m-%dT%H:%M:%S.000Z"
+}
+
 # ============================================================================
 # Section 3: Argument Parsing
 # ============================================================================
@@ -958,9 +971,12 @@ afx_yaml_add_skill() {
     local yaml="$TARGET_DIR/.afx.yaml"
     [[ "$DRY_RUN" == "true" ]] && return 0
 
-    # Skip if skill already exists (idempotent)
+    # Keep the workflow pack authoritative when another pack reuses one of
+    # its skills (for example Starter also declares afx-hello). Existing
+    # configs still store exactly one owner per skill.
     if grep -q "^  - name: ${skill_name}$" "$yaml" 2>/dev/null; then
-        return 0
+        [[ "$source" == "afx-pack-agenticflowx" ]] || return 0
+        afx_yaml_remove_skill "$skill_name"
     fi
 
     # Ensure skills: section exists
@@ -1066,6 +1082,50 @@ afx_yaml_skills_for_pack() {
     [[ -n "$name" && "$source" == "$source_pack" ]] && echo "$name:$category"
 }
 
+# Read one field from the current single-owner skill entry in .afx.yaml.
+afx_yaml_skill_field() {
+    local skill_name="$1"
+    local field="$2"
+    local yaml="$TARGET_DIR/.afx.yaml"
+    [[ -f "$yaml" ]] || return 1
+
+    awk -v skill="$skill_name" -v field="$field" '
+        $0 == "  - name: " skill { in_skill = 1; next }
+        in_skill && /^  - name:/ { exit 1 }
+        in_skill {
+            prefix = "    " field ":"
+            if (index($0, prefix) == 1) {
+                value = substr($0, length(prefix) + 1)
+                sub(/^[[:space:]]*/, "", value)
+                print value
+                found = 1
+                exit
+            }
+        }
+        END { if (!found) exit 1 }
+    ' "$yaml"
+}
+
+# Read the current single owner of a skill from .afx.yaml.
+afx_yaml_skill_source() {
+    afx_yaml_skill_field "$1" source
+}
+
+# Resolve the installed pack that owns a canonical skill category.
+afx_yaml_pack_for_category() {
+    local wanted_category="$1"
+    if [[ "$wanted_category" == "custom" ]]; then
+        echo "custom"
+        return 0
+    fi
+    local pack_name="afx-pack-$wanted_category"
+    if afx_yaml_all_packs | grep -q "^${pack_name}:"; then
+        echo "$pack_name"
+        return 0
+    fi
+    return 1
+}
+
 # ============================================================================
 # Section 7: Pack Lifecycle Functions
 # @see docs/specs/afx-packs/design.md#39-state-transitions
@@ -1108,7 +1168,26 @@ skill_sync() {
         [[ -n "$target_labels" ]] && target_labels+=" + "
         target_labels+="$target/$skill_name"
     done
-    INSTALLED+=("  → $target_labels")
+    record_installed_once "  → $target_labels"
+}
+
+# Sync the provider copies from the owner recorded in .afx.yaml. A duplicate
+# pack may keep its own canonical cache, but it must not overwrite content from
+# the current owner (especially protected AgenticFlowX workflow skills).
+skill_sync_owner() {
+    local skill_name="$1"
+    local category=""
+    local item_type=""
+    category=$(afx_yaml_skill_field "$skill_name" category || true)
+    item_type=$(afx_yaml_skill_field "$skill_name" item_type || true)
+    [[ -n "$category" ]] || return 0
+
+    if [[ -z "$item_type" ]]; then
+        item_type="afx"
+        [[ -f "$TARGET_DIR/.afx/skills/$category/$skill_name/.claude-plugin/plugin.json" ]] \
+            && item_type="plugin"
+    fi
+    skill_sync "$skill_name" "$category" "$item_type"
 }
 
 # Sync all skills from a pack to .agents/skills/ and .claude/skills/
@@ -1129,25 +1208,8 @@ pack_sync() {
         else
             item_type="afx"
         fi
-        skill_sync "$name" "$category" "$item_type"
+        skill_sync_owner "$name"
     done
-}
-
-# Remove all skill copies from .agents/skills/ and .claude/skills/ for a given pack
-pack_remove_from_agents() {
-    local pack_name="$1"
-
-    if [[ "$DRY_RUN" == "true" ]]; then
-        echo -e "  ${CYAN}(would remove skill copies for $pack_name)${NC}"
-        return 0
-    fi
-
-    # Read skill names from .afx.yaml for this pack
-    while IFS=: read -r name category; do
-        [[ -z "$name" ]] && continue
-        rm -rf "$TARGET_DIR/.agents/skills/$name"
-        rm -rf "$TARGET_DIR/.claude/skills/$name"
-    done < <(afx_yaml_skills_for_pack "$pack_name")
 }
 
 normalize_pack_name() {
@@ -1217,7 +1279,7 @@ pack_install() {
                 if [[ "$DRY_RUN" != "true" ]]; then
                     route_item "$item_dir" "$item_name" "$type" "$category"
                     afx_yaml_add_skill "$item_name" "$category" "$pack_name" "$type"
-                    skill_sync "$item_name" "$category" "$type"
+                    skill_sync_owner "$item_name"
                 else
                     INSTALLED+=("  ↓ $item_name ($type)")
                 fi
@@ -1267,7 +1329,7 @@ pack_install() {
             if [[ "$DRY_RUN" != "true" ]]; then
                 route_item "$item_dir" "$item_name" "$type" "$category"
                 afx_yaml_add_skill "$item_name" "$category" "$pack_name" "$type"
-                skill_sync "$item_name" "$category" "$type"
+                skill_sync_owner "$item_name"
             else
                 INSTALLED+=("  ↓ $item_name ($type)")
             fi
@@ -1283,6 +1345,63 @@ pack_install() {
     echo ""
 }
 
+pack_remove_skill() {
+    local name="$1"
+    local pack_name="$2"
+    local category="$3"
+    local current_source=""
+    current_source=$(afx_yaml_skill_source "$name" || true)
+
+    rm -rf "$TARGET_DIR/.afx/skills/$category/$name"
+
+    local replacement_category=""
+    local replacement_source=""
+    local candidate candidate_category candidate_source
+    local protected_candidate="$TARGET_DIR/.afx/skills/agenticflowx/$name"
+    if [[ -d "$protected_candidate" ]] \
+        && candidate_source=$(afx_yaml_pack_for_category agenticflowx); then
+        replacement_category="agenticflowx"
+        replacement_source="$candidate_source"
+    else
+        for candidate in "$TARGET_DIR/.afx/skills"/*/"$name"; do
+            [[ -d "$candidate" ]] || continue
+            candidate_category=$(basename "$(dirname "$candidate")")
+            if candidate_source=$(afx_yaml_pack_for_category "$candidate_category"); then
+                replacement_category="$candidate_category"
+                replacement_source="$candidate_source"
+                break
+            fi
+        done
+    fi
+
+    if [[ -n "$replacement_category" ]]; then
+        local replacement_dir="$TARGET_DIR/.afx/skills/$replacement_category/$name"
+        local item_type="afx"
+        [[ -f "$replacement_dir/.claude-plugin/plugin.json" ]] && item_type="plugin"
+
+        # Existing configs intentionally store one owner per skill. Prefer the
+        # protected workflow pack, or transfer ownership away from this pack.
+        if [[ "$replacement_source" == "afx-pack-agenticflowx" \
+            || -z "$current_source" || "$current_source" == "$pack_name" ]]; then
+            afx_yaml_remove_skill "$name"
+            afx_yaml_add_skill "$name" "$replacement_category" "$replacement_source" "$item_type"
+        else
+            local owner_category
+            owner_category=$(category_from_pack "$current_source")
+            if [[ -d "$TARGET_DIR/.afx/skills/$owner_category/$name" ]]; then
+                replacement_category="$owner_category"
+                [[ -f "$TARGET_DIR/.afx/skills/$owner_category/$name/.claude-plugin/plugin.json" ]] \
+                    && item_type="plugin" || item_type="afx"
+            fi
+        fi
+        skill_sync "$name" "$replacement_category" "$item_type"
+    elif [[ -z "$current_source" || "$current_source" == "$pack_name" ]]; then
+        rm -rf "$TARGET_DIR/.agents/skills/$name"
+        rm -rf "$TARGET_DIR/.claude/skills/$name"
+        afx_yaml_remove_skill "$name"
+    fi
+}
+
 pack_remove() {
     local input_name="$1"
     local pack_name
@@ -1290,20 +1409,25 @@ pack_remove() {
     local category
     category=$(category_from_pack "$pack_name")
 
-    # Remove skill copies from .agents/skills/
-    pack_remove_from_agents "$pack_name"
+    if [[ "$DRY_RUN" == "true" ]]; then
+        echo -e "  ${CYAN}(would remove canonical skills for $pack_name and retain shared skills)${NC}"
+    else
+        local skills_dir="$TARGET_DIR/.afx/skills/$category"
+        if [[ -d "$skills_dir" ]]; then
+            for skill_dir in "$skills_dir"/*/; do
+                [[ -d "$skill_dir" ]] || continue
+                pack_remove_skill "$(basename "$skill_dir")" "$pack_name" "$category"
+            done
+        fi
 
-    # Remove canonical skills
-    if [[ "$DRY_RUN" != "true" ]]; then
+        # Older configs may have a valid owner entry but a partial canonical
+        # cache. Rehome those remaining entries through the same safe path.
         while IFS=: read -r name cat; do
             [[ -z "$name" ]] && continue
-            rm -rf "$TARGET_DIR/.afx/skills/$cat/$name"
-            afx_yaml_remove_skill "$name"
+            pack_remove_skill "$name" "$pack_name" "$cat"
         done < <(afx_yaml_skills_for_pack "$pack_name")
 
-        # Clean up empty category dir
-        [[ -d "$TARGET_DIR/.afx/skills/$category" ]] && \
-            rmdir "$TARGET_DIR/.afx/skills/$category" 2>/dev/null || true
+        [[ -d "$skills_dir" ]] && rmdir "$skills_dir" 2>/dev/null || true
     fi
 
     afx_yaml_remove_pack "$pack_name"
@@ -1369,10 +1493,22 @@ pack_list() {
         has_packs=true
         echo -e "  ${GREEN}●${NC} $name (ref: $ref)"
 
-        # Show skills for this pack
-        while IFS=: read -r skill_name category; do
-            echo -e "    ${DIM}$skill_name${NC}"
-        done < <(afx_yaml_skills_for_pack "$name")
+        # Membership comes from the per-pack canonical category. .afx.yaml
+        # keeps a single owner per skill for backward compatibility, so it
+        # cannot by itself represent a skill shared by multiple packs.
+        local category
+        category=$(category_from_pack "$name")
+        local skills_dir="$TARGET_DIR/.afx/skills/$category"
+        if [[ -d "$skills_dir" ]]; then
+            for skill_dir in "$skills_dir"/*/; do
+                [[ -d "$skill_dir" ]] || continue
+                echo -e "    ${DIM}$(basename "$skill_dir")${NC}"
+            done
+        else
+            while IFS=: read -r skill_name skill_category; do
+                echo -e "    ${DIM}$skill_name${NC}"
+            done < <(afx_yaml_skills_for_pack "$name")
+        fi
     done < <(afx_yaml_all_packs)
 
     if [[ "$has_packs" == "false" ]]; then
@@ -1435,7 +1571,7 @@ add_skill() {
     if [[ "$DRY_RUN" != "true" ]]; then
         route_item "$item_dir" "$skill_name" "$type" "custom"
         afx_yaml_add_skill "$skill_name" "custom" "custom" "$type"
-        skill_sync "$skill_name" "custom" "$type"
+        skill_sync_owner "$skill_name"
     fi
 
     rm -rf "$temp"
@@ -1490,15 +1626,18 @@ step_skills() {
     fi
 
     local synced=0
+    local synced_names="|"
     for category_dir in "$canonical_root"/*/; do
         [ -d "$category_dir" ] || continue
         local category=$(basename "$category_dir")
         for skill_dir in "$category_dir"*/; do
             [ -d "$skill_dir" ] || continue
             local skill_name=$(basename "$skill_dir")
+            [[ "$synced_names" == *"|$skill_name|"* ]] && continue
+            synced_names+="$skill_name|"
             # pack_install already called skill_sync; avoid duplicate summary entries
             if [[ "$UPDATE_MODE" != "true" ]] || [[ ${#configured_packs[@]} -eq 0 ]]; then
-                skill_sync "$skill_name" "$category"
+                skill_sync_owner "$skill_name"
             fi
             ((++synced))
         done

@@ -92,8 +92,9 @@ for (const pf of packFiles) {
 function writeJson(p, o) { mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, JSON.stringify(o, null, 2) + '\n'); }
 
 // Cross-pack drift guard: a skill name shared by multiple packs (e.g. afx-hello in
-// starter + agenticflowx) MUST have identical SKILL.md content, since afx-cli installs
-// by skill name into a flat .claude/skills/<name> and the last pack wins.
+// starter + agenticflowx) MUST have identical source content. afx-cli protects the
+// recorded owner in its flat provider namespace, and may transfer that ownership
+// when a pack is removed.
 const byName = {};
 for (const pf of packFiles) {
   const pack = parsePack(join(ROOT, 'packs', pf));
