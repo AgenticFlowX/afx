@@ -4,7 +4,7 @@
 # @see docs/specs/afx-packs/design.md#11-pack-manifests
 
 name: afx-pack-security
-description: Security review and audit pack — OWASP, dependency scanning, code hardening
+description: Security review and audit pack — OWASP triage, threat modeling, dependency risk, and hardening plans
 category: role
 
 includes:
@@ -12,8 +12,8 @@ includes:
   - repo: AgenticFlowX/afx
     path: skills/security/
     items:
-      - afx-owasp-top-10 # OWASP top 10 checklist with @see tracing
-      - afx-security-audit # Security audit workflow
+      - afx-owasp-top-10 # OWASP Top 10 evidence review with @see tracing
+      - afx-security-audit # Security architecture audit and threat model workflow
 
   # Claude Code plugins (pristine — .claude-plugin/ format)
   - repo: anthropics/claude-code

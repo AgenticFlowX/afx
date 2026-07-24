@@ -23,7 +23,7 @@
         "providers": ["agents", "antigravity", "copilot"]
       },
       "afx-pack-security": {
-        "description": "Security review and audit pack — OWASP, dependency scanning, code hardening",
+        "description": "Security review and audit pack — OWASP triage, threat modeling, dependency risk, and hardening plans",
         "category": "role",
         "providers": ["agents", "antigravity", "copilot"]
       },
