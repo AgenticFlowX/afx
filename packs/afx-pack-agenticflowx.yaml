@@ -2,6 +2,9 @@
 # @see docs/specs/afx-packs/design.md [1.1]
 
 name: afx-pack-agenticflowx
+# Published Claude Code plugin name. Without this the builder derives "afx-agenticflowx";
+# the core pack ships as plain "afx" so skills invoke as /afx:afx-spec.
+plugin-name: afx
 description: AgenticFlowX workflow skills — spec-driven development commands for all AI coding agents
 category: workflow
 

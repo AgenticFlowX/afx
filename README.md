@@ -70,9 +70,40 @@ flowchart LR
 
 ## Quick Start
 
-> **OS Support**: Tested on macOS and Linux/WSL. Windows users: use **Git Bash** — tested and working.
->
 > **Optional acceleration**: **Node.js 18+** enables the AFX document query helper for fast, structured, low-context reads of spec/design/task documents. Without Node.js, AFX still works — skills fall back to targeted text search and warn once, broadening the read when needed. Install Node.js 18+ for faster structured loading.
+
+### Option A — Claude Code plugin (marketplace)
+
+This repo is a self-hosting Claude Code plugin marketplace. Inside Claude Code:
+
+```
+/plugin marketplace add AgenticFlowX/afx
+/plugin install afx@afx
+```
+
+Restart Claude Code, then verify with `/afx:hello`.
+
+`afx` is the core workflow pack (18 skills). Role add-ons are installed the same way:
+
+| Plugin                  | Skills | What you get                                             |
+| :---------------------- | :----- | :------------------------------------------------------- |
+| `afx@afx`               | 18     | **Core** — spec, design, task, sprint, session, and more |
+| `afx-dev@afx`           | 5      | Clean code, TDD, git workflows, debugging, patterns      |
+| `afx-qa@afx`            | 2      | QA methodology, spec test planning                       |
+| `afx-security@afx`      | 2      | OWASP Top 10 review, security audit                      |
+| `afx-architect@afx`     | 2      | Deep research, architecture patterns                     |
+| `afx-product-owner@afx` | 1      | Product discovery, prioritization, PRDs                  |
+| `afx-starter@afx`       | 1      | `afx-hello` install verification only                    |
+
+> **Command form differs by install method.** Plugins namespace by plugin name, so the redundant prefix is dropped: `/afx-spec` becomes `/afx:spec`, `/afx-task` becomes `/afx:task`. Add-on packs follow the same rule — `/afx-tdd` becomes `/afx-dev:tdd`. The command word is identical either way; only the separator changes. Documentation throughout this repo uses the `afx-cli` form.
+>
+> Pick one install method per project — don't combine both, or every skill loads twice.
+
+### Option B — afx-cli installer (all agents)
+
+Use this for multi-agent setups (Codex, Copilot, etc. via `.agents/skills/`), project-local `.claude/skills/`, templates, docs, and `CLAUDE.md`/`AGENTS.md` wiring.
+
+> **OS Support**: Tested on macOS and Linux/WSL. Windows users: use **Git Bash** — tested and working.
 
 ```bash
 # From your project directory

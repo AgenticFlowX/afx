@@ -77,6 +77,15 @@ When invoked, perform these checks and report results:
    - `.agents/skills/` directory exists (if multi-agent)
    - `CLAUDE.md` exists and references AFX
 
+   **Detect the install method.** AFX skills reach a project two ways, and the expected file layout differs:
+
+   | Signal                                                             | Install method     | Expected                                                  |
+   | ------------------------------------------------------------------ | ------------------ | --------------------------------------------------------- |
+   | Skills present in `.claude/skills/` or `.agents/skills/`           | `afx-cli`          | `.afx.yaml`, `CLAUDE.md`/`AGENTS.md`, `docs/` all present |
+   | Skills running but absent from those dirs (loaded from the plugin) | Claude Code plugin | Skills only — no `.afx.yaml`, no `CLAUDE.md` wiring       |
+
+   A plugin install with no `.afx.yaml` is **not a broken install** — the plugin ships skills only. Report it as an actionable gap, not an error, and recommend `/afx-scaffold init` to write a minimal config. Do not create the file yourself; this skill is read-only.
+
 3. **Skill Availability**
    - List all installed AFX skills (scan skill directories)
    - Flag any expected skills that are missing
@@ -93,6 +102,7 @@ When invoked, perform these checks and report results:
 
 **Agent**: Claude Code (claude-opus-4-6)
 **Workspace**: /path/to/project
+**Install method**: afx-cli
 
 ### Installation
 
@@ -119,4 +129,30 @@ Ready to go! Try:
 /afx-next # What should I do now?
 /afx-spec create <name> # Start a new feature
 /afx-discover capabilities # Explore the project
+```
+
+**Plugin install with no config** — report the gap and the one-step fix:
+
+```markdown
+## AFX Environment Check
+
+**Agent**: Claude Code (claude-opus-4-6)
+**Workspace**: /path/to/project
+**Install method**: Claude Code plugin (afx@afx)
+
+### Installation
+
+| Component  | Status | Note                                       |
+| ---------- | ------ | ------------------------------------------ |
+| Skills     | ✓      | 18 loaded from plugin                      |
+| Templates  | ✓      | Bundled in skill assets/                   |
+| .afx.yaml  | ✗      | Not created — the plugin ships skills only |
+| docs/specs | ✗      | Not created                                |
+
+### Next Step
+
+Run `/afx-scaffold init` to write a minimal `.afx.yaml` and create `docs/specs/` + `docs/adr/`.
+
+For full project setup (CLAUDE.md wiring, framework docs, multi-agent skills),
+use the installer instead: `curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .`
 ```

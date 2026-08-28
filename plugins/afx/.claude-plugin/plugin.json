@@ -1,0 +1,27 @@
+{
+  "name": "afx",
+  "version": "2.6.1",
+  "description": "AgenticFlowX workflow skills — spec-driven development commands for all AI coding agents. Node.js 18+ enables optional structured document queries; targeted-search fallback remains available.",
+  "author": {
+    "name": "AgenticFlowX",
+    "email": "noreply@agenticflowx.dev"
+  },
+  "homepage": "https://github.com/AgenticFlowX/afx#readme",
+  "repository": "https://github.com/AgenticFlowX/afx",
+  "license": "MIT",
+  "keywords": [
+    "afx",
+    "agenticflowx",
+    "workflow",
+    "spec",
+    "requirements",
+    "validation",
+    "lifecycle",
+    "design",
+    "architecture",
+    "task",
+    "implementation",
+    "coding"
+  ],
+  "skills": "./skills/"
+}

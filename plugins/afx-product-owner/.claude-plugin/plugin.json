@@ -1,0 +1,22 @@
+{
+  "name": "afx-product-owner",
+  "version": "2.6.1",
+  "description": "Product Owner role pack — discovery, prioritization, PRDs, and go-to-market",
+  "author": {
+    "name": "AgenticFlowX",
+    "email": "noreply@agenticflowx.dev"
+  },
+  "homepage": "https://github.com/AgenticFlowX/afx#readme",
+  "repository": "https://github.com/AgenticFlowX/afx",
+  "license": "MIT",
+  "keywords": [
+    "afx",
+    "agenticflowx",
+    "product",
+    "prioritization",
+    "prd",
+    "discovery",
+    "metrics"
+  ],
+  "skills": "./skills/"
+}

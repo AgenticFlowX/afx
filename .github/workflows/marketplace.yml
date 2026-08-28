@@ -1,0 +1,47 @@
+# Marketplace freshness guard — the committed plugin output (.claude-plugin/ + plugins/)
+# is generated from skills/ + packs/ + skills.json by scripts/build-plugins.mjs.
+# This job rebuilds and fails if the committed output is stale, so a skill or pack
+# change can never merge without regenerated plugins.
+name: marketplace
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "skills/**"
+      - "packs/**"
+      - "skills.json"
+      - "scripts/build-plugins.mjs"
+      - "plugins/**"
+      - ".claude-plugin/**"
+  pull_request:
+    paths:
+      - "skills/**"
+      - "packs/**"
+      - "skills.json"
+      - "scripts/build-plugins.mjs"
+      - "plugins/**"
+      - ".claude-plugin/**"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Rebuild marketplace output
+        run: node scripts/build-plugins.mjs
+      - name: Assert committed output is fresh
+        run: |
+          if ! git diff --exit-code --stat .claude-plugin plugins; then
+            echo "::error::Committed plugin output is stale. Run 'node scripts/build-plugins.mjs' and commit .claude-plugin/ + plugins/."
+            exit 1
+          fi
+          # Catch deleted-but-still-declared or newly generated untracked files too.
+          untracked=$(git ls-files --others --exclude-standard .claude-plugin plugins)
+          if [ -n "$untracked" ]; then
+            echo "::error::Generated files are untracked: $untracked"
+            exit 1
+          fi

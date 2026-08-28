@@ -1,0 +1,27 @@
+{
+  "name": "afx-dev",
+  "version": "2.6.1",
+  "description": "Developer essentials — clean code, debugging, TDD, git workflows, architecture patterns",
+  "author": {
+    "name": "AgenticFlowX",
+    "email": "noreply@agenticflowx.dev"
+  },
+  "homepage": "https://github.com/AgenticFlowX/afx#readme",
+  "repository": "https://github.com/AgenticFlowX/afx",
+  "license": "MIT",
+  "keywords": [
+    "afx",
+    "agenticflowx",
+    "debugging",
+    "root-cause",
+    "investigation",
+    "prevention",
+    "clean-code",
+    "readability",
+    "refactoring",
+    "code-quality",
+    "tdd",
+    "testing"
+  ],
+  "skills": "./skills/"
+}

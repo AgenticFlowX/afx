@@ -1,0 +1,21 @@
+{
+  "name": "afx-starter",
+  "version": "2.6.1",
+  "description": "Starter pack — verify AFX installation and multi-provider routing",
+  "author": {
+    "name": "AgenticFlowX",
+    "email": "noreply@agenticflowx.dev"
+  },
+  "homepage": "https://github.com/AgenticFlowX/afx#readme",
+  "repository": "https://github.com/AgenticFlowX/afx",
+  "license": "MIT",
+  "keywords": [
+    "afx",
+    "agenticflowx",
+    "workflow",
+    "diagnostics",
+    "environment",
+    "onboarding"
+  ],
+  "skills": "./skills/"
+}

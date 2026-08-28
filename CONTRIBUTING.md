@@ -70,6 +70,16 @@ Types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`
 
 Every PR that changes skill behavior, adds a command, or fixes a bug must include a `CHANGELOG.md` entry under `## [Unreleased]`.
 
+## Release
+
+Releases are cut from `main`. The Claude Code marketplace output (`.claude-plugin/` + `plugins/`) is generated and **committed** — it must be rebuilt whenever `skills/`, `packs/`, or the catalog version change (CI enforces this via `.github/workflows/marketplace.yml`).
+
+1. Bump `version` in `skills.json` (single source of truth for catalog + all plugin manifests)
+2. Move `## [Unreleased]` entries in `CHANGELOG.md` to the new version
+3. Regenerate marketplace output: `node scripts/build-plugins.mjs`
+4. Commit everything (including `.claude-plugin/` and `plugins/`), tag `v{VERSION}`, push with tags
+5. Create the GitHub release for the tag
+
 ## Questions?
 
 Open an issue for any questions about contributing.

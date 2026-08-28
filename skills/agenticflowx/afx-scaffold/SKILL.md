@@ -5,7 +5,7 @@ license: MIT
 metadata:
   afx-owner: "@rix"
   afx-tags: "workflow,scaffolding,feature,spec,research,adr"
-  afx-argument-hint: "spec | research | adr"
+  afx-argument-hint: "init | spec | research | adr"
 ---
 
 # /afx-scaffold
@@ -38,17 +38,19 @@ Templates are co-located with the skill that owns each artifact type.
 | `journal.md` | `/afx-spec create` | `afx-session/assets/journal-template.md` |
 | ADR          | `/afx-adr create`  | `afx-adr/assets/adr-template.md`         |
 
-**Directly owned** — this skill reads this template itself for the `research` subcommand:
+**Directly owned** — this skill reads these templates itself:
 
-| Artifact | Relative path (from this SKILL.md's folder)   |
-| -------- | --------------------------------------------- |
-| Research | `../afx-research/assets/research-template.md` |
+| Artifact       | Subcommand | Relative path (from this SKILL.md's folder)   |
+| -------------- | ---------- | --------------------------------------------- |
+| Research       | `research` | `../afx-research/assets/research-template.md` |
+| Project config | `init`     | `assets/afx-config-template.yaml`             |
 
 > **Path resolution:** The base is the folder containing this SKILL.md (e.g., `<skills-root>/afx-scaffold/`). `../afx-research/` means go up one level to `<skills-root>/`, then into `afx-research/`. Do NOT prepend `assets/` to the base.
 
 ## Usage
 
 ```bash
+/afx-scaffold init                # Bootstrap .afx.yaml + spec/ADR directories
 /afx-scaffold spec <name>         # Create new feature spec directory
 /afx-scaffold research <name>     # Create new research document
 /afx-scaffold adr <title>         # Delegates to /afx-adr create <title>
@@ -63,6 +65,7 @@ Templates are co-located with the skill that owns each artifact type.
   - `docs/specs/` (feature scaffolding)
   - `docs/research/` (research scaffolding)
   - `docs/adr/` (ADR creation — via delegation)
+- Create `.afx.yaml` **only when it does not already exist** (`init` subcommand)
 
 ### Forbidden
 
@@ -70,7 +73,7 @@ Templates are co-located with the skill that owns each artifact type.
 - Modify existing spec content (only scaffolds new empty specs)
 - Delete any files or directories
 - Run build/test/deploy/migration commands
-- Modify `.afx.yaml` or `.afx/` configuration
+- Modify or overwrite an **existing** `.afx.yaml`, or touch `.afx/` configuration at all
 
 If implementation is requested, respond with:
 
@@ -129,7 +132,59 @@ After EVERY `/afx-scaffold` action, suggest the most appropriate next command:
 
 ---
 
-## 1. spec
+## 1. init
+
+Bootstrap AFX project configuration. Intended for installs that deliver skills without project scaffolding — most commonly the Claude Code plugin (`/plugin install afx@afx`), which ships skills only. Installs performed by `afx-cli` already have `.afx.yaml` and do not need this.
+
+### Usage
+
+```bash
+/afx-scaffold init
+```
+
+### Process
+
+1. **Check for existing config.** If `.afx.yaml` exists in the workspace root, STOP and report:
+
+   ```text
+   .afx.yaml already exists — nothing to do. AFX never overwrites an existing config.
+   Edit it directly to change paths, features, or prefixes.
+   ```
+
+   Never overwrite, merge, or "repair" an existing config, even if it looks incomplete.
+
+2. **Read the template** from `assets/afx-config-template.yaml` (relative to this SKILL.md's folder).
+
+3. **Write `.afx.yaml`** to the workspace root, verbatim from the template. Do not substitute values or guess project-specific settings — the template's defaults are correct for a fresh project, and the user edits from there.
+
+4. **Create directories** if missing: `docs/specs/` and `docs/adr/`. Leave them empty; `/afx-scaffold spec <name>` populates them.
+
+5. **Report** what was created and point at the next step.
+
+### Output
+
+```markdown
+## AFX Initialized
+
+| Item      | Status  | Path       |
+| --------- | ------- | ---------- |
+| Config    | created | .afx.yaml  |
+| Specs dir | created | docs/specs |
+| ADR dir   | created | docs/adr   |
+
+Edit `.afx.yaml` to set your feature prefixes and paths.
+
+Next: /afx-scaffold spec <name> to scaffold your first feature.
+```
+
+### Notes
+
+- This subcommand does **not** create `CLAUDE.md`, `AGENTS.md`, or `docs/agenticflowx/`. Those are installed by `afx-cli`; plugin users who want the full project setup should run the installer.
+- If the workspace root is ambiguous (no git root, no manifest), ask the user to confirm the target directory before writing.
+
+---
+
+## 2. spec
 
 Create a new feature spec directory. **Delegates to `/afx-spec create <name>`.**
 
@@ -145,7 +200,7 @@ Delegates entirely to `/afx-spec create <name>`. See `/afx-spec` skill for full 
 
 ---
 
-## 2. research
+## 3. research
 
 Create a new research document.
 
@@ -180,7 +235,7 @@ Next: /afx-research explore {name}
 
 ---
 
-## 3. adr
+## 4. adr
 
 Create a global architecture decision record. **Delegates to `/afx-adr create`.**
 

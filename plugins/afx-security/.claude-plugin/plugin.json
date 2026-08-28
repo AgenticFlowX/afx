@@ -1,0 +1,26 @@
+{
+  "name": "afx-security",
+  "version": "2.6.1",
+  "description": "Security review and audit pack — OWASP triage, threat modeling, dependency risk, and hardening plans",
+  "author": {
+    "name": "AgenticFlowX",
+    "email": "noreply@agenticflowx.dev"
+  },
+  "homepage": "https://github.com/AgenticFlowX/afx#readme",
+  "repository": "https://github.com/AgenticFlowX/afx",
+  "license": "MIT",
+  "keywords": [
+    "afx",
+    "agenticflowx",
+    "security",
+    "owasp",
+    "vulnerability",
+    "code-review",
+    "appsec",
+    "audit",
+    "threat-modeling",
+    "remediation",
+    "architecture"
+  ],
+  "skills": "./skills/"
+}

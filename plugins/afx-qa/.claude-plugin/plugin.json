@@ -1,0 +1,25 @@
+{
+  "name": "afx-qa",
+  "version": "2.6.1",
+  "description": "QA Engineer role pack — testing, review, and quality assurance",
+  "author": {
+    "name": "AgenticFlowX",
+    "email": "noreply@agenticflowx.dev"
+  },
+  "homepage": "https://github.com/AgenticFlowX/afx#readme",
+  "repository": "https://github.com/AgenticFlowX/afx",
+  "license": "MIT",
+  "keywords": [
+    "afx",
+    "agenticflowx",
+    "qa",
+    "testing",
+    "test-strategy",
+    "bug-triage",
+    "coverage",
+    "test-planning",
+    "spec-tracing",
+    "acceptance-criteria"
+  ],
+  "skills": "./skills/"
+}

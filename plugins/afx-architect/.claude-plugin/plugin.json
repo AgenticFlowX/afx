@@ -1,0 +1,26 @@
+{
+  "name": "afx-architect",
+  "version": "2.6.1",
+  "description": "Architect role pack — system design, patterns, ADRs, and quality attributes",
+  "author": {
+    "name": "AgenticFlowX",
+    "email": "noreply@agenticflowx.dev"
+  },
+  "homepage": "https://github.com/AgenticFlowX/afx#readme",
+  "repository": "https://github.com/AgenticFlowX/afx",
+  "license": "MIT",
+  "keywords": [
+    "afx",
+    "agenticflowx",
+    "research",
+    "investigation",
+    "evidence",
+    "analysis",
+    "architecture",
+    "patterns",
+    "clean-architecture",
+    "hexagonal",
+    "ddd"
+  ],
+  "skills": "./skills/"
+}

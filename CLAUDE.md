@@ -28,7 +28,9 @@ afx/
 │   ├── starter/             # Starter skills (hello)
 │   └── agenticflowx/       # Workflow skills (next, design, dev, check, task, session, etc.)
 ├── packs/                   # Pack manifests (afx-pack-*.yaml)
-├── scripts/                 # Utility scripts
+├── .claude-plugin/          # GENERATED: marketplace.json (self-hosted Claude Code marketplace "afx")
+├── plugins/                 # GENERATED: one Claude Code plugin per pack (never edit by hand)
+├── scripts/                 # Utility scripts (build-plugins.mjs regenerates .claude-plugin/ + plugins/)
 ├── docs/
 │   ├── adr/                # Global Architecture Decision Records
 │   ├── agenticflowx/
@@ -44,12 +46,15 @@ afx/
 
 ## Development
 
-This is a documentation-only repo with no build or test commands. Changes are verified by:
+This is a documentation and tooling repo with one build step: `node scripts/build-plugins.mjs` regenerates the committed Claude Code marketplace output (`.claude-plugin/marketplace.json` + `plugins/`) from `skills/` + `packs/` + `skills.json`. Run it after any change to skills, packs, or the catalog version — CI (`.github/workflows/marketplace.yml`) fails if the committed output is stale. Never edit `.claude-plugin/` or `plugins/` by hand.
+
+Changes are verified by:
 
 1. Testing skills in a real project (install via `afx-cli`)
 2. Reviewing markdown rendering
 3. Verifying YAML/SKILL.md frontmatter syntax
 4. Validating skills against `skills-ref validate <path>`
+5. Rebuilding plugins (`node scripts/build-plugins.mjs`) and checking `git diff` is clean
 
 ## Key Concepts
 
@@ -147,6 +152,15 @@ Co-authored-by: copilot <noreply@github.com>
 Use only the line matching the agent that assisted with the commit.
 
 ## Integration
+
+**Claude Code plugin marketplace** (this repo self-hosts the marketplace `afx`):
+
+```
+/plugin marketplace add AgenticFlowX/afx
+/plugin install afx@afx                   # core workflow pack; add-ons: afx-dev@afx, afx-qa@afx, …
+```
+
+Plugin builds strip the redundant `afx-` prefix because the plugin name already namespaces: `/afx-spec` → `/afx:spec`, `/afx-tdd` → `/afx-dev:tdd`. `scripts/build-plugins.mjs` rewrites every cross-reference and template path to match, so plugin skills stay internally consistent. Source under `skills/` keeps the prefixed form for afx-cli. Use one install method per project, not both.
 
 **One-line install** (from target project directory):
 
