@@ -5,6 +5,12 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.1] - 2026-08-28
+
+### Fixed
+
+- **`/afx-release`**: Added a mandatory marketplace rebuild step between the `skills.json` bump and the release commit. Without it a release ships plugin manifests still advertising the previous version and fails the `marketplace.yml` drift gate on first push. The step also simulates that gate locally before committing. Execution contract and error table updated to match
+
 ## [2.7.0] - 2026-08-28
 
 ### Added

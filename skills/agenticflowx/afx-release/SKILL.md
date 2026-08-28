@@ -40,12 +40,13 @@ Requires:
 
 - Read git state (`git status`, `git log`, `git tag`, `git diff`)
 - Write `CHANGELOG.md` and `skills.json`
+- Run `node scripts/build-plugins.mjs` to regenerate `.claude-plugin/` and `plugins/`
 - Run `git commit`, `git tag`, `git push`
 - Run `gh release create`
 
 ### Forbidden
 
-- Modify any source code, skills, templates, or spec files
+- Modify any source code, skills, templates, or spec files — this covers everything under `skills/` and `packs/`. Regenerating `.claude-plugin/` and `plugins/` via the build script is not a source edit and is required by Step 5
 - Delete files or branches
 - Push to any branch other than `main`
 - Skip confirmation before committing or tagging
@@ -222,12 +223,40 @@ Rules:
 
 ---
 
-## Step 5 — Commit
+## Step 5 — Rebuild Marketplace Output (MANDATORY)
+
+`skills.json` is the version source for the committed Claude Code marketplace output. The marketplace manifest and every per-pack `plugin.json` embed that version, so bumping `skills.json` alone leaves them behind and ships a release whose plugins advertise the previous version.
+
+1. Rebuild:
+
+   ```bash
+   node scripts/build-plugins.mjs
+   ```
+
+2. Verify every manifest moved (expect one marketplace + one per pack):
+
+   ```bash
+   grep -l "\"version\": \"X.Y.Z\"" .claude-plugin/marketplace.json plugins/*/.claude-plugin/plugin.json | wc -l
+   ```
+
+3. Simulate the CI drift gate before committing — this is what `.github/workflows/marketplace.yml` runs:
+
+   ```bash
+   node scripts/build-plugins.mjs && git diff --exit-code --quiet .claude-plugin plugins
+   ```
+
+   Non-zero exit → the generated tree is stale. Do NOT proceed; re-run the build and stage the result.
+
+> Skipping this step produces a release that fails CI on the first push and serves stale versions to anyone installing from the marketplace.
+
+---
+
+## Step 6 — Commit
 
 Stage the release artifacts and commit:
 
 ```bash
-git add CHANGELOG.md skills.json
+git add CHANGELOG.md skills.json .claude-plugin plugins
 git commit -m "chore(release): vX.Y.Z
 
 - <bullets from Step 2>
@@ -240,10 +269,11 @@ This commit includes:
 - The originally staged files
 - `CHANGELOG.md`
 - `skills.json`
+- Regenerated `.claude-plugin/` and `plugins/` from Step 5
 
 ---
 
-## Step 6 — Push to main
+## Step 7 — Push to main
 
 ```bash
 git push origin main
@@ -257,7 +287,7 @@ Error: Push failed. Pull latest changes and resolve conflicts before releasing.
 
 ---
 
-## Step 7 — Create and Push Tag
+## Step 8 — Create and Push Tag
 
 ```bash
 git tag vX.Y.Z
@@ -272,7 +302,7 @@ Error: Tag vX.Y.Z already exists locally. Delete it first: git tag -d vX.Y.Z
 
 ---
 
-## Step 8 — Create GitHub Release
+## Step 9 — Create GitHub Release
 
 1. Extract the new changelog section (from `## [X.Y.Z]` to the next `## [` or EOF).
 2. Create the release:
@@ -309,6 +339,7 @@ Changelog entry added for vX.Y.Z.
 | Not on main               | Abort — "Not on main branch."                        |
 | `gh` not found            | Abort — "gh CLI not found. Install: brew install gh" |
 | Tag already exists        | Abort — "Tag vX.Y.Z already exists."                 |
+| Generated output stale    | Abort — "Run node scripts/build-plugins.mjs and stage `.claude-plugin/` + `plugins/`." |
 | Push fails                | Abort — "Push failed. Pull and resolve conflicts."   |
 | `gh release create` fails | Warn — show manual command to retry                  |
 
