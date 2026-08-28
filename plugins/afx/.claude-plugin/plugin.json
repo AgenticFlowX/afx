@@ -1,6 +1,6 @@
 {
   "name": "afx",
-  "version": "2.6.1",
+  "version": "2.7.0",
   "description": "AgenticFlowX workflow skills — spec-driven development commands for all AI coding agents. Node.js 18+ enables optional structured document queries; targeted-search fallback remains available.",
   "author": {
     "name": "AgenticFlowX",

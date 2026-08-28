@@ -5,6 +5,19 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2026-08-28
+
+### Added
+
+- **Claude Code plugin marketplace**: The repo now self-hosts a Claude Code marketplace (`afx`) — `/plugin marketplace add AgenticFlowX/afx` then `/plugin install afx@afx` (core) plus role add-on plugins (`afx-dev`, `afx-qa`, `afx-security`, `afx-architect`, `afx-product-owner`, `afx-starter`). Generated output (`.claude-plugin/` + `plugins/`) is committed and rebuilt by `scripts/build-plugins.mjs`; CI (`marketplace.yml`) fails when it is stale
+
+- **`/afx-scaffold init`**: Bootstraps `.afx.yaml` (from the new `afx-scaffold/assets/afx-config-template.yaml`) plus `docs/specs/` and `docs/adr/`, for installs that ship skills without project scaffolding. Never overwrites an existing config. `/afx-hello` now detects install method and points plugin users at it
+
+### Changed
+
+- **build-plugins.mjs**: Now emits one aggregate root marketplace with per-pack plugins under `plugins/` (replaces the seven separate single-plugin marketplaces under gitignored `dist/`); plugin manifests gain `homepage`, `repository`, `license`, `keywords` (from skill `afx-tags`), and explicit `skills` path
+- **Plugin command names**: Plugin builds strip the redundant `afx-` prefix since the plugin name namespaces already — `/afx-spec` → `/afx:spec`, `/afx-tdd` → `/afx-dev:tdd`. The builder rewrites all cross-references, template paths, and frontmatter names so plugin skills stay self-consistent. `skills/` source and `afx-cli` installs are unchanged
+
 ## [2.6.1] - 2026-07-24
 
 ### Changed
