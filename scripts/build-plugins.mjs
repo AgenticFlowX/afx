@@ -165,6 +165,14 @@ ${gettingStarted}
 
 ${commands}
 
+## Data handling and external services
+
+Skills can read project files and write local artifacts containing participant names, account handles, or contributor information. AFX operates no hosted backend for these plugins and retains no project data on an AFX service. Your workspace, repository history, agent host, and any external services have their own storage and retention controls.
+
+When you request task synchronization, Git operations, or a release, the agent may send issue content, commits, tags, release notes, and assets to GitHub using your existing authentication. Research may send queries through your host's browser or connected services; project commands may contact services configured by your project. Follow the host's permission controls and review content before approving transfers. See the [privacy and data-handling statement](${plugin.privacyPolicyUrl}) for details.
+
+For help, use [AFX support](${plugin.supportUrl}). Do not include secrets or sensitive personal data in public issues.
+
 ## Source and license
 
 Maintained by [AgenticFlowX](${REPO_URL}). See the [project documentation](${REPO_URL}#readme) for the workflow and other supported agents. This plugin is distributed under the ${plugin.license} license; see [LICENSE](LICENSE) in this folder.
@@ -211,6 +219,9 @@ for (const pack of parsedPacks) {
     author: AUTHOR,
     homepage: `${REPO_URL}#readme`,
     repository: REPO_URL,
+    documentationUrl: `${REPO_URL}#readme`,
+    supportUrl: `${REPO_URL}/issues`,
+    privacyPolicyUrl: `${REPO_URL}/blob/main/PRIVACY.md`,
     license: catalog.license || 'MIT',
     keywords: [...keywords].slice(0, 12),
     skills: './skills/',

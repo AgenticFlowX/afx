@@ -19,6 +19,14 @@ This role pack can be used alongside `afx@afx`, the core spec-driven workflow pl
 
 - `/afx-product-owner:product-owner`
 
+## Data handling and external services
+
+Skills can read project files and write local artifacts containing participant names, account handles, or contributor information. AFX operates no hosted backend for these plugins and retains no project data on an AFX service. Your workspace, repository history, agent host, and any external services have their own storage and retention controls.
+
+When you request task synchronization, Git operations, or a release, the agent may send issue content, commits, tags, release notes, and assets to GitHub using your existing authentication. Research may send queries through your host's browser or connected services; project commands may contact services configured by your project. Follow the host's permission controls and review content before approving transfers. See the [privacy and data-handling statement](https://github.com/AgenticFlowX/afx/blob/main/PRIVACY.md) for details.
+
+For help, use [AFX support](https://github.com/AgenticFlowX/afx/issues). Do not include secrets or sensitive personal data in public issues.
+
 ## Source and license
 
 Maintained by [AgenticFlowX](https://github.com/AgenticFlowX/afx). See the [project documentation](https://github.com/AgenticFlowX/afx#readme) for the workflow and other supported agents. This plugin is distributed under the MIT license; see [LICENSE](LICENSE) in this folder.

@@ -518,6 +518,10 @@ AFX's template system is a pragmatic hybrid of established industry standards:
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting PRs.
 
+## Privacy and support
+
+Workflow skills can read project data, write local artifacts, and use your agent's tools to interact with external services such as GitHub when requested. See [privacy and data handling](PRIVACY.md) for storage, retention, and transfer details. For help, use [AFX support](https://github.com/AgenticFlowX/afx/issues); avoid posting secrets or sensitive personal data in public issues.
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.

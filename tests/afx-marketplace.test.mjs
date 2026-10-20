@@ -34,6 +34,15 @@ test('generated plugins bundle listing assets without broad shell pre-approvals'
     assert.equal(manifest.name, entry.name);
     assert.equal(manifest.version, marketplace.metadata.version);
     assert.equal(entry.version, undefined, `${entry.name}: plugin.json owns the version`);
+    assert.equal(manifest.documentationUrl, 'https://github.com/AgenticFlowX/afx#readme');
+    assert.equal(manifest.supportUrl, 'https://github.com/AgenticFlowX/afx/issues');
+    assert.equal(manifest.privacyPolicyUrl, 'https://github.com/AgenticFlowX/afx/blob/main/PRIVACY.md');
+    assert.ok(readme.includes(manifest.supportUrl), `${entry.name}: accessible support link`);
+    assert.ok(readme.includes(manifest.privacyPolicyUrl), `${entry.name}: accessible privacy link`);
+    assert.match(readme, /send issue content, commits, tags, release notes, and assets to GitHub/, `${entry.name}: external transfer disclosure`);
+    for (const field of ['documentationUrl', 'supportUrl', 'privacyPolicyUrl']) {
+      assert.equal(entry[field], undefined, `${entry.name}: directory metadata belongs in plugin.json`);
+    }
     const icon = readFileSync(join(pluginRoot, '.claude-plugin/icon.png'));
     assert.deepEqual(icon.subarray(0, 8), Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
     const width = icon.readUInt32BE(16);
