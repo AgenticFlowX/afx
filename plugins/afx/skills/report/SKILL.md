@@ -2,7 +2,7 @@
 name: report
 description: Traceability reporting — orphaned code detection, spec-to-code coverage mapping, and stale spec detection
 license: MIT
-allowed-tools: Read Grep Glob Bash
+allowed-tools: Read Grep Glob
 metadata:
   afx-owner: "@rix"
   afx-tags: "workflow,report,metrics,health,coverage"

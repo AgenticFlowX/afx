@@ -123,10 +123,12 @@ function rewriteTree(dir, counter) {
     let after = rewriteCommands(before);
     if (entry.name === 'SKILL.md') {
       after = after
-        // Match afx-cli's installed skill tree exactly.
+        // Strip installer-only command markers.
         .replace(/^<!-- @afx:\/?provider-commands -->\n?/gm, '')
         // Frontmatter name drives the plugin:skill address.
-        .replace(/^(name:\s*)afx-([a-z0-9-]+)\s*$/m, (_m, key, rest) => `${key}${rest}`);
+        .replace(/^(name:\s*)afx-([a-z0-9-]+)\s*$/m, (_m, key, rest) => `${key}${rest}`)
+        // Plugin shell calls use normal Claude approvals; afx-cli policy stays canonical.
+        .replace(/^allowed-tools: ([^\r\n]+)$/m, (_m, tools) => `allowed-tools: ${tools.split(/\s+/).filter(tool => tool !== 'Bash').join(' ')}`);
     }
     if (after !== before) { writeFileSync(full, after); counter.files++; }
   }
@@ -182,6 +184,7 @@ for (const pack of parsedPacks) {
   const pluginDir = join(PLUGINS_DIR, pluginName);
   const skillsDir = join(pluginDir, 'skills');
   mkdirSync(join(pluginDir, '.claude-plugin'), { recursive: true });
+  cpSync(join(ROOT, 'assets/agenticflow_icon.png'), join(pluginDir, '.claude-plugin/icon.png'));
   mkdirSync(skillsDir, { recursive: true });
 
   let copied = 0, missing = [];

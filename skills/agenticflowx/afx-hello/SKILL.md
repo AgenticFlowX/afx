@@ -154,5 +154,5 @@ Ready to go! Try:
 Run `/afx-scaffold init` to write a minimal `.afx.yaml` and create `docs/specs/` + `docs/adr/`.
 
 For full project setup (CLAUDE.md wiring, framework docs, multi-agent skills),
-use the installer instead: `curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .`
+see the [afx-cli installation instructions](https://github.com/AgenticFlowX/afx#readme).
 ```

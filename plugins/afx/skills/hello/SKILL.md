@@ -2,7 +2,7 @@
 name: hello
 description: Verify AFX installation and environment — detect the AI provider, confirm skill availability, and show a project health snapshot. Use for onboarding, troubleshooting, or a quick multi-provider vibe check. Triggers on "is AFX working?", "hello AFX", "vibe check", or "verify AFX install".
 license: MIT
-allowed-tools: Read Grep Glob Bash
+allowed-tools: Read Grep Glob
 metadata:
   afx-owner: "@rix"
   afx-tags: "workflow,diagnostics,environment,onboarding"
@@ -154,5 +154,5 @@ Ready to go! Try:
 Run `/afx:scaffold init` to write a minimal `.afx.yaml` and create `docs/specs/` + `docs/adr/`.
 
 For full project setup (CLAUDE.md wiring, framework docs, multi-agent skills),
-use the installer instead: `curl -sL https://raw.githubusercontent.com/AgenticFlowX/afx/main/afx-cli | bash -s -- .`
+see the [afx-cli installation instructions](https://github.com/AgenticFlowX/afx#readme).
 ```

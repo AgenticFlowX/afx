@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative } from 'node:path';
 import test from 'node:test';
@@ -13,7 +13,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
  * @see docs/specs/afx-packs/spec.md [FR-25]
  * @see https://claude.com/docs/plugins/pre-submission-checklist
  */
-test('every generated plugin carries its directory listing and license', t => {
+test('generated plugins bundle listing assets without broad shell pre-approvals', t => {
   const output = mkdtempSync(join(tmpdir(), 'afx-marketplace-'));
   t.after(() => rmSync(output, { recursive: true, force: true }));
   execFileSync(process.execPath, [
@@ -34,5 +34,20 @@ test('every generated plugin carries its directory listing and license', t => {
     assert.equal(manifest.name, entry.name);
     assert.equal(manifest.version, marketplace.metadata.version);
     assert.equal(entry.version, undefined, `${entry.name}: plugin.json owns the version`);
+    const icon = readFileSync(join(pluginRoot, '.claude-plugin/icon.png'));
+    assert.deepEqual(icon.subarray(0, 8), Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+    const width = icon.readUInt32BE(16);
+    assert.equal(width, icon.readUInt32BE(20), `${entry.name}: square icon`);
+    assert.ok(width >= 512 && width <= 2048, `${entry.name}: directory icon dimensions`);
+    assert.ok(icon.length < 2 * 1024 * 1024, `${entry.name}: directory icon size`);
+    assert.deepEqual(icon, readFileSync(join(root, 'assets/agenticflow_icon.png')));
+
+    for (const skill of readdirSync(join(pluginRoot, 'skills'))) {
+      const md = readFileSync(join(pluginRoot, 'skills', skill, 'SKILL.md'), 'utf8');
+      const tools = md.match(/^allowed-tools:\s*(.+)$/m)?.[1].split(/\s+/) || [];
+      assert.ok(!tools.includes('Bash'), `${entry.name}:${skill}: no unrestricted shell pre-approval`);
+      assert.doesNotMatch(md, /curl[^\n]*\|\s*(?:bash|sh)\b/, `${entry.name}:${skill}: no download-and-run instructions`);
+    }
   }
+  assert.match(readFileSync(join(root, 'skills/agenticflowx/afx-hello/SKILL.md'), 'utf8'), /^allowed-tools: Read Grep Glob Bash$/m, 'CLI tool policy is retained');
 });

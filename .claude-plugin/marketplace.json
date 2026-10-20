@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "AgenticFlowX (AFX) — spec-driven development skills for AI coding agents. \"afx\" is the core workflow pack; the rest are role add-ons.",
-    "version": "2.7.2"
+    "version": "2.7.3"
   },
   "plugins": [
     {

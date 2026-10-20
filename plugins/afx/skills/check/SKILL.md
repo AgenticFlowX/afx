@@ -2,7 +2,7 @@
 name: check
 description: Quality gates and compliance — trace execution paths, audit annotations, verify cross-references, and run all checks against spec requirements
 license: MIT
-allowed-tools: Read Grep Glob Bash
+allowed-tools: Read Grep Glob
 metadata:
   afx-owner: "@rix"
   afx-tags: "workflow,check,quality,compliance,traceability"

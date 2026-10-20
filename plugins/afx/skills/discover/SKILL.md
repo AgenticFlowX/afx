@@ -2,7 +2,7 @@
 name: discover
 description: Project discovery — find infrastructure scripts, automation tools, deployment workflows, and development capabilities in your codebase
 license: MIT
-allowed-tools: Read Grep Glob Bash
+allowed-tools: Read Grep Glob
 metadata:
   afx-owner: "@rix"
   afx-tags: "workflow,discovery,infrastructure,tools,capabilities"

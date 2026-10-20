@@ -2,7 +2,7 @@
 name: help
 description: AFX command reference — lists all available commands, role-based workflow guides, and quick-start cheatsheet
 license: MIT
-allowed-tools: Read Grep Glob Bash
+allowed-tools: Read Grep Glob
 compatibility: Requires Node.js 18+ for the optional afx-doc-query and afx-validate helpers; skills fall back to targeted search without it.
 metadata:
   afx-owner: "@rix"

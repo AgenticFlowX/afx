@@ -15,6 +15,7 @@ on:
       - "plugins/**"
       - ".claude-plugin/**"
       - "LICENSE"
+      - "assets/agenticflow_icon.png"
       - "tests/afx-marketplace.test.mjs"
       - ".github/workflows/marketplace.yml"
   pull_request:
@@ -26,6 +27,7 @@ on:
       - "plugins/**"
       - ".claude-plugin/**"
       - "LICENSE"
+      - "assets/agenticflow_icon.png"
       - "tests/afx-marketplace.test.mjs"
       - ".github/workflows/marketplace.yml"
 

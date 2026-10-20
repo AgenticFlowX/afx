@@ -2,7 +2,7 @@
 name: next
 description: Context-aware guidance — analyzes git state, active tasks, and session history to recommend the best next action
 license: MIT
-allowed-tools: Read Grep Glob Bash
+allowed-tools: Read Grep Glob
 metadata:
   afx-owner: "@rix"
   afx-tags: "workflow,context,guidance,golden-thread"
