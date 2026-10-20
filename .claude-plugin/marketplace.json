@@ -6,14 +6,13 @@
   },
   "metadata": {
     "description": "AgenticFlowX (AFX) — spec-driven development skills for AI coding agents. \"afx\" is the core workflow pack; the rest are role add-ons.",
-    "version": "2.7.1"
+    "version": "2.7.2"
   },
   "plugins": [
     {
       "name": "afx",
       "source": "./plugins/afx",
       "description": "AgenticFlowX workflow skills — spec-driven development commands for all AI coding agents. Node.js 18+ enables optional structured document queries; targeted-search fallback remains available.",
-      "version": "2.7.1",
       "author": {
         "name": "AgenticFlowX"
       },
@@ -37,7 +36,6 @@
       "name": "afx-architect",
       "source": "./plugins/afx-architect",
       "description": "Architect role pack — system design, patterns, ADRs, and quality attributes",
-      "version": "2.7.1",
       "author": {
         "name": "AgenticFlowX"
       },
@@ -60,7 +58,6 @@
       "name": "afx-dev",
       "source": "./plugins/afx-dev",
       "description": "Developer essentials — clean code, debugging, TDD, git workflows, architecture patterns",
-      "version": "2.7.1",
       "author": {
         "name": "AgenticFlowX"
       },
@@ -84,7 +81,6 @@
       "name": "afx-product-owner",
       "source": "./plugins/afx-product-owner",
       "description": "Product Owner role pack — discovery, prioritization, PRDs, and go-to-market",
-      "version": "2.7.1",
       "author": {
         "name": "AgenticFlowX"
       },
@@ -103,7 +99,6 @@
       "name": "afx-qa",
       "source": "./plugins/afx-qa",
       "description": "QA Engineer role pack — testing, review, and quality assurance",
-      "version": "2.7.1",
       "author": {
         "name": "AgenticFlowX"
       },
@@ -125,7 +120,6 @@
       "name": "afx-security",
       "source": "./plugins/afx-security",
       "description": "Security review and audit pack — OWASP triage, threat modeling, dependency risk, and hardening plans",
-      "version": "2.7.1",
       "author": {
         "name": "AgenticFlowX"
       },
@@ -148,7 +142,6 @@
       "name": "afx-starter",
       "source": "./plugins/afx-starter",
       "description": "Starter pack — verify AFX installation and multi-provider routing",
-      "version": "2.7.1",
       "author": {
         "name": "AgenticFlowX"
       },

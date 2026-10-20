@@ -70,6 +70,8 @@ flowchart LR
 
 ## Quick Start
 
+AFX has two install paths: keep using **afx-cli** for Codex, GitHub Copilot, Claude Code, and compatible coding agents, or add the **Claude plugin** in Claude Code, Claude Desktop, or Cowork. Both use the same workflow and project markdown. The CLI can serve your coding agents while the Claude plugin is enabled alongside them.
+
 > **Optional acceleration**: **Node.js 18+** enables the AFX document query helper for fast, structured, low-context reads of spec/design/task documents. Without Node.js, AFX still works — skills fall back to targeted text search and warn once, broadening the read when needed. Install Node.js 18+ for faster structured loading.
 
 ### Option A — Claude Code plugin (marketplace)
@@ -81,7 +83,9 @@ This repo is a self-hosting Claude Code plugin marketplace. Inside Claude Code:
 /plugin install afx@afx
 ```
 
-Restart Claude Code, then verify with `/afx:hello`.
+Restart Claude Code or run `/reload-plugins`, then verify with `/afx:hello`.
+
+The default install scope is **user**, so the plugin is available across projects. A **project** install only enables it in that project. In a terminal, check the scope with `claude plugin list`; use `claude plugin install afx@afx --scope user` for a user-wide install. If an update is missing, run `claude plugin marketplace update afx` followed by `claude plugin update afx@afx`, then reload plugins.
 
 `afx` is the core workflow pack (18 skills). Role add-ons are installed the same way:
 
@@ -97,7 +101,21 @@ Restart Claude Code, then verify with `/afx:hello`.
 
 > **Command form differs by install method.** Plugins namespace by plugin name, so the redundant prefix is dropped: `/afx-spec` becomes `/afx:spec`, `/afx-task` becomes `/afx:task`. Add-on packs follow the same rule — `/afx-tdd` becomes `/afx-dev:tdd`. The command word is identical either way; only the separator changes. Documentation throughout this repo uses the `afx-cli` form.
 >
-> Pick one install method per project — don't combine both, or every skill loads twice.
+> Avoid loading the same AFX skills through both installation methods in the same agent. Using the CLI for Codex or another coding agent and the plugin for Claude in the same project is supported.
+
+#### Claude Desktop or Cowork
+
+In Claude, open **Customize → Plugins → Add plugin → Add marketplace → Add from a repository**. Enter `AgenticFlowX/afx` (or `https://github.com/AgenticFlowX/afx`) and select **Sync**. Once the seven plugins appear, open **Afx** and select **Add**. An enabled Afx switch confirms installation; the core plugin contains 18 skills.
+
+Claude may show **“Auto-sync requires the Claude GitHub App to have access to this repository.”** This notice concerns automatic updates: the initial repository import and plugin installation can still succeed. Automatic sync needs separate GitHub App access to the repository.
+
+#### Publishing to the Claude plugin directory
+
+The marketplace above is hosted by AgenticFlowX; adding it does not create a listing in Anthropic's public directory. That directory has a separate submission and review process.
+
+Submit one generated plugin folder at a time in the [developer portal](https://claude.ai/directory/manage). For the core workflow, use repository `AgenticFlowX/afx` and plugin path `plugins/afx`; role packs use their corresponding `plugins/<name>` path. The repository root is the marketplace catalog, not a single plugin. Each generated folder includes its own manifest, README, license, skills, and supporting resources.
+
+Before submitting, run `node --test tests/afx-marketplace.test.mjs`, `claude plugin validate . --strict`, and `claude plugin validate plugins/afx --strict`. Follow Anthropic's [pre-submission checklist](https://claude.com/docs/plugins/pre-submission-checklist) and run validation in the portal too: local manifest validation does not check name availability or all directory policies. Increment `skills.json` and regenerate the plugins before publishing changed plugin content, so existing installs receive a new version.
 
 ### Option B — afx-cli installer (all agents)
 

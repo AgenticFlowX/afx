@@ -19,7 +19,7 @@ Generate or run tests based on spec requirements.
 2. **Check Coverage**: Compare existing tests vs requirements.
 
 3. **Generate/Run**:
-   - `npx nx test [scope]`
+   - Use the project's configured test command. For Nx projects, run the installed local CLI: `./node_modules/.bin/nx test [scope]` (do not download a test runner implicitly).
    - Create new tests for missing scenarios.
 
 4. **Link**: Ensure test descriptions reference spec scenarios if possible.
@@ -45,7 +45,7 @@ Generate or run tests based on spec requirements.
 ### Tests Run
 
 ```bash
-npx nx test {package}
+./node_modules/.bin/nx test {package}
 ```
 
 Results: {X} passed, {Y} failed, {Z} skipped

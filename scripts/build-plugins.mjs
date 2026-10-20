@@ -23,6 +23,7 @@ const version = catalog.version || '0.0.0';
 const AUTHOR = { name: 'AgenticFlowX', email: 'noreply@agenticflowx.dev' };
 const REPO_URL = 'https://github.com/AgenticFlowX/afx';
 const MARKETPLACE_NAME = 'afx';
+const LICENSE = readFileSync(join(ROOT, 'LICENSE'), 'utf8');
 // The core workflow pack; listed first, add-ons after it.
 const MAIN_PLUGIN = 'afx';
 
@@ -131,6 +132,43 @@ function rewriteTree(dir, counter) {
   }
 }
 
+/**
+ * Keep each installed/submitted folder useful without the enclosing repository.
+ * @see docs/specs/afx-packs/spec.md [FR-25]
+ * @see https://claude.com/docs/plugins/pre-submission-checklist
+ */
+function pluginReadme(plugin, declared) {
+  const commands = declared.map(({ skill }) => `- \`/${plugin.name}:${exposedName(skill)}\``).join('\n');
+  const gettingStarted = plugin.name === MAIN_PLUGIN
+    ? 'Start with `/afx:hello` to verify the install. In a new project, use `/afx:scaffold init` to create the optional AFX configuration and document directories. Node.js 18+ enables the bundled document query helpers; targeted search remains available without Node.js.'
+    : 'This role pack can be used alongside `afx@afx`, the core spec-driven workflow plugin. Install the core plugin when you also want its specification, design, task, and session commands. Role pack commands use their own plugin namespace, as listed below.';
+  return `# AgenticFlowX — ${plugin.name}
+
+${plugin.description}
+
+This plugin contains AgenticFlowX skills for AI-assisted software development. The skills provide instructions and reference material for work in your project; they do not install the AFX command-line tool or the VS Code extension. The complete skill files and their supporting resources are included in this folder.
+
+## Install in Claude Code
+
+\`\`\`text
+/plugin marketplace add AgenticFlowX/afx
+/plugin install ${plugin.name}@${MARKETPLACE_NAME}
+\`\`\`
+
+Restart Claude Code or run \`/reload-plugins\` after installation. The install command uses user scope by default; select project scope only when you want this plugin enabled for a particular project. The afx-cli installer remains available for Codex, Copilot, and compatible coding agents alongside this plugin. Avoid loading duplicate copies of the same skills into one agent.
+
+${gettingStarted}
+
+## Skills
+
+${commands}
+
+## Source and license
+
+Maintained by [AgenticFlowX](${REPO_URL}). See the [project documentation](${REPO_URL}#readme) for the workflow and other supported agents. This plugin is distributed under the ${plugin.license} license; see [LICENSE](LICENSE) in this folder.
+`;
+}
+
 rmSync(PLUGINS_DIR, { recursive: true, force: true });
 mkdirSync(PLUGINS_DIR, { recursive: true });
 
@@ -175,11 +213,12 @@ for (const pack of parsedPacks) {
     skills: './skills/',
   };
   writeJson(join(pluginDir, '.claude-plugin', 'plugin.json'), plugin);
+  writeFileSync(join(pluginDir, 'README.md'), pluginReadme(plugin, declared));
+  writeFileSync(join(pluginDir, 'LICENSE'), LICENSE);
   listings.push({
     name: pluginName,
     source: `./plugins/${pluginName}`,
     description: listingDescription,
-    version,
     author: { name: AUTHOR.name },
     category: pack.category,
     keywords: plugin.keywords,

@@ -14,6 +14,9 @@ on:
       - "scripts/build-plugins.mjs"
       - "plugins/**"
       - ".claude-plugin/**"
+      - "LICENSE"
+      - "tests/afx-marketplace.test.mjs"
+      - ".github/workflows/marketplace.yml"
   pull_request:
     paths:
       - "skills/**"
@@ -22,6 +25,9 @@ on:
       - "scripts/build-plugins.mjs"
       - "plugins/**"
       - ".claude-plugin/**"
+      - "LICENSE"
+      - "tests/afx-marketplace.test.mjs"
+      - ".github/workflows/marketplace.yml"
 
 jobs:
   verify:
@@ -31,6 +37,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Test marketplace packaging contracts
+        run: node --test tests/afx-marketplace.test.mjs
       - name: Rebuild marketplace output
         run: node scripts/build-plugins.mjs
       - name: Assert committed output is fresh
@@ -45,3 +53,14 @@ jobs:
             echo "::error::Generated files are untracked: $untracked"
             exit 1
           fi
+      - name: Install Claude manifest validator
+        run: npm install --global @anthropic-ai/claude-code@2.1.304
+      - name: Validate marketplace and every plugin
+        env:
+          CLAUDE_CONFIG_DIR: ${{ runner.temp }}/afx-claude-validation
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+        run: |
+          claude plugin validate . --strict
+          for plugin in plugins/*; do
+            claude plugin validate "$plugin" --strict
+          done

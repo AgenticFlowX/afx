@@ -5,6 +5,18 @@ All notable changes to AFX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.2] - 2026-10-20
+
+### Fixed
+
+- Include a README and license in each generated Claude plugin folder for standalone installation and directory submission.
+- Keep plugin versions in `plugin.json` and use the project's installed Nx runner in test examples.
+
+### Changed
+
+- Add packaging regression coverage and strict Claude manifest validation to marketplace CI.
+- Document Claude Code, Desktop, and Cowork installation alongside the CLI for Codex and compatible coding agents, including command namespaces, scope, and automatic updates.
+
 ## [2.7.1] - 2026-08-28
 
 ### Fixed
